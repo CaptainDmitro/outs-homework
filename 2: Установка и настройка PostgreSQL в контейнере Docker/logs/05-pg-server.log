@@ -1,0 +1,66 @@
++ id
+uid=1000(debian) gid=1000(debian) groups=1000(debian),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),108(netdev),114(lpadmin),117(scanner),997(docker)
++ sudo mkdir -p /var/lib/postgres
++ ls -ld /var/lib/postgres
+drwxr-xr-x 2 root root 4096 Oct 12 08:25 /var/lib/postgres
++ docker network create pg-net
+337c1c04495bd8e9194c92f8e10cd3263c663af5b2ae56b15697476e7c55a7d7
++ docker pull -q postgres:14
+docker.io/library/postgres:14
++ docker image inspect postgres:14 --format '{{.Architecture}} {{.Os}} {{range .Config.Env}}{{println .}}{{end}}'
++ grep -E 'arm|PG_VERSION|PGDATA'
+arm64 linux PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/14/bin
+PG_VERSION=14.24-1.pgdg13+2
+PGDATA=/var/lib/postgresql/data
++ docker run -d --name pg-server --network pg-net -e POSTGRES_PASSWORD=otus_pass -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data --restart unless-stopped postgres:14
+eaa231a7c8ef0f2f79f21930394879cbfb24c4c0be9134c52c6a768d655a2e7c
++ sleep 8
++ docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+NAMES       IMAGE         STATUS         PORTS
+pg-server   postgres:14   Up 8 seconds   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
++ docker logs pg-server
++ tail -15
+.2026-10-12 15:27:11.008 UTC [49] LOG:  aborting any active transactions
+2026-10-12 15:27:11.008 UTC [49] LOG:  background worker "logical replication launcher" (PID 56) exited with exit code 1
+2026-10-12 15:27:11.009 UTC [51] LOG:  shutting down
+2026-10-12 15:27:11.013 UTC [49] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2026-10-12 15:27:11.122 UTC [1] LOG:  starting PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2026-10-12 15:27:11.122 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-10-12 15:27:11.122 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-10-12 15:27:11.124 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-12 15:27:11.126 UTC [62] LOG:  database system was shut down at 2026-10-12 15:27:11 UTC
+2026-10-12 15:27:11.127 UTC [1] LOG:  database system is ready to accept connections
++ sudo ls -la /var/lib/postgres
++ head -30
+total 136
+drwx------ 19 systemd-timesync root              4096 Oct 12 08:27 .
+drwxr-xr-x 42 root             root              4096 Oct 12 08:25 ..
+drwx------  5 systemd-timesync systemd-timesync  4096 Oct 12 08:27 base
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 global
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_commit_ts
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_dynshmem
+-rw-------  1 systemd-timesync systemd-timesync  4821 Oct 12 08:27 pg_hba.conf
+-rw-------  1 systemd-timesync systemd-timesync  1636 Oct 12 08:27 pg_ident.conf
+drwx------  4 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_logical
+drwx------  4 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_multixact
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_notify
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_replslot
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_serial
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_snapshots
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_stat
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_stat_tmp
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_subtrans
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_tblspc
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_twophase
+-rw-------  1 systemd-timesync systemd-timesync     3 Oct 12 08:27 PG_VERSION
+drwx------  3 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_wal
+drwx------  2 systemd-timesync systemd-timesync  4096 Oct 12 08:27 pg_xact
+-rw-------  1 systemd-timesync systemd-timesync    88 Oct 12 08:27 postgresql.auto.conf
+-rw-------  1 systemd-timesync systemd-timesync 28921 Oct 12 08:27 postgresql.conf
+-rw-------  1 systemd-timesync systemd-timesync    36 Oct 12 08:27 postmaster.opts
+-rw-------  1 systemd-timesync systemd-timesync    94 Oct 12 08:27 postmaster.pid

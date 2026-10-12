@@ -1,0 +1,54 @@
++ docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}'
+CONTAINER ID   NAMES       STATUS
+eaa231a7c8ef   pg-server   Up About a minute
++ docker stop pg-server
+pg-server
++ docker rm pg-server
+pg-server
++ docker ps -a --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}'
+CONTAINER ID   NAMES     STATUS
++ docker volume ls
+DRIVER    VOLUME NAME
++ sudo du -sh /var/lib/postgres
+42M	/var/lib/postgres
++ docker run -d --name pg-server --network pg-net -e POSTGRES_PASSWORD=otus_pass -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data --restart unless-stopped postgres:14
+9ff3786077f07c9d9e97c18fb4dcd8df271d4268f2402cec2f5a902cad439cf6
++ sleep 5
++ docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}'
+CONTAINER ID   NAMES       STATUS         PORTS
+9ff3786077f0   pg-server   Up 5 seconds   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
++ docker logs pg-server
+
+PostgreSQL Database directory appears to contain a database; Skipping initialization
+
+2026-10-12 15:28:32.277 UTC [1] LOG:  starting PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2026-10-12 15:28:32.277 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-10-12 15:28:32.277 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-10-12 15:28:32.278 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-12 15:28:32.280 UTC [27] LOG:  database system was shut down at 2026-10-12 15:28:31 UTC
+2026-10-12 15:28:32.281 UTC [1] LOG:  database system is ready to accept connections
++ docker run --rm --network pg-net -e PGPASSWORD=otus_pass postgres:14 psql -h pg-server -U postgres -c 'select pg_postmaster_start_time();' -c 'select count(*) from shipments;' -c 'select * from shipments order by id;'
+   pg_postmaster_start_time   
+------------------------------
+ 2026-10-12 15:28:32.27954+00
+(1 row)
+
+ count 
+-------
+    10
+(1 row)
+
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | bananas      |     1500 | Asia
+  3 | bananas      |     2000 | Africa
+  4 | coffee       |      500 | USA
+  5 | coffee       |      700 | Canada
+  6 | coffee       |      300 | Japan
+  7 | sugar        |     1000 | Europe
+  8 | sugar        |      800 | Asia
+  9 | sugar        |      600 | Africa
+ 10 | sugar        |      400 | USA
+(10 rows)
+

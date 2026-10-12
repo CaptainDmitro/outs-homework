@@ -1,0 +1,22 @@
++ sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
++ sudo rm -f /etc/apt/sources.list.d/docker.list
++ sudo tee /etc/apt/sources.list
+deb http://archive.debian.org/debian bullseye main
+deb http://archive.debian.org/debian bullseye-updates main
+deb http://archive.debian.org/debian-security bullseye-security main
++ sudo apt-get update
++ tail -6
+Get:6 http://archive.debian.org/debian bullseye-updates/main arm64 Packages [16.3 kB]
+Get:7 http://archive.debian.org/debian bullseye-updates/main Translation-en [10.9 kB]
+Get:8 http://archive.debian.org/debian-security bullseye-security/main arm64 Packages [471 kB]
+Get:9 http://archive.debian.org/debian-security bullseye-security/main Translation-en [318 kB]
+Fetched 15.2 MB in 13s (1,186 kB/s)
+Reading package lists...
++ sudo apt-get install -y -qq ca-certificates curl gnupg
++ tail -3
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
++ curl --version
++ head -1
+curl 7.74.0 (aarch64-unknown-linux-gnu) libcurl/7.74.0 OpenSSL/1.1.1n zlib/1.2.11 brotli/1.0.9 libidn2/2.3.0 libpsl/0.21.0 (+libidn2/2.3.0) libssh2/1.9.0 nghttp2/1.43.0 librtmp/2.3

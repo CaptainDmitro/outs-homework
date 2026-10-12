@@ -1,0 +1,39 @@
+# deb cdrom:[Debian GNU/Linux 11.5.0 _Bullseye_ - Official arm64 NETINST 20220910-10:39]/ bullseye main
+
+#deb cdrom:[Debian GNU/Linux 11.5.0 _Bullseye_ - Official arm64 NETINST 20220910-10:39]/ bullseye main
+
+deb http://deb.debian.org/debian/ bullseye main
+deb-src http://deb.debian.org/debian/ bullseye main
+
+deb http://security.debian.org/debian-security bullseye-security main
+deb-src http://security.debian.org/debian-security bullseye-security main
+
+# bullseye-updates, to get updates before a point release is made;
+# see https://www.debian.org/doc/manuals/debian-reference/ch02.en.html#_updates_and_backports
+deb http://deb.debian.org/debian/ bullseye-updates main
+deb-src http://deb.debian.org/debian/ bullseye-updates main
+
+# This system was installed using small removable media
+# (e.g. netinst, live or single CD). The matching "deb cdrom"
+# entries were disabled at the end of the installation process.
+# For information about how to configure apt package sources,
+# see the sources.list(5) manual.
+docker.list
+Mon 12 Oct 2026 08:23:06 AM PDT
+Hit:1 http://security.debian.org/debian-security bullseye-security InRelease
+Hit:2 http://deb.debian.org/debian bullseye InRelease
+Hit:3 http://deb.debian.org/debian bullseye-updates InRelease
+Get:4 https://download.docker.com/linux/debian bullseye InRelease [43.0 kB]
+Err:4 https://download.docker.com/linux/debian bullseye InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7EA0A9C3F273FCD8
+Reading package lists...
+W: GPG error: https://download.docker.com/linux/debian bullseye InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7EA0A9C3F273FCD8
+E: The repository 'https://download.docker.com/linux/debian bullseye InRelease' is not signed.
+curl:
+  Installed: (none)
+  Candidate: 7.74.0-1.3+deb11u16
+  Version table:
+     7.74.0-1.3+deb11u16 500
+        500 http://security.debian.org/debian-security bullseye-security/main arm64 Packages
+     7.74.0-1.3+deb11u13 500
+        500 http://deb.debian.org/debian bullseye/main arm64 Packages

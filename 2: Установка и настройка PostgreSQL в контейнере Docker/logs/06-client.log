@@ -1,0 +1,32 @@
++ docker run --rm -e PGPASSWORD=otus_pass postgres:14 psql -h pg-server -U postgres -c 'select 1'
+psql: error: could not translate host name "pg-server" to address: Name or service not known
++ docker run --rm --name pg-client --network pg-net -e PGPASSWORD=otus_pass postgres:14 psql -h pg-server -U postgres -c 'select version();' -c '\conninfo'
+                                                          version                                                           
+----------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+You are connected to database "postgres" as user "postgres" on host "pg-server" (address "172.18.0.2") at port "5432".
++ docker run --rm -i --name pg-client --network pg-net -e PGPASSWORD=otus_pass -v /home/debian/shipments.sql:/tmp/shipments.sql:ro postgres:14 psql -h pg-server -U postgres -e -f /tmp/shipments.sql
+create table shipments(id serial, product_name text, quantity int, destination text);
+CREATE TABLE
+insert into shipments(product_name, quantity, destination) values('bananas', 1000, 'Europe');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('bananas', 1500, 'Asia');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('bananas', 2000, 'Africa');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('coffee', 500, 'USA');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('coffee', 700, 'Canada');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('coffee', 300, 'Japan');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('sugar', 1000, 'Europe');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('sugar', 800, 'Asia');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('sugar', 600, 'Africa');
+INSERT 0 1
+insert into shipments(product_name, quantity, destination) values('sugar', 400, 'USA');
+INSERT 0 1
