@@ -119,7 +119,7 @@ You are connected to database "postgres" as user "postgres" on host "pg-server" 
 SQL из задания сохранил в [shipments.sql](shipments.sql) и выполнил из контейнера с клиентом ([logs/06-client.log](logs/06-client.log)):
 
 ```
-$ docker run --rm -i --name pg-client --network pg-net -e PGPASSWORD=otus_pass \
+$ docker run --rm --it --name pg-client --network pg-net -e PGPASSWORD=otus_pass \
     -v /home/debian/shipments.sql:/tmp/shipments.sql:ro postgres:14 \
     psql -h pg-server -U postgres -e -f /tmp/shipments.sql
 create table shipments(id serial, product_name text, quantity int, destination text);
@@ -127,17 +127,6 @@ CREATE TABLE
 insert into shipments(product_name, quantity, destination) values('bananas', 1000, 'Europe');
 INSERT 0 1
 ...
-insert into shipments(product_name, quantity, destination) values('sugar', 400, 'USA');
-INSERT 0 1
-```
-
-**Проблема:** из-за флага `-i` проверочная команда, стоявшая в скрипте следом, не выполнилась. `docker run -i` прочитал остаток скрипта, который передавался по SSH через stdin (`bash -s`).
-
-**Решение:** выполнил проверку отдельной командой без `-i` ([logs/07-client-select.log](logs/07-client-select.log)):
-
-```
-$ docker run --rm --network pg-net -e PGPASSWORD=otus_pass postgres:14 \
-    psql -h pg-server -U postgres -c '\dt' -c 'select * from shipments order by id;'
            List of relations
  Schema |   Name    | Type  |  Owner
 --------+-----------+-------+----------
@@ -215,7 +204,7 @@ PostgreSQL Database directory appears to contain a database; Skipping initializa
 2026-10-12 15:28:32.281 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-Новый контейнер нашёл существующий кластер в `/var/lib/postgres` и не стал инициализировать его заново.
+Новый контейнер нашёл существующие данные в `/var/lib/postgres` и не стал инициализировать их заново.
 
 ## 9. Проверка данных
 
