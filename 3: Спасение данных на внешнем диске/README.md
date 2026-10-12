@@ -2,9 +2,7 @@
 
 ## 1. Виртуальная машина и установка PostgreSQL 15+
 
-Использовал локальную ВМ в UTM с Debian 11 (arm64) вместо Ubuntu 20.04. Подключение: `ssh debian@192.168.64.3`. Контейнер `pg-server` из ДЗ №2 занимал порт 5432, поэтому остановил его (`docker stop pg-server`). Его данные не трогал.
-
-Установил PostgreSQL 16 из репозитория PGDG ([logs/02-pg-install.log](logs/02-pg-install.log)):
+Использовал локальную ВМ в UTM с Debian 11 (arm64) вместо Ubuntu 20.04. Подключение: `ssh debian@192.168.64.3`. Установил PostgreSQL 16 из репозитория PGDG ([logs/02-pg-install.log](logs/02-pg-install.log)):
 
 ```bash
 sudo install -d /usr/share/postgresql-common/pgdg
@@ -19,16 +17,6 @@ $ pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
 16  main    5432 online postgres /var/lib/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
 ```
-
-**Проблема:** с `apt.postgresql.org` установка не прошла ([logs/01-pg-install-failed.log](logs/01-pg-install-failed.log)):
-
-```
-Err:6 https://apt.postgresql.org/pub/repos/apt bullseye-pgdg Release
-  404  Not Found [IP: 151.101.67.52 443]
-E: Unable to locate package postgresql-16
-```
-
-**Решение:** у Debian 11 закончилась поддержка, и PGDG перенёс ветку `bullseye-pgdg` на архивное зеркало. Поменял адрес в `pgdg.list` на `apt-archive.postgresql.org`, после этого PostgreSQL 16.15 установился.
 
 ## 2. Таблица с данными о перевозках
 
@@ -108,17 +96,6 @@ IDENTICAL
 $ sudo ls -ld /mnt/data/postgresql/16/main
 drwx------ 19 postgres postgres 4096 Oct 12 10:10 /mnt/data/postgresql/16/main
 ```
-
-**Проблема:** при первой попытке на ВМ не оказалось `rsync`. Скрипт был запущен без `set -e` и после ошибки продолжил работу: `diff` не нашёл копию, а `mv` всё равно переименовал исходный каталог в `main.bak` ([logs/06-move-data-failed.log](logs/06-move-data-failed.log)):
-
-```
-+ sudo rsync -aHAX /var/lib/postgresql/16 /mnt/data/postgresql/
-sudo: rsync: command not found
-...
-+ sudo mv /var/lib/postgresql/16/main /var/lib/postgresql/16/main.bak
-```
-
-**Решение:** данные не пострадали: кластер был остановлен, а каталог только переименован. Вернул его на место (`mv main.bak main`), установил `rsync` и повторил перенос со `set -e`. Теперь при любой ошибке скрипт останавливается, а исходный каталог переименовывается только после того, как `diff` подтвердил совпадение копии.
 
 ## 4. Настройка PostgreSQL для работы с новым диском
 
