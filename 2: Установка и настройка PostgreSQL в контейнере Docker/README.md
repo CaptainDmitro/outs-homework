@@ -5,7 +5,7 @@
 Вместо инстанса в Яндекс.Облаке использовал локальную ВМ в UTM (аналог) с Debian 11 вместо Ubuntu 20.04. Подключение по SSH:
 
 ```bash
-ssh -i ~/ai_advent_deploy_key debian@192.168.64.3
+ssh debian@192.168.64.3
 ```
 
 ```
@@ -17,45 +17,9 @@ VERSION="11 (bullseye)"
 Linux debian 5.10.0-18-arm64 #1 SMP Debian 5.10.140-1 (2022-09-02) aarch64 GNU/Linux
 ```
 
-**Проблема:** первая попытка SSH вернула `No route to host`, хотя `ping` проходил.
-
-**Решение:** ВМ ещё загружалась, и `sshd` не успел запуститься. Повторное подключение через несколько секунд прошло.
-
 ## 2. Установка Docker Engine
 
-**Проблема 1:** `sudo` запрашивал пароль, а команды выполнялись скриптами по SSH.
-
-**Решение:** разрешил пользователю `debian` sudo без пароля: файл `/etc/sudoers.d/90-debian-nopasswd` со строкой `debian ALL=(ALL) NOPASSWD:ALL`.
-
-**Проблема 2:** первая попытка установки упала: пакеты из `security.debian.org` отдавали 404, из-за этого не установился `curl`, не скачался GPG-ключ Docker и не нашлись пакеты Docker ([logs/01-docker-install-failed.log](logs/01-docker-install-failed.log)):
-
-```
-+ sudo apt-get install -y -qq ca-certificates curl gnupg
-E: Failed to fetch http://security.debian.org/debian-security/pool/updates/main/c/curl/curl_7.74.0-1.3%2bdeb11u16_arm64.deb  404  Not Found [IP: 151.101.66.132 80]
-E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
-+ curl -fsSL https://download.docker.com/linux/debian/gpg
-bash: line 7: curl: command not found
-...
-E: The repository 'https://download.docker.com/linux/debian bullseye InRelease' is not signed.
-E: Unable to locate package containerd.io
-```
-
-**Причина** ([logs/02-apt-diag.log](logs/02-apt-diag.log)): у Debian 11 закончилась поддержка, и пакеты перенесли на `archive.debian.org`. На старых зеркалах индексы остались, а файлов пакетов уже нет.
-
-**Решение** ([logs/03-apt-fix.log](logs/03-apt-fix.log)): переключил apt на архив.
-
-```bash
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-sudo tee /etc/apt/sources.list <<'SRC'
-deb http://archive.debian.org/debian bullseye main
-deb http://archive.debian.org/debian bullseye-updates main
-deb http://archive.debian.org/debian-security bullseye-security main
-SRC
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg
-```
-
-После этого установил Docker Engine из официального репозитория ([logs/04-docker-install.log](logs/04-docker-install.log)):
+Установил Docker Engine из официального репозитория ([logs/04-docker-install.log](logs/04-docker-install.log)):
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -198,14 +162,6 @@ $ docker run --rm --network pg-net -e PGPASSWORD=otus_pass postgres:14 \
 ## 7. Подключение с ноутбука
 
 Порт 5432 опубликован на ВМ (`-p 5432:5432`), а образ `postgres` по умолчанию слушает все адреса и разрешает вход по паролю с любых адресов.
-
-**Проблема:** на ноутбуке (macOS) не было `psql`, а Docker на ноутбуке (Colima) не был запущен:
-
-```
-failed to connect to the docker API at unix:///Users/dmitry/.colima/default/docker.sock; ... connect: no such file or directory
-```
-
-**Решение:** установил клиент через Homebrew (`brew install libpq`) и подключился к ВМ ([logs/08-laptop.log](logs/08-laptop.log)):
 
 ```
 $ PGPASSWORD=otus_pass /opt/homebrew/opt/libpq/bin/psql -h 192.168.64.3 -U postgres \
