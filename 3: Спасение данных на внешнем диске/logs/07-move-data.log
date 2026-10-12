@@ -30,8 +30,8 @@ Processing triggers for man-db (2.9.4-2) ...
 + sudo rsync -aHAX /var/lib/postgresql/16 /mnt/data/postgresql/
 + sudo chown -R postgres:postgres /mnt/data/postgresql
 + sudo diff -r /var/lib/postgresql/16/main /mnt/data/postgresql/16/main
-+ echo IDENTICAL
 IDENTICAL
++ echo IDENTICAL
 + sudo mv /var/lib/postgresql/16/main /var/lib/postgresql/16/main.bak
 + sudo ls -ld /mnt/data/postgresql/16/main
 drwx------ 19 postgres postgres 4096 Oct 12 10:10 /mnt/data/postgresql/16/main
