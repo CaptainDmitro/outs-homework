@@ -36,5 +36,3 @@ psql (PostgreSQL) 18.6
  sugar        |  2800
 (3 rows)
 
-+(eval):1> PGPASSWORD=wrong /opt/homebrew/opt/libpq/bin/psql -h 192.168.64.3 -U postgres -c 'select 1'
-psql: error: connection to server at "192.168.64.3", port 5432 failed: FATAL:  password authentication failed for user "postgres"
