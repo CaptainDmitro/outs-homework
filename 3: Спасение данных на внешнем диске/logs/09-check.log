@@ -1,0 +1,43 @@
++ sudo -u postgres psql -d logistics -c 'SELECT * FROM shipments ORDER BY id'
+ id | product_name | quantity |  destination  |          shipped_at           
+----+--------------+----------+---------------+-------------------------------
+  1 | Bananas      |     1000 | Europe        | 2026-10-12 10:10:11.916876-07
+  2 | Apples       |      500 | Asia          | 2026-10-12 10:10:11.916876-07
+  3 | Oranges      |      750 | Africa        | 2026-10-12 10:10:11.916876-07
+  4 | Mangoes      |      300 | South America | 2026-10-12 10:10:11.916876-07
+  5 | Bananas      |     1200 | Europe        | 2026-10-12 10:10:11.916876-07
+(5 rows)
+
++ sudo -u postgres psql -d logistics -c 'INSERT INTO shipments (product_name, quantity, destination) VALUES ('\''Bananas'\'', 800, '\''Europe'\'')'
+INSERT 0 1
++ sudo -u postgres psql -d logistics -c 'SELECT pg_relation_filepath('\''shipments'\''), current_setting('\''data_directory'\'')'
+ pg_relation_filepath |       current_setting        
+----------------------+------------------------------
+ base/16384/16386     | /mnt/data/postgresql/16/main
+(1 row)
+
++ sudo systemctl reboot
+Connection to 192.168.64.3 closed by remote host.
++ uptime
+ 10:11:58 up 0 min,  0 users,  load average: 0.00, 0.00, 0.00
++ findmnt /mnt/data
+TARGET    SOURCE    FSTYPE OPTIONS
+/mnt/data /dev/vdb1 ext4   rw,relatime
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory               Log file
+16  main    5432 online postgres /mnt/data/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
++ sudo -u postgres psql -d logistics -c 'SELECT * FROM shipments ORDER BY id'
+ id | product_name | quantity |  destination  |          shipped_at           
+----+--------------+----------+---------------+-------------------------------
+  1 | Bananas      |     1000 | Europe        | 2026-10-12 10:10:11.916876-07
+  2 | Apples       |      500 | Asia          | 2026-10-12 10:10:11.916876-07
+  3 | Oranges      |      750 | Africa        | 2026-10-12 10:10:11.916876-07
+  4 | Mangoes      |      300 | South America | 2026-10-12 10:10:11.916876-07
+  5 | Bananas      |     1200 | Europe        | 2026-10-12 10:10:11.916876-07
+  6 | Bananas      |      800 | Europe        | 2026-10-12 10:11:13.296913-07
+(6 rows)
+
++ df -h / /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda2        19G  3.7G   14G  22% /
+/dev/vdb1       4.9G   46M  4.6G   1% /mnt/data

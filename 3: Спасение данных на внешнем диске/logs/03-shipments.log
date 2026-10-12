@@ -1,0 +1,21 @@
++ sudo -u postgres psql -c 'CREATE DATABASE logistics'
+CREATE DATABASE
++ sudo -u postgres psql -d logistics -v ON_ERROR_STOP=1 -f -
+CREATE TABLE
+INSERT 0 5
++ sudo -u postgres psql -d logistics -c 'SELECT * FROM shipments ORDER BY id'
+ id | product_name | quantity |  destination  |          shipped_at           
+----+--------------+----------+---------------+-------------------------------
+  1 | Bananas      |     1000 | Europe        | 2026-10-12 10:10:11.916876-07
+  2 | Apples       |      500 | Asia          | 2026-10-12 10:10:11.916876-07
+  3 | Oranges      |      750 | Africa        | 2026-10-12 10:10:11.916876-07
+  4 | Mangoes      |      300 | South America | 2026-10-12 10:10:11.916876-07
+  5 | Bananas      |     1200 | Europe        | 2026-10-12 10:10:11.916876-07
+(5 rows)
+
++ sudo -u postgres psql -c 'SELECT version()'
+                                                              version                                                               
+------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Debian 16.15-1.pgdg11+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+(1 row)
+

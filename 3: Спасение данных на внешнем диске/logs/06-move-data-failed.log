@@ -1,0 +1,19 @@
++ sudo -u postgres psql -tAc 'SHOW data_directory'
+/var/lib/postgresql/16/main
++ sudo du -sh /var/lib/postgresql/16/main
+41M	/var/lib/postgresql/16/main
++ sudo systemctl stop postgresql@16-main
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+16  main    5432 down   postgres /var/lib/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
++ sudo mkdir -p /mnt/data/postgresql
++ sudo rsync -aHAX /var/lib/postgresql/16 /mnt/data/postgresql/
+sudo: rsync: command not found
++ sudo chown -R postgres:postgres /mnt/data/postgresql
++ sudo diff -r /var/lib/postgresql/16/main /mnt/data/postgresql/16/main
+diff: /mnt/data/postgresql/16/main: No such file or directory
++ sudo mv /var/lib/postgresql/16/main /var/lib/postgresql/16/main.bak
++ sudo ls -ld /mnt/data/postgresql/16/main
+ls: cannot access '/mnt/data/postgresql/16/main': No such file or directory
++ sudo du -sh /mnt/data/postgresql/16/main
+du: cannot access '/mnt/data/postgresql/16/main': No such file or directory

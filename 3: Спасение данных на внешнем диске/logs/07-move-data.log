@@ -1,0 +1,39 @@
++ sudo mv /var/lib/postgresql/16/main.bak /var/lib/postgresql/16/main
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+16  main    5432 down   postgres /var/lib/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
++ sudo apt-get install -y rsync
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following NEW packages will be installed:
+  rsync
+0 upgraded, 1 newly installed, 0 to remove and 311 not upgraded.
+Need to get 385 kB of archives.
+After this operation, 784 kB of additional disk space will be used.
+Get:1 http://archive.debian.org/debian-security bullseye-security/main arm64 rsync arm64 3.2.3-4+deb11u4 [385 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+Fetched 385 kB in 1s (688 kB/s)
+Selecting previously unselected package rsync.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 73132 files and directories currently installed.)
+Preparing to unpack .../rsync_3.2.3-4+deb11u4_arm64.deb ...
+Unpacking rsync (3.2.3-4+deb11u4) ...
+Setting up rsync (3.2.3-4+deb11u4) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/rsync.service → /lib/systemd/system/rsync.service.
+Processing triggers for man-db (2.9.4-2) ...
++ sudo rsync -aHAX /var/lib/postgresql/16 /mnt/data/postgresql/
++ sudo chown -R postgres:postgres /mnt/data/postgresql
++ sudo diff -r /var/lib/postgresql/16/main /mnt/data/postgresql/16/main
++ echo IDENTICAL
+IDENTICAL
++ sudo mv /var/lib/postgresql/16/main /var/lib/postgresql/16/main.bak
++ sudo ls -ld /mnt/data/postgresql/16/main
+drwx------ 19 postgres postgres 4096 Oct 12 10:10 /mnt/data/postgresql/16/main
++ sudo du -sh /mnt/data/postgresql/16/main
+47M	/mnt/data/postgresql/16/main

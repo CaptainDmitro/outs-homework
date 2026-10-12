@@ -1,0 +1,151 @@
++ curl -sI https://apt-archive.postgresql.org/pub/repos/apt/dists/bullseye-pgdg/Release
++ head -1
+HTTP/2 200 
++ echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg main'
++ sudo tee /etc/apt/sources.list.d/pgdg.list
+deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg main
++ sudo apt-get update
+Hit:1 http://archive.debian.org/debian bullseye InRelease
+Hit:2 http://archive.debian.org/debian bullseye-updates InRelease
+Hit:3 https://download.docker.com/linux/debian bullseye InRelease
+Hit:4 http://archive.debian.org/debian-security bullseye-security InRelease
+Get:5 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg InRelease [181 kB]
+Get:6 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 Packages [790 kB]
+Fetched 971 kB in 2s (592 kB/s)
+Reading package lists...
++ sudo apt-get install -y postgresql-16
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libcommon-sense-perl libjson-perl libjson-xs-perl libllvm16 libpq5
+  libtypes-serialiser-perl libxslt1.1 postgresql-client-16
+  postgresql-client-common postgresql-common sysstat
+Suggested packages:
+  libpq-oauth postgresql-doc-16 isag
+The following NEW packages will be installed:
+  libcommon-sense-perl libjson-perl libjson-xs-perl libllvm16 libpq5
+  libtypes-serialiser-perl libxslt1.1 postgresql-16 postgresql-client-16
+  postgresql-client-common postgresql-common sysstat
+0 upgraded, 12 newly installed, 0 to remove and 311 not upgraded.
+Need to get 41.5 MB of archives.
+After this operation, 190 MB of additional disk space will be used.
+Get:1 http://archive.debian.org/debian bullseye/main arm64 libjson-perl all 4.03000-1 [88.6 kB]
+Get:2 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 postgresql-client-common all 293.pgdg11+1 [107 kB]
+Get:3 http://archive.debian.org/debian bullseye/main arm64 libcommon-sense-perl arm64 3.75-1+b4 [24.6 kB]
+Get:4 http://archive.debian.org/debian bullseye/main arm64 libtypes-serialiser-perl all 1.01-1 [12.2 kB]
+Get:5 http://archive.debian.org/debian-security bullseye-security/main arm64 libjson-xs-perl arm64 4.030-1+deb11u1 [93.6 kB]
+Get:6 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 postgresql-common all 293.pgdg11+1 [185 kB]
+Get:7 http://archive.debian.org/debian bullseye/main arm64 libllvm16 arm64 1:16.0.6-15~deb11u2 [20.6 MB]
+Get:8 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 libpq5 arm64 18.6-1.pgdg11+2 [256 kB]
+Get:9 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 postgresql-client-16 arm64 16.15-1.pgdg11+2 [1,914 kB]
+Get:10 https://apt-archive.postgresql.org/pub/repos/apt bullseye-pgdg/main arm64 postgresql-16 arm64 16.15-1.pgdg11+2 [17.4 MB]
+Get:11 http://archive.debian.org/debian-security bullseye-security/main arm64 libxslt1.1 arm64 1.1.34-4+deb11u3 [230 kB]
+Get:12 http://archive.debian.org/debian-security bullseye-security/main arm64 sysstat arm64 12.5.2-2+deb11u1 [581 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+Fetched 41.5 MB in 20s (2,040 kB/s)
+Selecting previously unselected package libjson-perl.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 70766 files and directories currently installed.)
+Preparing to unpack .../00-libjson-perl_4.03000-1_all.deb ...
+Unpacking libjson-perl (4.03000-1) ...
+Selecting previously unselected package postgresql-client-common.
+Preparing to unpack .../01-postgresql-client-common_293.pgdg11+1_all.deb ...
+Unpacking postgresql-client-common (293.pgdg11+1) ...
+Selecting previously unselected package postgresql-common.
+Preparing to unpack .../02-postgresql-common_293.pgdg11+1_all.deb ...
+Adding 'diversion of /usr/bin/pg_config to /usr/bin/pg_config.libpq-dev by postgresql-common'
+Unpacking postgresql-common (293.pgdg11+1) ...
+Selecting previously unselected package libcommon-sense-perl.
+Preparing to unpack .../03-libcommon-sense-perl_3.75-1+b4_arm64.deb ...
+Unpacking libcommon-sense-perl (3.75-1+b4) ...
+Selecting previously unselected package libtypes-serialiser-perl.
+Preparing to unpack .../04-libtypes-serialiser-perl_1.01-1_all.deb ...
+Unpacking libtypes-serialiser-perl (1.01-1) ...
+Selecting previously unselected package libjson-xs-perl.
+Preparing to unpack .../05-libjson-xs-perl_4.030-1+deb11u1_arm64.deb ...
+Unpacking libjson-xs-perl (4.030-1+deb11u1) ...
+Selecting previously unselected package libllvm16:arm64.
+Preparing to unpack .../06-libllvm16_1%3a16.0.6-15~deb11u2_arm64.deb ...
+Unpacking libllvm16:arm64 (1:16.0.6-15~deb11u2) ...
+Selecting previously unselected package libpq5:arm64.
+Preparing to unpack .../07-libpq5_18.6-1.pgdg11+2_arm64.deb ...
+Unpacking libpq5:arm64 (18.6-1.pgdg11+2) ...
+Selecting previously unselected package libxslt1.1:arm64.
+Preparing to unpack .../08-libxslt1.1_1.1.34-4+deb11u3_arm64.deb ...
+Unpacking libxslt1.1:arm64 (1.1.34-4+deb11u3) ...
+Selecting previously unselected package postgresql-client-16.
+Preparing to unpack .../09-postgresql-client-16_16.15-1.pgdg11+2_arm64.deb ...
+Unpacking postgresql-client-16 (16.15-1.pgdg11+2) ...
+Selecting previously unselected package postgresql-16.
+Preparing to unpack .../10-postgresql-16_16.15-1.pgdg11+2_arm64.deb ...
+Unpacking postgresql-16 (16.15-1.pgdg11+2) ...
+Selecting previously unselected package sysstat.
+Preparing to unpack .../11-sysstat_12.5.2-2+deb11u1_arm64.deb ...
+Unpacking sysstat (12.5.2-2+deb11u1) ...
+Setting up postgresql-client-common (293.pgdg11+1) ...
+Setting up libpq5:arm64 (18.6-1.pgdg11+2) ...
+Setting up libcommon-sense-perl (3.75-1+b4) ...
+Setting up libtypes-serialiser-perl (1.01-1) ...
+Setting up libjson-perl (4.03000-1) ...
+Setting up libxslt1.1:arm64 (1.1.34-4+deb11u3) ...
+Setting up libllvm16:arm64 (1:16.0.6-15~deb11u2) ...
+Setting up sysstat (12.5.2-2+deb11u1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+
+Creating config file /etc/default/sysstat with new version
+update-alternatives: using /usr/bin/sar.sysstat to provide /usr/bin/sar (sar) in auto mode
+Created symlink /etc/systemd/system/sysstat.service.wants/sysstat-collect.timer → /lib/systemd/system/sysstat-collect.timer.
+Created symlink /etc/systemd/system/sysstat.service.wants/sysstat-summary.timer → /lib/systemd/system/sysstat-summary.timer.
+Created symlink /etc/systemd/system/multi-user.target.wants/sysstat.service → /lib/systemd/system/sysstat.service.
+Setting up libjson-xs-perl (4.030-1+deb11u1) ...
+Setting up postgresql-client-16 (16.15-1.pgdg11+2) ...
+update-alternatives: using /usr/share/postgresql/16/man/man1/psql.1.gz to provide /usr/share/man/man1/psql.1.gz (psql.1.gz) in auto mode
+Setting up postgresql-common (293.pgdg11+1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+Adding user postgres to group ssl-cert
+
+Creating config file /etc/postgresql-common/createcluster.conf with new version
+Building PostgreSQL dictionaries from installed myspell/hunspell packages...
+  en_us
+Removing obsolete dictionary files:
+Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /lib/systemd/system/postgresql.service.
+Setting up postgresql-16 (16.15-1.pgdg11+2) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+Creating new PostgreSQL cluster 16/main ...
+/usr/lib/postgresql/16/bin/initdb -D /var/lib/postgresql/16/main --auth-local peer --auth-host scram-sha-256 --no-instructions
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.UTF-8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/16/main ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... US/Pacific
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+Processing triggers for man-db (2.9.4-2) ...
+Processing triggers for libc-bin (2.31-13+deb11u4) ...
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+16  main    5432 online postgres /var/lib/postgresql/16/main /var/log/postgresql/postgresql-16-main.log

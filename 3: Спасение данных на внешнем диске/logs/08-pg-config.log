@@ -1,0 +1,21 @@
++ grep -n '^data_directory' /etc/postgresql/16/main/postgresql.conf
+42:data_directory = '/var/lib/postgresql/16/main'		# use data in another directory
++ sudo sed -i 's|^data_directory = .*|data_directory = '\''/mnt/data/postgresql/16/main'\''\t\t# use data in another directory|' /etc/postgresql/16/main/postgresql.conf
++ grep -n '^data_directory' /etc/postgresql/16/main/postgresql.conf
+42:data_directory = '/mnt/data/postgresql/16/main'		# use data in another directory
++ sudo mkdir -p /etc/systemd/system/postgresql@16-main.service.d
++ printf '[Unit]\nRequiresMountsFor=/mnt/data\n'
++ sudo tee /etc/systemd/system/postgresql@16-main.service.d/mount.conf
+[Unit]
+RequiresMountsFor=/mnt/data
++ sudo systemctl daemon-reload
++ sudo systemctl start postgresql@16-main
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory               Log file
+16  main    5432 online postgres /mnt/data/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
++ sudo -u postgres psql -tAc 'SHOW data_directory'
+/mnt/data/postgresql/16/main
++ sudo tail -3 /var/log/postgresql/postgresql-16-main.log
+2026-10-12 10:11:02.459 PDT [5716] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-12 10:11:02.461 PDT [5719] LOG:  database system was shut down at 2026-10-12 10:10:48 PDT
+2026-10-12 10:11:02.462 PDT [5716] LOG:  database system is ready to accept connections
