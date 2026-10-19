@@ -1,0 +1,57 @@
++ cd /tmp
++ U=https://github.com/wal-g/wal-g/releases/download/v3.0.9/wal-g-pg-24.04-amd64
++ curl -sSLO https://github.com/wal-g/wal-g/releases/download/v3.0.9/wal-g-pg-24.04-amd64
++ curl -sSLO https://github.com/wal-g/wal-g/releases/download/v3.0.9/wal-g-pg-24.04-amd64.sha256
++ cat wal-g-pg-24.04-amd64.sha256
+8015836f246a978f27b31a2462eac7765312558ae5b11ac033322b555abf9e22  wal-g-pg-24.04-amd64
++ sha256sum wal-g-pg-24.04-amd64
+8015836f246a978f27b31a2462eac7765312558ae5b11ac033322b555abf9e22  wal-g-pg-24.04-amd64
++ sudo mkdir -p /srv/walg
++ for i in 1 2 3
++ sudo lxc file push /tmp/wal-g-pg-24.04-amd64 pg1/usr/local/bin/wal-g --mode 0755
++ sudo lxc config device add pg1 walg disk source=/srv/walg path=/backup shift=true
+Device walg added to pg1
++ sudo lxc exec pg1 -- bash -c 'chown postgres:postgres /backup && cat > /var/lib/postgresql/.walg.json <<CFG
+{
+  "WALG_FILE_PREFIX": "/backup/bananaflow",
+  "WALG_COMPRESSION_METHOD": "brotli",
+  "WALG_DELTA_MAX_STEPS": "6",
+  "PGHOST": "/var/run/postgresql",
+  "PGUSER": "postgres"
+}
+CFG
+chown postgres:postgres /var/lib/postgresql/.walg.json'
++ for i in 1 2 3
++ sudo lxc file push /tmp/wal-g-pg-24.04-amd64 pg2/usr/local/bin/wal-g --mode 0755
++ sudo lxc config device add pg2 walg disk source=/srv/walg path=/backup shift=true
+Device walg added to pg2
++ sudo lxc exec pg2 -- bash -c 'chown postgres:postgres /backup && cat > /var/lib/postgresql/.walg.json <<CFG
+{
+  "WALG_FILE_PREFIX": "/backup/bananaflow",
+  "WALG_COMPRESSION_METHOD": "brotli",
+  "WALG_DELTA_MAX_STEPS": "6",
+  "PGHOST": "/var/run/postgresql",
+  "PGUSER": "postgres"
+}
+CFG
+chown postgres:postgres /var/lib/postgresql/.walg.json'
++ for i in 1 2 3
++ sudo lxc file push /tmp/wal-g-pg-24.04-amd64 pg3/usr/local/bin/wal-g --mode 0755
++ sudo lxc config device add pg3 walg disk source=/srv/walg path=/backup shift=true
+Device walg added to pg3
++ sudo lxc exec pg3 -- bash -c 'chown postgres:postgres /backup && cat > /var/lib/postgresql/.walg.json <<CFG
+{
+  "WALG_FILE_PREFIX": "/backup/bananaflow",
+  "WALG_COMPRESSION_METHOD": "brotli",
+  "WALG_DELTA_MAX_STEPS": "6",
+  "PGHOST": "/var/run/postgresql",
+  "PGUSER": "postgres"
+}
+CFG
+chown postgres:postgres /var/lib/postgresql/.walg.json'
++ sudo lxc exec pg1 -- wal-g --version
+wal-g version v3.0.9	3e49318	2026.08.20_14:32:36	PostgreSQL
++ sudo lxc exec pg1 -- ls -ld /backup
+drwxr-xr-x 2 postgres postgres 4096 Oct 19 20:11 /backup
++ sudo lxc exec pg3 -- ls -ld /backup
+drwxr-xr-x 2 postgres postgres 4096 Oct 19 20:11 /backup

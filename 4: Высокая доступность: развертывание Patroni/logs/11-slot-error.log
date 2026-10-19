@@ -1,0 +1,22 @@
++ sudo lxc exec pg1 -- bash -c 'journalctl -u patroni --no-pager --since '\''20:05:20'\'' --until '\''20:05:30'\'' | grep -E '\''ERROR|FATAL|Error|psycopg'\'' | head -10'
+Oct 19 20:05:26 pg1 patroni[3819]: 2026-10-19 20:05:26.593 UTC [3819] ERROR:  canceling statement due to statement timeout
+Oct 19 20:05:26 pg1 patroni[3784]: 2026-10-19 20:05:26,596 ERROR: Failed to create physical replication slot 'pg2'
+Oct 19 20:05:26 pg1 patroni[3784]: psycopg2.errors.QueryCanceled: canceling statement due to statement timeout
++ sudo lxc exec pg1 -- bash -c 'journalctl -u patroni --no-pager --since '\''20:09:00'\'' | grep -iE '\''rewind|demot|follow|starting|bootstrap'\'' | head -10'
+Oct 19 20:09:55 pg1 patroni[282]: 2026-10-19 20:09:55,755 INFO: running pg_rewind from pg2
+Oct 19 20:09:55 pg1 patroni[282]: 2026-10-19 20:09:55,793 INFO: running pg_rewind from dbname=postgres user=rewind_user host=10.48.221.22 port=5432 target_session_attrs=read-write
+Oct 19 20:10:03 pg1 patroni[282]: 2026-10-19 20:10:03,502 INFO: running pg_rewind from pg2 in progress
+Oct 19 20:10:03 pg1 patroni[282]: 2026-10-19 20:10:03,822 INFO: pg_rewind exit code=0
+Oct 19 20:10:03 pg1 patroni[282]: 2026-10-19 20:10:03,822 INFO:  stderr=pg_rewind: servers diverged at WAL location 0/407A140 on timeline 1
+Oct 19 20:10:03 pg1 patroni[282]: pg_rewind: rewinding from last common checkpoint at 0/2000148 on timeline 1
+Oct 19 20:10:03 pg1 patroni[282]: pg_rewind: Done!
+Oct 19 20:10:03 pg1 patroni[282]: 2026-10-19 20:10:03,827 INFO: starting as a secondary
+Oct 19 20:10:04 pg1 patroni[459]: 2026-10-19 20:10:04.146 UTC [459] LOG:  starting PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+Oct 19 20:10:04 pg1 patroni[464]: 2026-10-19 20:10:04.179 UTC [464] FATAL:  the database system is starting up
++ sudo lxc exec pg2 -- env PGPASSWORD=otus_pass psql -h 127.0.0.1 -U postgres -c 'select slot_name, active from pg_replication_slots'
+ slot_name | active 
+-----------+--------
+ pg3       | t
+ pg1       | t
+(2 rows)
+

@@ -1,0 +1,21 @@
++ sudo lxc start pg1
++ sleep 40
++ sudo lxc exec pg1 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Replica      | streaming |  2 |         0 |
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
++ sudo lxc exec pg1 -- bash -c 'journalctl -u patroni --no-pager | grep -iE '\''rewind|demot|following|replica'\'' | head -8'
+Oct 19 20:05:02 pg1 patroni[3784]: 2026-10-19 20:05:02,250 INFO: Enabled synchronous replication
+Oct 19 20:05:26 pg1 patroni[3819]: 2026-10-19 20:05:26.593 UTC [3819] STATEMENT:  SELECT pg_catalog.pg_create_physical_replication_slot('pg2', true) WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_type = 'physical' AND slot_name = 'pg2')
+Oct 19 20:05:26 pg1 patroni[3784]: 2026-10-19 20:05:26,596 ERROR: Failed to create physical replication slot 'pg2'
+Oct 19 20:05:26 pg1 patroni[3784]:     self._query(f"SELECT pg_catalog.pg_create_physical_replication_slot(%s{immediately_reserve})"
+Oct 19 20:05:34 pg1 patroni[3819]: 2026-10-19 20:05:34.185 UTC [3819] STATEMENT:  SELECT pg_catalog.pg_create_physical_replication_slot('pg3', true) WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_type = 'physical' AND slot_name = 'pg3')
+Oct 19 20:05:34 pg1 patroni[3784]: 2026-10-19 20:05:34,185 ERROR: Failed to create physical replication slot 'pg3'
+Oct 19 20:05:34 pg1 patroni[3784]:     self._query(f"SELECT pg_catalog.pg_create_physical_replication_slot(%s{immediately_reserve})"
+Oct 19 20:05:45 pg1 patroni[3830]: 2026-10-19 20:05:45.068 UTC [3830] STATEMENT:  START_REPLICATION SLOT "pg2" 0/4000000 TIMELINE 1
++ sudo lxc exec pg1 -- env PGPASSWORD=otus_pass psql -h 127.0.0.1 -U postgres -Atc 'select pg_is_in_recovery(), count(*) from orders'
+t|83

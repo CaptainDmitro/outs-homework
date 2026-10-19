@@ -1,0 +1,147 @@
++ H='sudo lxc exec haproxy --env PGPASSWORD=otus_pass --'
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5000 -U postgres -c 'create table orders(id serial primary key, supplier text, tons int, created_at timestamptz default now())' -c 'insert into orders(supplier, tons) values ('\''GreenBanana Co.'\'', 10)'
+CREATE TABLE
+INSERT 0 1
++ sleep 10
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- bash -c 'for i in $(seq 1 90); do
+  r=$(psql -h 127.0.0.1 -p 5000 -U postgres -Atc "insert into orders(supplier,tons) values ('\''writer'\'',$i) returning id, inet_server_addr()" 2>&1 | head -1)
+  echo "$(date +%T) $i $r"; sleep 1; done > /root/writer.log'
++ sudo lxc exec pg1 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Leader       | running   |  1 |           |
+| pg2    | 10.48.221.22 | Sync Standby | streaming |  1 |         0 |
+| pg3    | 10.48.221.23 | Replica      | streaming |  1 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
++ date +%T
+20:07:39
++ sudo lxc stop pg1 --force
++ sleep 40
++ sudo lxc list pg -c ns4
++------+---------+---------------------+
+| NAME |  STATE  |        IPV4         |
++------+---------+---------------------+
+| pg1  | STOPPED |                     |
++------+---------+---------------------+
+| pg2  | RUNNING | 10.48.221.22 (eth0) |
++------+---------+---------------------+
+| pg3  | RUNNING | 10.48.221.23 (eth0) |
++------+---------+---------------------+
++ sudo lxc exec pg2 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
++ sudo lxc exec haproxy -- bash -c 'curl -s '\''http://127.0.0.1:7000/;csv'\'' | cut -d, -f1,2,18 | grep pg'
+primary,pg1,DOWN
+primary,pg2,UP
+primary,pg3,DOWN
+replicas,pg1,DOWN
+replicas,pg2,DOWN
+replicas,pg3,UP
++ wait
++ sudo lxc exec haproxy -- cat /root/writer.log
+20:07:29 1 2|10.48.221.21
+20:07:31 2 3|10.48.221.21
+20:07:33 3 4|10.48.221.21
+20:07:34 4 5|10.48.221.21
+20:07:37 5 6|10.48.221.21
+20:07:38 6 7|10.48.221.21
+20:07:39 7 8|10.48.221.21
+20:07:53 8 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:06 9 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:07 10 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:08 11 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:09 12 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:10 13 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:11 14 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:12 15 psql: error: connection to server at "127.0.0.1", port 5000 failed: server closed the connection unexpectedly
+20:08:13 16 34|10.48.221.22
+20:08:14 17 35|10.48.221.22
+20:08:15 18 36|10.48.221.22
+20:08:16 19 37|10.48.221.22
+20:08:17 20 38|10.48.221.22
+20:08:19 21 39|10.48.221.22
+20:08:20 22 40|10.48.221.22
+20:08:21 23 41|10.48.221.22
+20:08:22 24 42|10.48.221.22
+20:08:23 25 43|10.48.221.22
+20:08:25 26 44|10.48.221.22
+20:08:26 27 45|10.48.221.22
+20:08:27 28 46|10.48.221.22
+20:08:28 29 47|10.48.221.22
+20:08:29 30 48|10.48.221.22
+20:08:30 31 49|10.48.221.22
+20:08:31 32 50|10.48.221.22
+20:08:32 33 51|10.48.221.22
+20:08:33 34 52|10.48.221.22
+20:08:34 35 53|10.48.221.22
+20:08:35 36 54|10.48.221.22
+20:08:36 37 55|10.48.221.22
+20:08:37 38 56|10.48.221.22
+20:08:38 39 57|10.48.221.22
+20:08:39 40 58|10.48.221.22
+20:08:41 41 59|10.48.221.22
+20:08:42 42 60|10.48.221.22
+20:08:43 43 61|10.48.221.22
+20:08:44 44 62|10.48.221.22
+20:08:45 45 63|10.48.221.22
+20:08:46 46 64|10.48.221.22
+20:08:47 47 65|10.48.221.22
+20:08:48 48 66|10.48.221.22
+20:08:49 49 67|10.48.221.22
+20:08:50 50 68|10.48.221.22
+20:08:51 51 69|10.48.221.22
+20:08:52 52 70|10.48.221.22
+20:08:53 53 71|10.48.221.22
+20:08:54 54 72|10.48.221.22
+20:08:55 55 73|10.48.221.22
+20:08:56 56 74|10.48.221.22
+20:08:57 57 75|10.48.221.22
+20:08:59 58 76|10.48.221.22
+20:09:00 59 77|10.48.221.22
+20:09:01 60 78|10.48.221.22
+20:09:02 61 79|10.48.221.22
+20:09:03 62 80|10.48.221.22
+20:09:04 63 81|10.48.221.22
+20:09:05 64 82|10.48.221.22
+20:09:06 65 83|10.48.221.22
+20:09:07 66 84|10.48.221.22
+20:09:08 67 85|10.48.221.22
+20:09:09 68 86|10.48.221.22
+20:09:10 69 87|10.48.221.22
+20:09:11 70 88|10.48.221.22
+20:09:12 71 89|10.48.221.22
+20:09:13 72 90|10.48.221.22
+20:09:14 73 91|10.48.221.22
+20:09:15 74 92|10.48.221.22
+20:09:16 75 93|10.48.221.22
+20:09:18 76 94|10.48.221.22
+20:09:19 77 95|10.48.221.22
+20:09:20 78 96|10.48.221.22
+20:09:21 79 97|10.48.221.22
+20:09:22 80 98|10.48.221.22
+20:09:23 81 99|10.48.221.22
+20:09:24 82 100|10.48.221.22
+20:09:25 83 101|10.48.221.22
+20:09:26 84 102|10.48.221.22
+20:09:27 85 103|10.48.221.22
+20:09:28 86 104|10.48.221.22
+20:09:29 87 105|10.48.221.22
+20:09:30 88 106|10.48.221.22
+20:09:31 89 107|10.48.221.22
+20:09:32 90 108|10.48.221.22
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5000 -U postgres -c 'select inet_server_addr(), count(*), max(id) from orders' -c 'select * from orders where supplier='\''GreenBanana Co.'\'''
+ inet_server_addr | count | max 
+------------------+-------+-----
+ 10.48.221.22     |    83 | 108
+(1 row)
+
+ id |    supplier     | tons |          created_at           
+----+-----------------+------+-------------------------------
+  1 | GreenBanana Co. |   10 | 2026-10-19 20:07:29.219388+00
+(1 row)
+
