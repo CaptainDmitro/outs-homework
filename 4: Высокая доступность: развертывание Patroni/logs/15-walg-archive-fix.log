@@ -1,0 +1,20 @@
++ sudo lxc exec pg2 -- su postgres -c 'mkdir -p /backup/bananaflow'
++ sudo lxc exec pg1 -- ls -ld /backup/bananaflow
+drwxrwxr-x 2 postgres postgres 4096 Oct 19 20:13 /backup/bananaflow
++ sleep 10
++ sudo lxc exec pg2 -- su postgres -c 'psql -c '\''select pg_switch_wal()'\'''
+ pg_switch_wal 
+---------------
+ 0/6000078
+(1 row)
+
++ sleep 5
++ sudo lxc exec pg2 -- su postgres -c 'psql -c '\''select archived_count, last_archived_wal, last_failed_wal, failed_count from pg_stat_archiver'\'''
+ archived_count |    last_archived_wal     |     last_failed_wal      | failed_count 
+----------------+--------------------------+--------------------------+--------------
+              2 | 000000020000000000000006 | 000000020000000000000005 |            3
+(1 row)
+
++ sudo lxc exec pg2 -- su postgres -c 'ls /backup/bananaflow/wal_005/'
+000000020000000000000005.br
+000000020000000000000006.br

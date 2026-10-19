@@ -1,0 +1,15 @@
++ sudo lxc exec pg2 -- bash -c 'journalctl -u patroni --no-pager --since '\''-3min'\'' | grep -iE '\''archive|wal-g|walg|error'\'' | grep -v '\''STATEMENT'\'' | tail -8'
+Oct 19 20:12:44 pg2 patroni[4196]: 2026-10-19 20:12:44.458 UTC [4196] LOG:  archive command failed with exit code 1
+Oct 19 20:12:44 pg2 patroni[4196]: 2026-10-19 20:12:44.458 UTC [4196] DETAIL:  The failed archive command was: wal-g wal-push pg_wal/000000020000000000000005
+Oct 19 20:12:45 pg2 patroni[4252]: ERROR: 2026/10/19 20:12:45.482523 Failed to configure multi-storage: configure primary storage: configure storage with prefix "/backup/bananaflow": create FS storage: FS storage root directory doesn't exist or is inaccessible: stat /backup/bananaflow: no such file or directory
+Oct 19 20:12:45 pg2 patroni[4196]: 2026-10-19 20:12:45.484 UTC [4196] LOG:  archive command failed with exit code 1
+Oct 19 20:12:45 pg2 patroni[4196]: 2026-10-19 20:12:45.484 UTC [4196] DETAIL:  The failed archive command was: wal-g wal-push pg_wal/000000020000000000000005
+Oct 19 20:12:46 pg2 patroni[4259]: ERROR: 2026/10/19 20:12:46.516663 Failed to configure multi-storage: configure primary storage: configure storage with prefix "/backup/bananaflow": create FS storage: FS storage root directory doesn't exist or is inaccessible: stat /backup/bananaflow: no such file or directory
+Oct 19 20:12:46 pg2 patroni[4196]: 2026-10-19 20:12:46.519 UTC [4196] LOG:  archive command failed with exit code 1
+Oct 19 20:12:46 pg2 patroni[4196]: 2026-10-19 20:12:46.519 UTC [4196] DETAIL:  The failed archive command was: wal-g wal-push pg_wal/000000020000000000000005
++ sudo lxc exec pg2 -- bash -c 'ls /var/lib/postgresql/16/patroni/log 2>/dev/null; tail -5 /var/lib/postgresql/16/patroni/log/*.log 2>/dev/null'
++ sudo lxc exec pg2 -- su postgres -c 'cd /tmp && wal-g wal-show 2>&1 | head -5'
+ERROR: 2026/10/19 20:13:02.012243 configure storage with prefix "/backup/bananaflow": create FS storage: FS storage root directory doesn't exist or is inaccessible: stat /backup/bananaflow: no such file or directory
++ sudo lxc exec pg2 -- su postgres -c 'echo HOME=$HOME'
+HOME=/var/lib/postgresql
++ sudo lxc exec pg2 -- bash -c 'cat /proc/$(pgrep -f "postgres: .*archiver" | head -1)/environ | tr "\0" "\n" | grep -E "HOME|USER"'

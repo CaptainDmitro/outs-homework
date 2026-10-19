@@ -1,0 +1,63 @@
++ for i in 1 2 3
++ sudo lxc exec pg1 -- bash -c 'cat > /usr/local/bin/walg-backup.sh <<SH
+#!/bin/bash
+# backup is taken only on the current Patroni leader
+curl -sf -o /dev/null http://127.0.0.1:8008/primary || exit 0
+wal-g backup-push /var/lib/postgresql/16/patroni && wal-g delete retain FULL 7 --confirm
+SH
+chmod +x /usr/local/bin/walg-backup.sh
+echo "0 2 * * * /usr/local/bin/walg-backup.sh >> /var/lib/postgresql/walg-backup.log 2>&1" | crontab -u postgres -'
++ for i in 1 2 3
++ sudo lxc exec pg2 -- bash -c 'cat > /usr/local/bin/walg-backup.sh <<SH
+#!/bin/bash
+# backup is taken only on the current Patroni leader
+curl -sf -o /dev/null http://127.0.0.1:8008/primary || exit 0
+wal-g backup-push /var/lib/postgresql/16/patroni && wal-g delete retain FULL 7 --confirm
+SH
+chmod +x /usr/local/bin/walg-backup.sh
+echo "0 2 * * * /usr/local/bin/walg-backup.sh >> /var/lib/postgresql/walg-backup.log 2>&1" | crontab -u postgres -'
++ for i in 1 2 3
++ sudo lxc exec pg3 -- bash -c 'cat > /usr/local/bin/walg-backup.sh <<SH
+#!/bin/bash
+# backup is taken only on the current Patroni leader
+curl -sf -o /dev/null http://127.0.0.1:8008/primary || exit 0
+wal-g backup-push /var/lib/postgresql/16/patroni && wal-g delete retain FULL 7 --confirm
+SH
+chmod +x /usr/local/bin/walg-backup.sh
+echo "0 2 * * * /usr/local/bin/walg-backup.sh >> /var/lib/postgresql/walg-backup.log 2>&1" | crontab -u postgres -'
++ sudo lxc exec pg1 -- crontab -u postgres -l
+0 2 * * * /usr/local/bin/walg-backup.sh >> /var/lib/postgresql/walg-backup.log 2>&1
++ sudo lxc exec pg1 -- su postgres -c /usr/local/bin/walg-backup.sh
+pg1 (replica) exit=0
++ echo 'pg1 (replica) exit=0'
++ sudo lxc exec pg2 -- su postgres -c /usr/local/bin/walg-backup.sh
+INFO: 2026/10/19 20:13:41.997962 Backup will be pushed to storage: default
+INFO: 2026/10/19 20:13:42.009575 Couldn't find previous backup. Doing full backup.
+INFO: 2026/10/19 20:13:42.020178 Calling pg_start_backup()
+INFO: 2026/10/19 20:13:52.740135 Started backup with name base_000000020000000000000008 at LSN 0/8000060
+INFO: 2026/10/19 20:13:52.740455 Initializing the PG alive checker (interval=1m0s)...
+INFO: 2026/10/19 20:13:52.741006 Starting a new tar bundle
+INFO: 2026/10/19 20:13:52.741072 Walking ...
+INFO: 2026/10/19 20:13:52.741284 Starting part 1 of backup base_000000020000000000000008 ...
+INFO: 2026/10/19 20:13:53.130678 Packing ...
+INFO: 2026/10/19 20:13:53.131301 Finished writing part 1 of backup base_000000020000000000000008.
+INFO: 2026/10/19 20:13:53.377620 Starting part 2 of backup base_000000020000000000000008 ...
+INFO: 2026/10/19 20:13:53.377664 /global/pg_control
+INFO: 2026/10/19 20:13:53.378101 Finished writing part 2 of backup base_000000020000000000000008.
+INFO: 2026/10/19 20:13:53.378120 Calling pg_stop_backup()
+INFO: 2026/10/19 20:13:58.947552 Starting part 3 of backup base_000000020000000000000008 ...
+INFO: 2026/10/19 20:13:58.947651 backup_label
+INFO: 2026/10/19 20:13:58.947659 tablespace_map
+INFO: 2026/10/19 20:13:58.948061 Finished writing part 3 of backup base_000000020000000000000008.
+INFO: 2026/10/19 20:13:59.939711 Querying pg_database
+INFO: 2026/10/19 20:14:03.245156 Wrote backup with name base_000000020000000000000008 to storage default
+INFO: 2026/10/19 20:14:03.281467 Backup to delete will be searched in storages: [default]
+INFO: 2026/10/19 20:14:03.281542 retrieving permanent objects
+INFO: 2026/10/19 20:14:03.283337 No backup found for deletion
++ sudo lxc exec pg2 -- su postgres -c 'wal-g backup-list --detail'
+backup_name                   modified             wal_file_name            storage_name start_time           finish_time          hostname data_dir                       pg_version start_lsn finish_lsn is_permanent
+base_000000020000000000000008 2026-10-19T20:14:03Z 000000020000000000000008 default      2026-10-19T20:13:42Z 2026-10-19T20:13:59Z pg2      /var/lib/postgresql/16/patroni 160015     0/8000060 0/8000138  false
+INFO: 2026/10/19 20:14:03.506366 List backups from storages: [default]
++ sudo du -sh /srv/walg/bananaflow/basebackups_005 /srv/walg/bananaflow/wal_005
+2.9M	/srv/walg/bananaflow/basebackups_005
+24K	/srv/walg/bananaflow/wal_005

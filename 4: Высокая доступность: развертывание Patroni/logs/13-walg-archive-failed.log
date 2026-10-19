@@ -1,0 +1,103 @@
++ sudo lxc exec pg2 -- bash -c 'grep -v '\''^#'\'' /var/lib/postgresql/16/patroni/pg_hba.conf | grep .'
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            trust
+host    all             all             ::1/128                 trust
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+host replication replicator 10.48.221.0/24 scram-sha-256
+host all all 10.48.221.0/24 scram-sha-256
+host all all 127.0.0.1/32 scram-sha-256
++ sudo lxc exec pg2 -- bash -c 'cat > /tmp/walg-patch.yml <<CFG
+postgresql:
+  parameters:
+    archive_mode: "on"
+    archive_command: "wal-g wal-push %p"
+    archive_timeout: 60
+  recovery_conf:
+    restore_command: "wal-g wal-fetch %f %p"
+  pg_hba:
+    - local all postgres peer
+    - host replication replicator 10.48.221.0/24 scram-sha-256
+    - host all all 10.48.221.0/24 scram-sha-256
+    - host all all 127.0.0.1/32 scram-sha-256
+CFG
+patronictl -c /etc/patroni/config.yml edit-config --apply /tmp/walg-patch.yml --force'
+--- 
++++ 
+@@ -2,12 +2,22 @@
+ maximum_lag_on_failover: 1048576
+ postgresql:
+   parameters:
++    archive_command: wal-g wal-push %p
++    archive_mode: 'on'
++    archive_timeout: 60
+     hot_standby: true
+     max_replication_slots: 10
+     max_wal_senders: 10
+     shared_buffers: 128MB
+     wal_level: replica
+     wal_log_hints: true
++  pg_hba:
++  - local all postgres peer
++  - host replication replicator 10.48.221.0/24 scram-sha-256
++  - host all all 10.48.221.0/24 scram-sha-256
++  - host all all 127.0.0.1/32 scram-sha-256
++  recovery_conf:
++    restore_command: wal-g wal-fetch %f %p
+   use_pg_rewind: true
+   use_slots: true
+ retry_timeout: 10
+Configuration changed
++ sleep 15
++ sudo lxc exec pg2 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+-----------------+
+| Member | Host         | Role         | State     | TL | Lag in MB | Pending restart |
++--------+--------------+--------------+-----------+----+-----------+-----------------+
+| pg1    | 10.48.221.21 | Replica      | streaming |  2 |         0 | *               |
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           | *               |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 | *               |
++--------+--------------+--------------+-----------+----+-----------+-----------------+
++ sudo lxc exec pg2 -- patronictl -c /etc/patroni/config.yml restart bananaflow --force
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+-----------------+
+| Member | Host         | Role         | State     | TL | Lag in MB | Pending restart |
++--------+--------------+--------------+-----------+----+-----------+-----------------+
+| pg1    | 10.48.221.21 | Replica      | streaming |  2 |         0 | *               |
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           | *               |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 | *               |
++--------+--------------+--------------+-----------+----+-----------+-----------------+
+Success: restart on member pg1
+Success: restart on member pg2
+Success: restart on member pg3
++ sleep 20
++ sudo lxc exec pg2 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Replica      | streaming |  2 |         0 |
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
++ sudo lxc exec pg2 -- su postgres -c 'psql -c '\''show archive_mode'\'' -c '\''show archive_command'\'' -c '\''select pg_switch_wal()'\'''
+ archive_mode 
+--------------
+ on
+(1 row)
+
+  archive_command  
+-------------------
+ wal-g wal-push %p
+(1 row)
+
+ pg_switch_wal 
+---------------
+ 0/5002238
+(1 row)
+
++ sleep 5
++ sudo lxc exec pg2 -- su postgres -c 'psql -c '\''select archived_count, last_archived_wal, failed_count from pg_stat_archiver'\'''
+ archived_count | last_archived_wal | failed_count 
+----------------+-------------------+--------------
+              0 |                   |            3
+(1 row)
+
