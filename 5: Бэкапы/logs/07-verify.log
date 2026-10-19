@@ -1,0 +1,38 @@
++ CHECK='select '\''wholesalers'\'' tbl, count(*), md5(string_agg(t::text, '\'','\'' order by id)) from wholesalers t
+union all select '\''bonus_accounts'\'', count(*), md5(string_agg(t::text, '\'','\'' order by wholesaler_id)) from bonus_accounts t
+union all select '\''bonus_operations'\'', count(*), md5(string_agg(t::text, '\'','\'' order by id)) from bonus_operations t'
++ sudo lxc exec bk-restore -- su postgres -c 'psql -d wholesale_loyalty -c '\''select pg_is_in_recovery(), inet_server_addr()'\'' -c "select shobj_description(oid, '\''pg_database'\'') from pg_database where datname = current_database()" -c "select * from wholesalers where inn = '\''9999999999'\''"'
+ pg_is_in_recovery | inet_server_addr 
+-------------------+------------------
+ f                 | 
+(1 row)
+
+  shobj_description   
+----------------------
+ Лояльность оптовиков
+(1 row)
+
+  id   |               name               |    inn     |   tier   |          created_at           
+-------+----------------------------------+------------+----------+-------------------------------
+ 10001 | ООО Банановый опт (после бэкапа) | 9999999999 | platinum | 2026-10-19 20:54:47.026796+00
+(1 row)
+
++ sudo lxc exec bk-restore -- su postgres -c 'psql -d wholesale_loyalty -c "select '\''wholesalers'\'' tbl, count(*), md5(string_agg(t::text, '\'','\'' order by id)) from wholesalers t
+union all select '\''bonus_accounts'\'', count(*), md5(string_agg(t::text, '\'','\'' order by wholesaler_id)) from bonus_accounts t
+union all select '\''bonus_operations'\'', count(*), md5(string_agg(t::text, '\'','\'' order by id)) from bonus_operations t"'
++ tee /tmp/restore.txt
+       tbl        | count  |               md5                
+------------------+--------+----------------------------------
+ wholesalers      |  10001 | 5a6ebd251ea368cf48cb79635821e970
+ bonus_accounts   |  10000 | da1b77b52b7575cdeb9c5a946c72c028
+ bonus_operations | 520000 | d0b7f1e82661b995f18a998e349d9f2e
+(3 rows)
+
++ diff /tmp/primary.txt /tmp/restore.txt
+DATA IDENTICAL
++ echo 'DATA IDENTICAL'
++ sudo lxc exec bk-restore -- su postgres -c '/usr/lib/postgresql/16/bin/pg_amcheck -d wholesale_loyalty --heapallindexed && echo AMCHECK_OK'
+pg_amcheck: warning: skipping database "wholesale_loyalty": amcheck is not installed
+pg_amcheck: error: no relations to check
++ sudo lxc exec bk-restore -- su postgres -c '/usr/lib/postgresql/16/bin/pg_amcheck -d wholesale_loyalty --install-missing --heapallindexed && echo AMCHECK_OK'
+AMCHECK_OK

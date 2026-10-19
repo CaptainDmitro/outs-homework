@@ -1,0 +1,57 @@
++ sudo lxc exec bk-primary -- bash -s
++ pg_ctlcluster 16 main stop
++ /usr/lib/postgresql/16/bin/pg_checksums -D /var/lib/postgresql/16/main --enable
+Checksum operation completed
+Files scanned:   948
+Blocks scanned:  2828
+Files written:  780
+Blocks written: 2828
+pg_checksums: syncing data directory
+Checksums enabled in cluster
+pg_checksums: updating control file
++ su postgres -c 'pg_probackup-16 init -B /backup'
+INFO: Backup catalog '/backup' successfully initialized
++ cat
++ cat
++ pg_ctlcluster 16 main start
++ su postgres -c 'pg_probackup-16 add-instance -B /backup -D /var/lib/postgresql/16/main --instance loyalty'
+INFO: Instance 'loyalty' successfully initialized
++ su postgres -c 'pg_probackup-16 set-config -B /backup --instance loyalty --retention-redundancy=7 --retention-window=7 --compress-algorithm=zlib --compress-level=1 -d postgres'
++ su postgres -c 'pg_probackup-16 show-config -B /backup --instance loyalty'
++ grep -E 'pgdata|system-identifier|retention|compress|pgdatabase'
+pgdata = /var/lib/postgresql/16/main
+system-identifier = 7698483225002011150
+pgdatabase = postgres
+retention-redundancy = 7
+retention-window = 7
+compress-algorithm = zlib
+compress-level = 1
++ su postgres -c 'psql -v ON_ERROR_STOP=1'
+CREATE ROLE
+ALTER ROLE
+ data_checksums 
+----------------
+ on
+(1 row)
+
+                                               archive_command                                               
+-------------------------------------------------------------------------------------------------------------
+ pg_probackup-16 archive-push -B /backup --instance loyalty --wal-file-path=%p --wal-file-name=%f --compress
+(1 row)
+
+CREATE DATABASE
+COMMENT
+You are now connected to database "wholesale_loyalty" as user "postgres".
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 10000
+INSERT 0 500000
+INSERT 0 10000
+CREATE INDEX
+ANALYZE
+ wholesalers | accounts | operations | db_size 
+-------------+----------+------------+---------
+       10000 |    10000 |     500000 | 56 MB
+(1 row)
+

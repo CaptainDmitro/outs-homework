@@ -1,0 +1,79 @@
++ sudo lxc exec bk-primary -- bash -s
++ su postgres -c 'psql -Atc '\''select pg_switch_wal()'\'' -c '\''select pg_sleep(2)'\'' -c '\''select archived_count, last_archived_wal, failed_count from pg_stat_archiver'\'''
+0/70C9298
+
+7|000000010000000000000007|0
++ su postgres -c 'pg_probackup-16 backup -B /backup --instance loyalty -b FULL -j 2 --compress'
+INFO: Backup start, pg_probackup version: 2.5.16, instance: loyalty, backup ID: TN6A22, backup mode: FULL, wal mode: ARCHIVE, remote: false, compress-algorithm: zlib, compress-level: 1
+INFO: This PostgreSQL instance was initialized with data block checksums. Data block corruption will be detected
+WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+INFO: Database backup start
+INFO: wait for pg_backup_start()
+INFO: Wait for WAL segment /backup/wal/loyalty/000000010000000000000008 to be archived
+INFO: PGDATA size: 79MB
+INFO: Current Start LSN: 0/8000028, TLI: 1
+INFO: Start transferring data files
+INFO: Data files are transferred, time elapsed: 1s
+INFO: wait for pg_stop_backup()
+INFO: pg_stop backup() successfully executed
+INFO: stop_lsn: 0/90000B8
+INFO: Wait for LSN 0/90000B8 in archived WAL segment /backup/wal/loyalty/000000010000000000000009
+INFO: Getting the Recovery Time from WAL
+INFO: Syncing backup files to disk
+INFO: Backup files are synced, time elapsed: 0
+INFO: Validating backup TN6A22
+INFO: Backup TN6A22 data files are valid
+INFO: Backup TN6A22 resident size: 24MB
+INFO: Backup TN6A22 completed
++ su postgres -c 'psql -d wholesale_loyalty -c "insert into bonus_operations(wholesaler_id, amount, op_type) select 1 + g % 10000, 100, '\''accrual'\'' from generate_series(1, 20000) g"'
+INSERT 0 20000
++ su postgres -c 'pg_probackup-16 backup -B /backup --instance loyalty -b DELTA -j 2 --compress'
+INFO: Backup start, pg_probackup version: 2.5.16, instance: loyalty, backup ID: TN6A2I, backup mode: DELTA, wal mode: ARCHIVE, remote: false, compress-algorithm: zlib, compress-level: 1
+INFO: This PostgreSQL instance was initialized with data block checksums. Data block corruption will be detected
+WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+INFO: Database backup start
+INFO: wait for pg_backup_start()
+INFO: Parent backup: TN6A22
+INFO: Wait for WAL segment /backup/wal/loyalty/00000001000000000000000B to be archived
+INFO: PGDATA size: 80MB
+INFO: Current Start LSN: 0/B000060, TLI: 1
+INFO: Parent Start LSN: 0/8000028, TLI: 1
+INFO: Start transferring data files
+INFO: Data files are transferred, time elapsed: 0
+INFO: wait for pg_stop_backup()
+INFO: pg_stop backup() successfully executed
+INFO: stop_lsn: 0/C0000B8
+INFO: Getting the Recovery Time from WAL
+INFO: Syncing backup files to disk
+INFO: Backup files are synced, time elapsed: 0
+INFO: Validating backup TN6A2I
+INFO: Backup TN6A2I data files are valid
+INFO: Backup TN6A2I resident size: 2628kB
+INFO: Backup TN6A2I completed
++ su postgres -c 'pg_probackup-16 validate -B /backup --instance loyalty'
+INFO: Validate backups of the instance 'loyalty'
+INFO: Validating backup TN6A2I
+INFO: Backup TN6A2I data files are valid
+INFO: Backup TN6A2I WAL segments are valid
+INFO: Validating backup TN6A22
+INFO: Backup TN6A22 data files are valid
+INFO: Backup TN6A22 WAL segments are valid
+INFO: All backups are valid
++ su postgres -c 'pg_probackup-16 show -B /backup --instance loyalty'
+===================================================================================================================================
+ Instance  Version  ID      Recovery Time           Mode   WAL Mode  TLI  Time    Data   WAL  Zratio  Start LSN  Stop LSN   Status 
+===================================================================================================================================
+ loyalty   16       TN6A2I  2026-10-19 20:54:23+00  DELTA  ARCHIVE   1/1    7s  2628kB  16MB    2.60  0/B000060  0/C0000B8  OK     
+ loyalty   16       TN6A22  2026-10-19 20:54:13+00  FULL   ARCHIVE   1/0   15s    24MB  16MB    3.26  0/8000028  0/90000B8  OK     
++ su postgres -c 'pg_probackup-16 show -B /backup --instance loyalty --archive'
+
+ARCHIVE INSTANCE 'loyalty'
+===============================================================================================================================
+ TLI  Parent TLI  Switchpoint  Min Segno                 Max Segno                 N segments  Size  Zratio  N backups  Status 
+===============================================================================================================================
+ 1    0           0/0          000000010000000000000001  00000001000000000000000C  12          33MB  5.82    2          OK     
++ cat
++ cat /etc/cron.d/pg_probackup
+# FULL on Sunday, DELTA on other days; old backups and WAL are purged by the retention policy
+0 2 * * 0   postgres pg_probackup-16 backup -B /backup --instance loyalty -b FULL  -j 2 --compress --delete-expired --delete-wal >> /var/log/postgresql/pg_probackup-cron.log 2>&1
+0 2 * * 1-6 postgres pg_probackup-16 backup -B /backup --instance loyalty -b DELTA -j 2 --compress --delete-expired --delete-wal >> /var/log/postgresql/pg_probackup-cron.log 2>&1

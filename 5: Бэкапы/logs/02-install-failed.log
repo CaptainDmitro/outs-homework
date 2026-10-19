@@ -1,0 +1,59 @@
++ sudo mkdir -p /srv/probackup
++ for n in bk-primary bk-replica bk-restore
++ sudo lxc exec bk-primary -- bash -c '
+    set -e
+    curl -fsSL https://repo.postgrespro.ru/pg_probackup/keys/GPG-KEY-PG-PROBACKUP | gpg --dearmor -o /usr/share/keyrings/pg_probackup.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/pg_probackup.gpg] https://repo.postgrespro.ru/pg_probackup/deb noble main-noble" > /etc/apt/sources.list.d/pg_probackup.list
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 pg-probackup-16 >/dev/null
+    pg_probackup-16 version; psql --version'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+pg_probackup-16 2.5.16 (PostgreSQL 16.11)
+psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
++ sudo lxc config device add bk-primary probackup disk source=/srv/probackup path=/backup shift=true
+Device probackup added to bk-primary
++ sudo lxc exec bk-primary -- chown postgres:postgres /backup
++ for n in bk-primary bk-replica bk-restore
++ sudo lxc exec bk-replica -- bash -c '
+    set -e
+    curl -fsSL https://repo.postgrespro.ru/pg_probackup/keys/GPG-KEY-PG-PROBACKUP | gpg --dearmor -o /usr/share/keyrings/pg_probackup.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/pg_probackup.gpg] https://repo.postgrespro.ru/pg_probackup/deb noble main-noble" > /etc/apt/sources.list.d/pg_probackup.list
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 pg-probackup-16 >/dev/null
+    pg_probackup-16 version; psql --version'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+pg_probackup-16 2.5.16 (PostgreSQL 16.11)
+psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
++ sudo lxc config device add bk-replica probackup disk source=/srv/probackup path=/backup shift=true
+Device probackup added to bk-replica
++ sudo lxc exec bk-replica -- chown postgres:postgres /backup
++ for n in bk-primary bk-replica bk-restore
++ sudo lxc exec bk-restore -- bash -c '
+    set -e
+    curl -fsSL https://repo.postgrespro.ru/pg_probackup/keys/GPG-KEY-PG-PROBACKUP | gpg --dearmor -o /usr/share/keyrings/pg_probackup.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/pg_probackup.gpg] https://repo.postgrespro.ru/pg_probackup/deb noble main-noble" > /etc/apt/sources.list.d/pg_probackup.list
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 pg-probackup-16 >/dev/null
+    pg_probackup-16 version; psql --version'
+Error in tempdir() using /tmp/XXXXXXXXXX: Could not create directory /tmp/z2VcOCkwe6: No space left on device at /usr/share/perl5/NeedRestart/Interp/Python.pm line 87.
+debconf: DbDriver "config": could not write /var/cache/debconf/config.dat-new: No space left on device
+Warning: unable to close filehandle $fh properly: No space left on device at /usr/share/perl5/Debconf/DbDriver.pm line 61, <GEN0> line 3.
+pg_probackup-16 2.5.16 (PostgreSQL 16.11)
+psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
++ sudo lxc config device add bk-restore probackup disk source=/srv/probackup path=/backup shift=true
+Device probackup added to bk-restore
++ sudo lxc exec bk-restore -- chown postgres:postgres /backup

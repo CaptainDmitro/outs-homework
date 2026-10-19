@@ -1,0 +1,42 @@
++ for n in bk-primary:41 bk-replica:42 bk-restore:43
++ name=bk-primary
++ ip=10.48.221.41
++ sudo lxc init ubuntu:24.04 bk-primary -c limits.cpu=1 -c limits.memory=1GiB
+Creating bk-primary
+Retrieving image: Unpacking image: 100% (601.46MB/s)
++ sudo lxc config device override bk-primary eth0 ipv4.address=10.48.221.41
+Device eth0 overridden for bk-primary
++ sudo lxc start bk-primary
++ for n in bk-primary:41 bk-replica:42 bk-restore:43
++ name=bk-replica
++ ip=10.48.221.42
++ sudo lxc init ubuntu:24.04 bk-replica -c limits.cpu=1 -c limits.memory=1GiB
+Creating bk-replica
+Retrieving image: Unpacking image: 100% (542.11MB/s)
++ sudo lxc config device override bk-replica eth0 ipv4.address=10.48.221.42
+Device eth0 overridden for bk-replica
++ sudo lxc start bk-replica
++ for n in bk-primary:41 bk-replica:42 bk-restore:43
++ name=bk-restore
++ ip=10.48.221.43
++ sudo lxc init ubuntu:24.04 bk-restore -c limits.cpu=1 -c limits.memory=1GiB
+Creating bk-restore
+Retrieving image: Unpacking image: 100% (657.10MB/s)
++ sudo lxc config device override bk-restore eth0 ipv4.address=10.48.221.43
+Device eth0 overridden for bk-restore
++ sudo lxc start bk-restore
++ sleep 15
++ sudo lxc list -c ns4tM bk-
++------------+---------+---------------------+-----------+---------------+
+|    NAME    |  STATE  |        IPV4         |   TYPE    | MEMORY USAGE% |
++------------+---------+---------------------+-----------+---------------+
+| bk-primary | RUNNING | 10.48.221.41 (eth0) | CONTAINER | 5.9%          |
++------------+---------+---------------------+-----------+---------------+
+| bk-replica | RUNNING | 10.48.221.42 (eth0) | CONTAINER | 5.3%          |
++------------+---------+---------------------+-----------+---------------+
+| bk-restore | RUNNING | 10.48.221.43 (eth0) | CONTAINER | 10.7%         |
++------------+---------+---------------------+-----------+---------------+
++ sudo lxc exec bk-primary -- bash -c 'apt-get update -qq && apt-cache policy postgresql-16 | head -3; apt-cache search probackup'
+postgresql-16:
+  Installed: (none)
+  Candidate: 16.15-0ubuntu0.24.04.1

@@ -1,0 +1,42 @@
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   19G   55M 100% /
++ sudo lxc storage list
++---------+--------+------------------------------------------------+-------------+---------+---------+
+|  NAME   | DRIVER |                     SOURCE                     | DESCRIPTION | USED BY |  STATE  |
++---------+--------+------------------------------------------------+-------------+---------+---------+
+| default | dir    | /var/snap/lxd/common/lxd/storage-pools/default |             | 11      | CREATED |
++---------+--------+------------------------------------------------+-------------+---------+---------+
+++ sudo lxc list -c n -f csv
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec bk-primary -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec bk-replica -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec bk-restore -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec etcd1 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec etcd2 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec etcd3 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec haproxy -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec pg1 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec pg2 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ for c in $(sudo lxc list -c n -f csv)
++ sudo lxc exec pg3 -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'
++ sudo apt-get clean
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   15G  3.5G  81% /
++ df -h /
++ sudo lxc exec bk-restore -- bash -c 'dpkg --configure -a; apt-get update -qq; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 pg-probackup-16 >/dev/null; apt-get clean; rm -rf /var/lib/apt/lists/*; dpkg -l postgresql-16 pg-probackup-16 | tail -2; pg_lsclusters'
+ii  pg-probackup-16 2.5.16-1.79b986494ecea8bbd67f97a62ba8ae4a00703586.noble amd64        Backup tool for PostgreSQL.
+ii  postgresql-16   16.15-0ubuntu0.24.04.1                                  amd64        The World's Most Advanced Open Source Relational Database
+Ver Cluster Port Status Owner    Data directory              Log file
+16  main    5432 online postgres /var/lib/postgresql/16/main /var/log/postgresql/postgresql-16-main.log
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   15G  3.5G  81% /
