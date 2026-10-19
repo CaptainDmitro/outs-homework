@@ -1,0 +1,267 @@
++ for i in 1 2 3
++ ip=10.48.221.21
++ sudo lxc exec pg1 -- bash -c 'mkdir -p /etc/patroni && cat > /etc/patroni/config.yml <<CFG
+scope: bananaflow
+namespace: /service/
+name: pg1
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.48.221.21:8008
+
+etcd3:
+  hosts: 10.48.221.11:2379,10.48.221.12:2379,10.48.221.13:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    synchronous_mode: true
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: on
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_log_hints: on
+        shared_buffers: 128MB
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+  pg_hba:
+    - host replication replicator 10.48.221.0/24 scram-sha-256
+    - host all all 10.48.221.0/24 scram-sha-256
+    - host all all 127.0.0.1/32 scram-sha-256
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.48.221.21:5432
+  data_dir: /var/lib/postgresql/16/patroni
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /var/lib/postgresql/.pgpass_patroni
+  authentication:
+    superuser:
+      username: postgres
+      password: otus_pass
+    replication:
+      username: replicator
+      password: repl_pass
+    rewind:
+      username: rewind_user
+      password: rewind_pass
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false
+CFG
+chown -R postgres:postgres /etc/patroni && chmod 600 /etc/patroni/config.yml'
++ for i in 1 2 3
++ ip=10.48.221.22
++ sudo lxc exec pg2 -- bash -c 'mkdir -p /etc/patroni && cat > /etc/patroni/config.yml <<CFG
+scope: bananaflow
+namespace: /service/
+name: pg2
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.48.221.22:8008
+
+etcd3:
+  hosts: 10.48.221.11:2379,10.48.221.12:2379,10.48.221.13:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    synchronous_mode: true
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: on
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_log_hints: on
+        shared_buffers: 128MB
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+  pg_hba:
+    - host replication replicator 10.48.221.0/24 scram-sha-256
+    - host all all 10.48.221.0/24 scram-sha-256
+    - host all all 127.0.0.1/32 scram-sha-256
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.48.221.22:5432
+  data_dir: /var/lib/postgresql/16/patroni
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /var/lib/postgresql/.pgpass_patroni
+  authentication:
+    superuser:
+      username: postgres
+      password: otus_pass
+    replication:
+      username: replicator
+      password: repl_pass
+    rewind:
+      username: rewind_user
+      password: rewind_pass
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false
+CFG
+chown -R postgres:postgres /etc/patroni && chmod 600 /etc/patroni/config.yml'
++ for i in 1 2 3
++ ip=10.48.221.23
++ sudo lxc exec pg3 -- bash -c 'mkdir -p /etc/patroni && cat > /etc/patroni/config.yml <<CFG
+scope: bananaflow
+namespace: /service/
+name: pg3
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.48.221.23:8008
+
+etcd3:
+  hosts: 10.48.221.11:2379,10.48.221.12:2379,10.48.221.13:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    synchronous_mode: true
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: on
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_log_hints: on
+        shared_buffers: 128MB
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+  pg_hba:
+    - host replication replicator 10.48.221.0/24 scram-sha-256
+    - host all all 10.48.221.0/24 scram-sha-256
+    - host all all 127.0.0.1/32 scram-sha-256
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.48.221.23:5432
+  data_dir: /var/lib/postgresql/16/patroni
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /var/lib/postgresql/.pgpass_patroni
+  authentication:
+    superuser:
+      username: postgres
+      password: otus_pass
+    replication:
+      username: replicator
+      password: repl_pass
+    rewind:
+      username: rewind_user
+      password: rewind_pass
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false
+CFG
+chown -R postgres:postgres /etc/patroni && chmod 600 /etc/patroni/config.yml'
++ sudo lxc exec pg1 -- cat /etc/patroni/config.yml
+scope: bananaflow
+namespace: /service/
+name: pg1
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.48.221.21:8008
+
+etcd3:
+  hosts: 10.48.221.11:2379,10.48.221.12:2379,10.48.221.13:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    synchronous_mode: true
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: on
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_log_hints: on
+        shared_buffers: 128MB
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+  pg_hba:
+    - host replication replicator 10.48.221.0/24 scram-sha-256
+    - host all all 10.48.221.0/24 scram-sha-256
+    - host all all 127.0.0.1/32 scram-sha-256
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.48.221.21:5432
+  data_dir: /var/lib/postgresql/16/patroni
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /var/lib/postgresql/.pgpass_patroni
+  authentication:
+    superuser:
+      username: postgres
+      password: otus_pass
+    replication:
+      username: replicator
+      password: repl_pass
+    rewind:
+      username: rewind_user
+      password: rewind_pass
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false
++ sudo lxc exec pg1 -- systemctl enable --now patroni
+Synchronizing state of patroni.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable patroni
++ sleep 20
++ sudo lxc exec pg2 -- systemctl enable --now patroni
+Synchronizing state of patroni.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable patroni
++ sudo lxc exec pg3 -- systemctl enable --now patroni
+Synchronizing state of patroni.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable patroni
++ sleep 30
++ sudo lxc exec pg1 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) --+----+-----------+
+| Member | Host         | Role    | State     | TL | Lag in MB |
++--------+--------------+---------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Leader  | running   |  1 |           |
+| pg2    | 10.48.221.22 | Replica | streaming |  1 |         0 |
+| pg3    | 10.48.221.23 | Replica | streaming |  1 |         0 |
++--------+--------------+---------+-----------+----+-----------+

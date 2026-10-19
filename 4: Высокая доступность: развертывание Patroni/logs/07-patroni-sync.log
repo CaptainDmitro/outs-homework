@@ -1,0 +1,43 @@
++ sudo lxc exec pg1 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Leader       | running   |  1 |           |
+| pg2    | 10.48.221.22 | Sync Standby | streaming |  1 |         0 |
+| pg3    | 10.48.221.23 | Replica      | streaming |  1 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
++ sudo lxc exec pg1 -- patronictl -c /etc/patroni/config.yml show-config
+loop_wait: 10
+maximum_lag_on_failover: 1048576
+postgresql:
+  parameters:
+    hot_standby: true
+    max_replication_slots: 10
+    max_wal_senders: 10
+    shared_buffers: 128MB
+    wal_level: replica
+    wal_log_hints: true
+  use_pg_rewind: true
+  use_slots: true
+retry_timeout: 10
+synchronous_mode: true
+ttl: 30
+
++ sudo lxc exec pg1 -- env PGPASSWORD=otus_pass psql -h 10.48.221.21 -U postgres -c 'select application_name, client_addr, state, sync_state from pg_stat_replication' -c 'show synchronous_standby_names'
+ application_name | client_addr  |   state   | sync_state 
+------------------+--------------+-----------+------------
+ pg2              | 10.48.221.22 | streaming | sync
+ pg3              | 10.48.221.23 | streaming | async
+(2 rows)
+
+ synchronous_standby_names 
+---------------------------
+ pg2
+(1 row)
+
++ sudo lxc exec pg2 -- journalctl -u patroni --no-pager -n 5
+Oct 19 20:05:36 pg2 patroni[3831]: localhost:5432 - accepting connections
+Oct 19 20:05:36 pg2 patroni[3806]: 2026-10-19 20:05:36,918 INFO: Lock owner: pg1; I am pg2
+Oct 19 20:05:36 pg2 patroni[3806]: 2026-10-19 20:05:36,918 INFO: establishing a new patroni heartbeat connection to postgres
+Oct 19 20:05:38 pg2 patroni[3806]: 2026-10-19 20:05:38,422 INFO: no action. I am (pg2), a secondary, and following a leader (pg1)
+Oct 19 20:05:44 pg2 patroni[3806]: 2026-10-19 20:05:44,962 INFO: no action. I am (pg2), a secondary, and following a leader (pg1)

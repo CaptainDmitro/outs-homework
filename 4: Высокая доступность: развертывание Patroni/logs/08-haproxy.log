@@ -1,0 +1,80 @@
++ sudo lxc exec haproxy -- bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq haproxy postgresql-client >/dev/null'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
++ sudo lxc exec haproxy -- bash -c 'cat > /etc/haproxy/haproxy.cfg <<CFG
+global
+    maxconn 1000
+    log /dev/log local0
+
+defaults
+    log global
+    mode tcp
+    retries 2
+    timeout client 30m
+    timeout connect 4s
+    timeout server 30m
+    timeout check 5s
+
+listen stats
+    mode http
+    bind *:7000
+    stats enable
+    stats uri /
+
+listen primary
+    bind *:5000
+    option httpchk GET /primary
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pg1 10.48.221.21:5432 maxconn 100 check port 8008
+    server pg2 10.48.221.22:5432 maxconn 100 check port 8008
+    server pg3 10.48.221.23:5432 maxconn 100 check port 8008
+
+listen replicas
+    bind *:5001
+    balance roundrobin
+    option httpchk GET /replica
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pg1 10.48.221.21:5432 maxconn 100 check port 8008
+    server pg2 10.48.221.22:5432 maxconn 100 check port 8008
+    server pg3 10.48.221.23:5432 maxconn 100 check port 8008
+CFG
+haproxy -c -f /etc/haproxy/haproxy.cfg && systemctl restart haproxy'
+Configuration file is valid
++ sleep 8
++ sudo lxc exec haproxy -- haproxy -v
+HAProxy version 2.8.16-0ubuntu0.24.04.3 2026/06/19 - https://haproxy.org/
+Status: long-term supported branch - will stop receiving fixes around Q2 2028.
+Known bugs: http://www.haproxy.org/bugs/bugs-2.8.16.html
+Running on: Linux 6.8.0-147-generic #147-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep 24 11:33:16 UTC 2026 x86_64
++ sudo lxc exec haproxy -- bash -c 'echo '\''show stat'\'' | socat - /run/haproxy/admin.sock 2>/dev/null | cut -d, -f1,2,18 | grep -v '\''^#'\''; curl -s '\''http://127.0.0.1:7000/;csv'\'' | cut -d, -f1,2,18 | grep pg'
+primary,pg1,UP
+primary,pg2,DOWN
+primary,pg3,DOWN
+replicas,pg1,DOWN
+replicas,pg2,UP
+replicas,pg3,UP
++ export PGPASSWORD=otus_pass
++ PGPASSWORD=otus_pass
++ for p in 5000 5001 5001 5001 5001
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5000 -U postgres -Atc 'select 5000 as port, inet_server_addr(), pg_is_in_recovery()'
+5000|10.48.221.21|f
++ for p in 5000 5001 5001 5001 5001
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5001 -U postgres -Atc 'select 5001 as port, inet_server_addr(), pg_is_in_recovery()'
+5001|10.48.221.22|t
++ for p in 5000 5001 5001 5001 5001
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5001 -U postgres -Atc 'select 5001 as port, inet_server_addr(), pg_is_in_recovery()'
+5001|10.48.221.23|t
++ for p in 5000 5001 5001 5001 5001
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5001 -U postgres -Atc 'select 5001 as port, inet_server_addr(), pg_is_in_recovery()'
+5001|10.48.221.22|t
++ for p in 5000 5001 5001 5001 5001
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5001 -U postgres -Atc 'select 5001 as port, inet_server_addr(), pg_is_in_recovery()'
+5001|10.48.221.23|t
