@@ -1,0 +1,91 @@
++ H='sudo lxc exec haproxy --env PGPASSWORD=otus_pass --'
++ sudo lxc exec haproxy --env PGPASSWORD=otus_pass -- psql -h 127.0.0.1 -p 5000 -U postgres -c 'insert into orders(supplier,tons) select '\''after-backup'\'', g from generate_series(1,1000) g' -c 'select count(*) from orders' -c 'select pg_switch_wal()'
+INSERT 0 1000
+ count 
+-------
+  1083
+(1 row)
+
+ pg_switch_wal 
+---------------
+ 0/9030AA0
+(1 row)
+
++ sleep 5
++ sudo lxc exec pg3 -- su postgres -c 'wal-g backup-fetch /var/lib/postgresql/restore LATEST && touch /var/lib/postgresql/restore/recovery.signal && ls /var/lib/postgresql/restore'
+INFO: 2026/10/19 20:14:25.492526 Selecting the latest backup...
+INFO: 2026/10/19 20:14:25.492752 Backup to fetch will be searched in storages: [default]
+INFO: 2026/10/19 20:14:25.493129 LATEST backup is: 'base_000000020000000000000008'
+INFO: 2026/10/19 20:14:36.075834 Finished extraction of part_001.tar.br
+INFO: 2026/10/19 20:14:36.078015 Finished extraction of pg_control.tar.br
+INFO: 2026/10/19 20:14:36.079009 Finished extraction of backup_label.tar.br
+INFO: 2026/10/19 20:14:36.079031 
+Backup extraction complete.
+PG_VERSION
+backup_label
+backup_label.old
+backup_manifest
+base
+global
+patroni.dynamic.json
+pg_commit_ts
+pg_dynshmem
+pg_hba.conf
+pg_hba.conf.backup
+pg_ident.conf
+pg_ident.conf.backup
+pg_logical
+pg_multixact
+pg_notify
+pg_replslot
+pg_serial
+pg_snapshots
+pg_stat
+pg_stat_tmp
+pg_subtrans
+pg_tblspc
+pg_twophase
+pg_wal
+pg_xact
+postgresql.auto.conf
+postgresql.base.conf
+postgresql.base.conf.backup
+postgresql.conf
+postgresql.conf.backup
+recovery.signal
+tablespace_map
++ sudo lxc exec pg3 -- su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/restore -l /tmp/restore.log -w start -o "-p 5433 -c shared_buffers=32MB -c archive_mode=off -c synchronous_standby_names='\'''\'' -c primary_conninfo='\'''\'' -c primary_slot_name='\'''\'' -c restore_command='\''wal-g wal-fetch %f %p'\''"'
+waiting for server to start....... done
+server started
++ sleep 5
++ sudo lxc exec pg3 -- bash -c 'grep -E '\''restored log file|redo done|archive recovery complete|selected new timeline|ready to accept'\'' /tmp/restore.log'
+2026-10-19 20:14:36.540 UTC [4386] LOG:  restored log file "000000020000000000000008" from archive
+2026-10-19 20:14:38.183 UTC [4386] LOG:  restored log file "000000020000000000000009" from archive
+2026-10-19 20:14:39.578 UTC [4383] LOG:  database system is ready to accept read-only connections
+2026-10-19 20:14:39.698 UTC [4386] LOG:  redo done at 0/9030A88 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 1.54 s
+2026-10-19 20:14:39.841 UTC [4386] LOG:  restored log file "000000020000000000000009" from archive
+2026-10-19 20:14:43.001 UTC [4386] LOG:  selected new timeline ID: 3
++ sudo lxc exec pg3 -- su postgres -c 'psql -p 5433 -c '\''select pg_is_in_recovery()'\'' -c '\''select supplier, count(*) from orders group by supplier order by 1'\'''
+ pg_is_in_recovery 
+-------------------
+ t
+(1 row)
+
+    supplier     | count 
+-----------------+-------
+ GreenBanana Co. |     1
+ after-backup    |  1000
+ writer          |    82
+(3 rows)
+
++ sudo lxc exec pg3 -- su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/restore -m fast stop && rm -rf /var/lib/postgresql/restore'
+waiting for server to shut down.... done
+server stopped
++ sudo lxc exec pg3 -- patronictl -c /etc/patroni/config.yml list
++ Cluster: bananaflow (7698472439337094871) -------+----+-----------+
+| Member | Host         | Role         | State     | TL | Lag in MB |
++--------+--------------+--------------+-----------+----+-----------+
+| pg1    | 10.48.221.21 | Replica      | streaming |  2 |         0 |
+| pg2    | 10.48.221.22 | Leader       | running   |  2 |           |
+| pg3    | 10.48.221.23 | Sync Standby | streaming |  2 |         0 |
++--------+--------------+--------------+-----------+----+-----------+
