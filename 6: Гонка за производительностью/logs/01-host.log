@@ -1,0 +1,13 @@
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+4
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.8Gi       220Mi       284Mi       6.3Gi       5.9Gi
+Swap:             0B          0B          0B
++ grep PRETTY_NAME /etc/os-release
++ nproc
++ free -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   17G  2.3G  88% /
+ 21:36:26 up  1:57,  1 user,  load average: 0.01, 0.08, 0.44
++ df -h /
++ uptime

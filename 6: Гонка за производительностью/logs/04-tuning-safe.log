@@ -1,0 +1,53 @@
++ sudo -u postgres psql -v ON_ERROR_STOP=1
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
++ sudo systemctl restart postgresql@16-main
++ sudo -u postgres psql -Atc 'select name, setting, unit from pg_settings where source = '\''configuration file'\'' and sourcefile like '\''%auto%'\'' order by name'
+checkpoint_completion_target|0.9|
+checkpoint_timeout|900|s
+commit_delay|1000|
+commit_siblings|5|
+effective_cache_size|786432|8kB
+effective_io_concurrency|200|
+maintenance_work_mem|524288|kB
+max_wal_size|1024|MB
+min_wal_size|512|MB
+random_page_cost|1.1|
+shared_buffers|262144|8kB
+wal_buffers|8192|8kB
+wal_compression|lz4|
+work_mem|16384|kB
++ sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+starting vacuum...end.
+progress: 10.0 s, 2526.7 tps, lat 9.418 ms stddev 20.377, 0 failed
+progress: 20.0 s, 2467.8 tps, lat 9.726 ms stddev 20.612, 0 failed
+progress: 30.0 s, 2900.6 tps, lat 8.274 ms stddev 15.203, 0 failed
+progress: 40.0 s, 2511.8 tps, lat 9.549 ms stddev 25.887, 0 failed
+progress: 50.0 s, 2923.1 tps, lat 8.206 ms stddev 16.125, 0 failed
+progress: 60.0 s, 3008.8 tps, lat 7.967 ms stddev 15.201, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 30
+query mode: simple
+number of clients: 24
+number of threads: 4
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 163412
+number of failed transactions: 0 (0.000%)
+latency average = 8.805 ms
+latency stddev = 19.035 ms
+initial connection time = 27.238 ms
+tps = 2722.768190 (without initial connection time)

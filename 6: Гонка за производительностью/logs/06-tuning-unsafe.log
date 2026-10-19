@@ -1,0 +1,83 @@
++ sudo -u postgres psql -v ON_ERROR_STOP=1
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
++ sudo systemctl restart postgresql@16-main
++ sudo -u postgres psql -Atc 'select name, setting, unit from pg_settings where sourcefile like '\''%auto%'\'' order by name'
+autovacuum|off|
+bgwriter_lru_maxpages|0|
+checkpoint_completion_target|0.9|
+checkpoint_timeout|900|s
+commit_delay|0|
+commit_siblings|5|
+effective_cache_size|786432|8kB
+effective_io_concurrency|200|
+fsync|off|
+full_page_writes|off|
+maintenance_work_mem|524288|kB
+max_wal_senders|0|
+max_wal_size|1024|MB
+min_wal_size|512|MB
+random_page_cost|1.1|
+shared_buffers|262144|8kB
+synchronous_commit|off|
+wal_buffers|8192|8kB
+wal_compression|lz4|
+wal_level|minimal|
+wal_writer_delay|10000|ms
+wal_writer_flush_after|8192|8kB
+work_mem|16384|kB
++ sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+starting vacuum...end.
+progress: 10.0 s, 7626.8 tps, lat 3.132 ms stddev 5.842, 0 failed
+progress: 20.0 s, 8446.8 tps, lat 2.843 ms stddev 4.064, 0 failed
+progress: 30.0 s, 9053.3 tps, lat 2.649 ms stddev 1.080, 0 failed
+progress: 40.0 s, 9584.3 tps, lat 2.502 ms stddev 0.997, 0 failed
+progress: 50.0 s, 9616.4 tps, lat 2.494 ms stddev 1.031, 0 failed
+progress: 60.0 s, 8871.5 tps, lat 2.703 ms stddev 1.258, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 30
+query mode: simple
+number of clients: 24
+number of threads: 4
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 532011
+number of failed transactions: 0 (0.000%)
+latency average = 2.704 ms
+latency stddev = 2.898 ms
+initial connection time = 25.310 ms
+tps = 8865.700414 (without initial connection time)
++ sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+starting vacuum...end.
+progress: 10.0 s, 9066.9 tps, lat 2.638 ms stddev 1.051, 0 failed
+progress: 20.0 s, 9301.8 tps, lat 2.578 ms stddev 0.982, 0 failed
+progress: 30.0 s, 9670.0 tps, lat 2.480 ms stddev 0.949, 0 failed
+progress: 40.0 s, 8934.5 tps, lat 2.684 ms stddev 1.258, 0 failed
+progress: 50.0 s, 9150.3 tps, lat 2.621 ms stddev 1.055, 0 failed
+progress: 60.0 s, 9290.4 tps, lat 2.581 ms stddev 1.041, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 30
+query mode: simple
+number of clients: 24
+number of threads: 4
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 554162
+number of failed transactions: 0 (0.000%)
+latency average = 2.596 ms
+latency stddev = 1.062 ms
+initial connection time = 26.103 ms
+tps = 9235.801976 (without initial connection time)
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   18G 1002M  95% /
