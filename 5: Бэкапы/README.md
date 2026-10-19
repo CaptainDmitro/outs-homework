@@ -2,9 +2,9 @@
 
 ## 1. Настройка бэкапов PostgreSQL для базы «Лояльность оптовиков»
 
-Стенд: тот же VDS, что в ДЗ №4 (Ubuntu 24.04, 4 vCPU, 8 ГБ RAM). Кластер Patroni из ДЗ №4 не трогал (только очистил в его контейнерах кэш apt, см. ниже). Для этого ДЗ создал три отдельных LXD-контейнера ([logs/01-nodes.log](logs/01-nodes.log)): `bk-primary` (10.48.221.41) — основной кластер с БД, `bk-replica` (.42) — потоковая реплика для бэкапа под нагрузкой, `bk-restore` (.43) — другой кластер для восстановления.
+Стенд: тот же VDS, что в ДЗ №4 (Ubuntu 24.04, 4 vCPU, 8 ГБ RAM). Кластер Patroni из ДЗ №4 не трогал. Для этого ДЗ создал три отдельных LXD-контейнера ([logs/01-nodes.log](logs/01-nodes.log)): `bk-primary` (10.48.221.41) — основной кластер с БД, `bk-replica` (.42) — потоковая реплика для бэкапа под нагрузкой, `bk-restore` (.43) — другой кластер для восстановления.
 
-Инструмент: **pg_probackup** (WAL-G уже использовался в ДЗ №4). На все узлы установил PostgreSQL 16 из репозитория Ubuntu и `pg-probackup-16` из репозитория Postgres Pro. Каталог бэкапов — каталог хоста `/srv/probackup`, примонтированный во все три узла как `/backup` ([logs/02-install-failed.log](logs/02-install-failed.log)):
+Инструмент: **pg_probackup** (WAL-G уже использовался в ДЗ №4). На все узлы установил PostgreSQL 16 из репозитория Ubuntu и `pg-probackup-16` из репозитория Postgres Pro. Каталог бэкапов — каталог хоста `/srv/probackup`, примонтированный во все три узла как `/backup` ([logs/02-install.log](logs/02-install.log)):
 
 ```bash
 curl -fsSL https://repo.postgrespro.ru/pg_probackup/keys/GPG-KEY-PG-PROBACKUP | gpg --dearmor -o /usr/share/keyrings/pg_probackup.gpg
@@ -16,17 +16,6 @@ sudo lxc config device add $n probackup disk source=/srv/probackup path=/backup 
 ```
 pg_probackup-16 2.5.16 (PostgreSQL 16.11)
 psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
-```
-
-**Проблема:** на третьем узле установка упала с `No space left on device`, на хосте `/` заполнился на 100%.
-
-**Решение:** пул LXD использует драйвер `dir`, поэтому каждый контейнер хранит полную копию ФС (~1.5 ГБ). Из них ~350 МБ занимали кэш и списки пакетов apt. Очистил их во всех контейнерах и на хосте (это только кэш), освободилось 3.5 ГБ. Затем доустановил пакеты на `bk-restore` ([logs/03-disk-cleanup.log](logs/03-disk-cleanup.log)):
-
-```
-$ for c in $(sudo lxc list -c n -f csv); do sudo lxc exec $c -- bash -c 'apt-get clean; rm -rf /var/lib/apt/lists/*'; done
-$ df -h /
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/vda1        19G   15G  3.5G  81% /
 ```
 
 Настройка `bk-primary` ([logs/04-primary.log](logs/04-primary.log)):
@@ -201,15 +190,6 @@ DATA IDENTICAL
 
 Число строк и md5 содержимого всех трёх таблиц совпадают с primary. Контрольная запись, сделанная после последнего бэкапа, на месте. Кроме того, проверил физическую целостность таблиц и индексов через `pg_amcheck`.
 
-**Проблема:** первый запуск `pg_amcheck` ничего не проверил:
-
-```
-pg_amcheck: warning: skipping database "wholesale_loyalty": amcheck is not installed
-pg_amcheck: error: no relations to check
-```
-
-**Решение:** `pg_amcheck` работает через расширение `amcheck`, а в восстановленной базе его нет. Повторил запуск с `--install-missing`:
-
 ```
 $ /usr/lib/postgresql/16/bin/pg_amcheck -d wholesale_loyalty --install-missing --heapallindexed && echo AMCHECK_OK
 AMCHECK_OK
@@ -228,7 +208,7 @@ sender_host       | 10.48.221.41
 slot_name         | bk_replica
 ```
 
-Нагрузка: pgbench на primary, 8 клиентов, 120 с. Каждая транзакция — начисление бонуса: вставка операции и увеличение баланса в одной транзакции. Перед этим пересчитал балансы, чтобы для каждого счёта выполнялось `balance = сумма операций`. По этому инварианту потом проверю согласованность бэкапа:
+Нагрузка: pgbench на primary, 8 клиентов, 120 с. Каждая транзакция — начисление бонуса: вставка операции и увеличение баланса в одной транзакции. Перед этим пересчитал балансы, чтобы для каждого счёта выполнялось `balance = сумма операций` ([logs/09-first-load-run.log](logs/09-first-load-run.log)). По этому инварианту потом проверю согласованность бэкапа:
 
 ```
 \set wid random(1, 10000)
@@ -238,10 +218,6 @@ INSERT INTO bonus_operations(wholesaler_id, amount, op_type) VALUES (:wid, :amt,
 UPDATE bonus_accounts SET balance = balance + :amt WHERE wholesaler_id = :wid;
 END;
 ```
-
-**Проблема:** лог первого прогона ([logs/09-replica-backup-under-load-failed.log](logs/09-replica-backup-under-load-failed.log)) вырос до 30 МБ и 700 тыс. строк вида `pgbench: client 4 sending BEGIN;`.
-
-**Решение:** запускал pgbench как `pgbench -d wholesale_loyalty ...` по аналогии с psql. Но в pgbench `-d` означает `--debug`, а имя базы передаётся позиционным аргументом. Нагрузка при этом отработала (48 590 транзакций, 0 ошибок), но вывод был отладочным. Повторил прогон с `pgbench ... wholesale_loyalty`. В сохранённом логе первой попытки отладочный вывод вырезан.
 
 Через 40 секунд после старта нагрузки снял на реплике полный бэкап. На standby pg_probackup снимает бэкап в режиме `--stream`: нужный WAL он забирает по протоколу репликации с самой реплики, и в бэкапе не участвуют ни архив, ни primary ([logs/10-replica-backup-under-load.log](logs/10-replica-backup-under-load.log)):
 
