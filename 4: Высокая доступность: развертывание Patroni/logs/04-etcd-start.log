@@ -1,0 +1,31 @@
++ for i in 1 2 3
++ sudo lxc exec etcd1 -- systemctl start etcd --no-block
++ for i in 1 2 3
++ sudo lxc exec etcd2 -- systemctl start etcd --no-block
++ for i in 1 2 3
++ sudo lxc exec etcd3 -- systemctl start etcd --no-block
++ sleep 10
++ E=http://10.48.221.11:2379,http://10.48.221.12:2379,http://10.48.221.13:2379
++ sudo lxc exec etcd1 -- etcdctl version
+etcdctl version: 3.4.30
+API version: 3.4
++ sudo lxc exec etcd1 -- etcdctl --endpoints=http://10.48.221.11:2379,http://10.48.221.12:2379,http://10.48.221.13:2379 member list -w table
++------------------+---------+-------+--------------------------+--------------------------+------------+
+|        ID        | STATUS  | NAME  |        PEER ADDRS        |       CLIENT ADDRS       | IS LEARNER |
++------------------+---------+-------+--------------------------+--------------------------+------------+
+|  89f0705da6de2fd | started | etcd3 | http://10.48.221.13:2380 | http://10.48.221.13:2379 |      false |
+| 787e985b4b1141a4 | started | etcd1 | http://10.48.221.11:2380 | http://10.48.221.11:2379 |      false |
+| 7eccf9e030dd604d | started | etcd2 | http://10.48.221.12:2380 | http://10.48.221.12:2379 |      false |
++------------------+---------+-------+--------------------------+--------------------------+------------+
++ sudo lxc exec etcd1 -- etcdctl --endpoints=http://10.48.221.11:2379,http://10.48.221.12:2379,http://10.48.221.13:2379 endpoint status -w table
++--------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+|         ENDPOINT         |        ID        | VERSION | DB SIZE | IS LEADER | IS LEARNER | RAFT TERM | RAFT INDEX | RAFT APPLIED INDEX | ERRORS |
++--------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+| http://10.48.221.11:2379 | 787e985b4b1141a4 |  3.4.30 |   29 kB |      true |      false |         2 |          8 |                  8 |        |
+| http://10.48.221.12:2379 | 7eccf9e030dd604d |  3.4.30 |   29 kB |     false |      false |         2 |          8 |                  8 |        |
+| http://10.48.221.13:2379 |  89f0705da6de2fd |  3.4.30 |   20 kB |     false |      false |         2 |          8 |                  8 |        |
++--------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
++ sudo lxc exec etcd1 -- etcdctl --endpoints=http://10.48.221.11:2379,http://10.48.221.12:2379,http://10.48.221.13:2379 endpoint health
+http://10.48.221.11:2379 is healthy: successfully committed proposal: took = 4.616569ms
+http://10.48.221.13:2379 is healthy: successfully committed proposal: took = 5.800743ms
+http://10.48.221.12:2379 is healthy: successfully committed proposal: took = 5.153154ms

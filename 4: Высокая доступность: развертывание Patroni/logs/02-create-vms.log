@@ -1,0 +1,75 @@
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=etcd1
++ ip=10.48.221.11
++ sudo lxc init ubuntu:24.04 etcd1 -c limits.cpu=1 -c limits.memory=1GiB
+Creating etcd1
++ sudo lxc config device override etcd1 eth0 ipv4.address=10.48.221.11
+Device eth0 overridden for etcd1
++ sudo lxc start etcd1
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=etcd2
++ ip=10.48.221.12
++ sudo lxc init ubuntu:24.04 etcd2 -c limits.cpu=1 -c limits.memory=1GiB
+Creating etcd2
++ sudo lxc config device override etcd2 eth0 ipv4.address=10.48.221.12
+Device eth0 overridden for etcd2
++ sudo lxc start etcd2
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=etcd3
++ ip=10.48.221.13
++ sudo lxc init ubuntu:24.04 etcd3 -c limits.cpu=1 -c limits.memory=1GiB
+Creating etcd3
++ sudo lxc config device override etcd3 eth0 ipv4.address=10.48.221.13
+Device eth0 overridden for etcd3
++ sudo lxc start etcd3
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=pg1
++ ip=10.48.221.21
++ sudo lxc init ubuntu:24.04 pg1 -c limits.cpu=1 -c limits.memory=1GiB
+Creating pg1
++ sudo lxc config device override pg1 eth0 ipv4.address=10.48.221.21
+Device eth0 overridden for pg1
++ sudo lxc start pg1
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=pg2
++ ip=10.48.221.22
++ sudo lxc init ubuntu:24.04 pg2 -c limits.cpu=1 -c limits.memory=1GiB
+Creating pg2
++ sudo lxc config device override pg2 eth0 ipv4.address=10.48.221.22
+Device eth0 overridden for pg2
++ sudo lxc start pg2
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=pg3
++ ip=10.48.221.23
++ sudo lxc init ubuntu:24.04 pg3 -c limits.cpu=1 -c limits.memory=1GiB
+Creating pg3
++ sudo lxc config device override pg3 eth0 ipv4.address=10.48.221.23
+Device eth0 overridden for pg3
++ sudo lxc start pg3
++ for n in etcd1:11 etcd2:12 etcd3:13 pg1:21 pg2:22 pg3:23 haproxy:30
++ name=haproxy
++ ip=10.48.221.30
++ sudo lxc init ubuntu:24.04 haproxy -c limits.cpu=1 -c limits.memory=1GiB
+Creating haproxy
++ sudo lxc config device override haproxy eth0 ipv4.address=10.48.221.30
+Device eth0 overridden for haproxy
++ sudo lxc start haproxy
++ sleep 15
++ sudo lxc list -c ns4tM
++---------+---------+---------------------+-----------+---------------+
+|  NAME   |  STATE  |        IPV4         |   TYPE    | MEMORY USAGE% |
++---------+---------+---------------------+-----------+---------------+
+| etcd1   | RUNNING | 10.48.221.11 (eth0) | CONTAINER | 4.1%          |
++---------+---------+---------------------+-----------+---------------+
+| etcd2   | RUNNING | 10.48.221.12 (eth0) | CONTAINER | 4.1%          |
++---------+---------+---------------------+-----------+---------------+
+| etcd3   | RUNNING | 10.48.221.13 (eth0) | CONTAINER | 4.1%          |
++---------+---------+---------------------+-----------+---------------+
+| haproxy | RUNNING | 10.48.221.30 (eth0) | CONTAINER | 12.3%         |
++---------+---------+---------------------+-----------+---------------+
+| pg1     | RUNNING | 10.48.221.21 (eth0) | CONTAINER | 4.2%          |
++---------+---------+---------------------+-----------+---------------+
+| pg2     | RUNNING | 10.48.221.22 (eth0) | CONTAINER | 4.2%          |
++---------+---------+---------------------+-----------+---------------+
+| pg3     | RUNNING | 10.48.221.23 (eth0) | CONTAINER | 4.2%          |
++---------+---------+---------------------+-----------+---------------+

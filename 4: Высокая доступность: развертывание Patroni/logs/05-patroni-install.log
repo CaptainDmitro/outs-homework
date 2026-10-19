@@ -1,0 +1,87 @@
++ for i in 1 2 3
++ sudo lxc exec pg1 -- bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 patroni >/dev/null && pg_dropcluster 16 main --stop && systemctl disable --now postgresql'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Synchronizing state of postgresql.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install disable postgresql
+Removed "/etc/systemd/system/multi-user.target.wants/postgresql.service".
++ for i in 1 2 3
++ sudo lxc exec pg2 -- bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 patroni >/dev/null && pg_dropcluster 16 main --stop && systemctl disable --now postgresql'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Synchronizing state of postgresql.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install disable postgresql
+Removed "/etc/systemd/system/multi-user.target.wants/postgresql.service".
++ for i in 1 2 3
++ sudo lxc exec pg3 -- bash -c 'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-16 patroni >/dev/null && pg_dropcluster 16 main --stop && systemctl disable --now postgresql'
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Synchronizing state of postgresql.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install disable postgresql
+Removed "/etc/systemd/system/multi-user.target.wants/postgresql.service".
++ sudo lxc exec pg1 -- patroni --version
+patroni 3.2.2
++ sudo lxc exec pg1 -- /usr/lib/postgresql/16/bin/postgres --version
+postgres (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
++ sudo lxc exec pg1 -- systemctl cat patroni
+# /usr/lib/systemd/system/patroni.service
+[Unit]
+Description=Runners to orchestrate a high-availability PostgreSQL
+After=network.target
+ConditionPathExists=/etc/patroni/config.yml
+
+[Service]
+Type=simple
+
+User=postgres
+Group=postgres
+
+# Read in configuration file if it exists, otherwise proceed
+EnvironmentFile=-/etc/patroni_env.conf
+
+# The default is the user's home directory, and if you want to change it, you must provide an absolute path.
+# WorkingDirectory=/home/sameuser
+
+# Pre-commands to start watchdog device
+# Uncomment if watchdog is part of your patroni setup
+#ExecStartPre=-/usr/bin/sudo /sbin/modprobe softdog
+#ExecStartPre=-/usr/bin/sudo /bin/chown postgres /dev/watchdog
+
+# Start the patroni process
+ExecStart=/usr/bin/patroni /etc/patroni/config.yml
+
+# Send HUP to reload from patroni.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+
+# Only kill the patroni process, not it's children, so it will gracefully stop postgres
+KillMode=process
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=30
+
+# Restart the service if it crashed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
++ sudo lxc exec pg1 -- pg_lsclusters
+Ver Cluster Port Status Owner Data directory Log file

@@ -1,0 +1,14 @@
++ grep PRETTY_NAME /etc/os-release
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
++ nproc
+4
++ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       1.3Gi       254Mi        44Mi       6.5Gi       6.4Gi
+Swap:             0B          0B          0B
++ systemd-detect-virt
+kvm
+0
++ grep -cE 'vmx|svm' /proc/cpuinfo
++ ls -l /dev/kvm
+ls: cannot access '/dev/kvm': No such file or directory
