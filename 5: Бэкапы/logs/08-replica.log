@@ -1,0 +1,26 @@
++ sudo lxc exec bk-replica -- bash -s
++ pg_ctlcluster 16 main stop
++ rm -rf /var/lib/postgresql/16/main
++ echo '10.48.221.41:5432:*:replicator:repl_pass'
++ chown postgres: /var/lib/postgresql/.pgpass
++ chmod 600 /var/lib/postgresql/.pgpass
++ su postgres -c 'pg_basebackup -h 10.48.221.41 -U replicator -D /var/lib/postgresql/16/main -R -X stream -C -S bk_replica -P'
+waiting for checkpoint
+   87/82797 kB (0%), 0/1 tablespace
+82807/82807 kB (100%), 0/1 tablespace
+82807/82807 kB (100%), 1/1 tablespace
++ pg_ctlcluster 16 main start
++ sleep 3
++ su postgres -c 'psql -xc '\''select pg_is_in_recovery(), status, sender_host, slot_name from pg_stat_wal_receiver'\'''
+-[ RECORD 1 ]-----+-------------
+pg_is_in_recovery | t
+status            | streaming
+sender_host       | 10.48.221.41
+slot_name         | bk_replica
+
++ sudo lxc exec bk-primary -- su postgres -c 'psql -c '\''select application_name, client_addr, state, sync_state from pg_stat_replication'\'''
+ application_name | client_addr  |   state   | sync_state 
+------------------+--------------+-----------+------------
+ 16/main          | 10.48.221.42 | streaming | async
+(1 row)
+

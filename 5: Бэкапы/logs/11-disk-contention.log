@@ -1,0 +1,23 @@
+NAME     SIZE MOUNTPOINT
+vda       20G 
+├─vda1    19G /
+├─vda14    4M 
+├─vda15  106M /boot/efi
+└─vda16  913M /boot
+[none] mq-deadline 
++ lsblk -o NAME,SIZE,MOUNTPOINT /dev/vda
++ cat /sys/block/vda/queue/scheduler
++ sudo lxc config device show bk-replica
++ grep -A3 probackup
+probackup:
+  path: /backup
+  shift: "true"
+  source: /srv/probackup
+  type: disk
++ sudo lxc exec bk-primary -- df -h /var/lib/postgresql
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   16G  2.8G  85% /
++ sudo lxc exec bk-replica -- df -h /var/lib/postgresql /backup
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        19G   16G  2.8G  85% /
+/dev/vda1        19G   16G  2.8G  85% /backup

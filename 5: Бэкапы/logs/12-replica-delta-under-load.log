@@ -1,0 +1,67 @@
++ sudo lxc exec bk-primary -- su postgres -c 'nohup /usr/lib/postgresql/16/bin/pgbench -n -f /var/lib/postgresql/accrual.sql -c 8 -j 1 -T 120 -P 10 wholesale_loyalty > /tmp/pgbench.log 2>&1 &'
++ sleep 40
++ sudo lxc exec bk-replica -- bash -s
+21:08:21
++ date -u +%T
++ su postgres -c 'pg_probackup-16 backup -B /backup --instance loyalty -D /var/lib/postgresql/16/main -b DELTA --stream -j 1 --compress --no-sync'
+INFO: Backup start, pg_probackup version: 2.5.16, instance: loyalty, backup ID: TN6APX, backup mode: DELTA, wal mode: STREAM, remote: false, compress-algorithm: zlib, compress-level: 1
+INFO: This PostgreSQL instance was initialized with data block checksums. Data block corruption will be detected
+WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+INFO: Backup TN6APX is going to be taken from standby
+INFO: Database backup start
+INFO: wait for pg_backup_start()
+INFO: Parent backup: TN6AKT
+INFO: Wait for WAL segment /backup/backups/loyalty/TN6APX/database/pg_wal/000000010000000000000012 to be streamed
+INFO: PGDATA size: 94MB
+INFO: Current Start LSN: 0/12000060, TLI: 1
+INFO: Parent Start LSN: 0/12000060, TLI: 1
+INFO: Start transferring data files
+INFO: Data files are transferred, time elapsed: 7s
+INFO: wait for pg_stop_backup()
+INFO: pg_stop backup() successfully executed
+INFO: stop_lsn: 0/19716F48
+INFO: Getting the Recovery Time from WAL
+WARNING: Backup files are not synced to disk
+INFO: Validating backup TN6APX
+INFO: Backup TN6APX data files are valid
+INFO: Backup TN6APX resident size: 131MB
+INFO: Backup TN6APX completed
++ date -u +%T
+21:08:35
++ sleep 90
++ sudo lxc exec bk-primary -- cat /tmp/pgbench.log
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+progress: 10.0 s, 291.3 tps, lat 27.242 ms stddev 118.448, 0 failed
+progress: 20.0 s, 502.3 tps, lat 15.911 ms stddev 30.843, 0 failed
+progress: 30.0 s, 470.7 tps, lat 16.998 ms stddev 35.011, 0 failed
+progress: 40.0 s, 506.9 tps, lat 15.773 ms stddev 29.316, 0 failed
+progress: 50.0 s, 41.2 tps, lat 188.546 ms stddev 830.127, 0 failed
+progress: 60.0 s, 243.7 tps, lat 27.769 ms stddev 179.488, 0 failed
+progress: 70.0 s, 146.7 tps, lat 64.519 ms stddev 329.023, 0 failed
+progress: 80.0 s, 456.3 tps, lat 17.532 ms stddev 36.976, 0 failed
+progress: 90.0 s, 503.8 tps, lat 15.871 ms stddev 30.523, 0 failed
+progress: 100.0 s, 490.3 tps, lat 16.308 ms stddev 32.048, 0 failed
+progress: 110.0 s, 474.0 tps, lat 16.872 ms stddev 35.058, 0 failed
+progress: 120.0 s, 442.3 tps, lat 18.086 ms stddev 43.605, 0 failed
+transaction type: /var/lib/postgresql/accrual.sql
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 1
+maximum number of tries: 1
+duration: 120 s
+number of transactions actually processed: 45703
+number of failed transactions: 0 (0.000%)
+latency average = 21.001 ms
+latency stddev = 116.714 ms
+initial connection time = 22.940 ms
+tps = 380.817652 (without initial connection time)
++ sudo lxc exec bk-replica -- su postgres -c 'pg_probackup-16 show -B /backup --instance loyalty'
+======================================================================================================================================
+ Instance  Version  ID      Recovery Time           Mode   WAL Mode  TLI  Time    Data    WAL  Zratio  Start LSN   Stop LSN    Status 
+======================================================================================================================================
+ loyalty   16       TN6APX  2026-10-19 21:08:33+00  DELTA  STREAM    1/1   13s  2840kB  128MB    6.87  0/12000060  0/19716F48  OK     
+ loyalty   16       TN6AKT  2026-10-19 21:05:27+00  FULL   STREAM    1/0   22s    25MB   80MB    3.55  0/12000060  0/16671CC8  OK     
+ loyalty   16       TN6AF0  2026-10-19 21:01:52+00  FULL   STREAM    1/0   17s    25MB   32MB    3.26  0/12000060  0/1329B028  OK     
+ loyalty   16       TN6A2I  2026-10-19 20:54:23+00  DELTA  ARCHIVE   1/1    7s  2628kB   16MB    2.60  0/B000060   0/C0000B8   OK     
+ loyalty   16       TN6A22  2026-10-19 20:54:13+00  FULL   ARCHIVE   1/0   15s    24MB   16MB    3.26  0/8000028   0/90000B8   OK     

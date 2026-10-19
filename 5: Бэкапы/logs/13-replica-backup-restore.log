@@ -1,0 +1,71 @@
++ sudo lxc exec bk-restore -- bash -s
++ pg_createcluster 16 from_replica -p 5433
+Creating new PostgreSQL cluster 16/from_replica ...
+/usr/lib/postgresql/16/bin/initdb -D /var/lib/postgresql/16/from_replica --auth-local peer --auth-host scram-sha-256 --no-instructions
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C.UTF-8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/16/from_replica ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... Etc/UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+Ver Cluster      Port Status Owner    Data directory                      Log file
+16  from_replica 5433 down   postgres /var/lib/postgresql/16/from_replica /var/log/postgresql/postgresql-16-from_replica.log
++ rm -rf /var/lib/postgresql/16/from_replica
++ su postgres -c 'pg_probackup-16 restore -B /backup --instance loyalty -i TN6APX -D /var/lib/postgresql/16/from_replica -j 2 --recovery-target=immediate --recovery-target-action=promote'
+INFO: Validating parents for backup TN6APX
+INFO: Validating backup TN6AKT
+INFO: Backup TN6AKT data files are valid
+INFO: Validating backup TN6APX
+INFO: Backup TN6APX data files are valid
+INFO: Backup TN6APX WAL segments are valid
+INFO: Backup TN6APX is valid.
+INFO: Restoring the database from backup TN6APX
+INFO: Start restoring backup files. PGDATA size: 222MB
+INFO: Backup files are restored. Transfered bytes: 222MB, time elapsed: 19s
+INFO: Restore incremental ratio (less is better): 100% (222MB/222MB)
+INFO: Syncing restored files to disk
+INFO: Restored backup files are synced, time elapsed: 3s
+INFO: Restore of backup TN6APX completed.
++ pg_ctlcluster 16 from_replica start
++ sleep 5
++ grep -E 'consistent recovery state|recovery stopping|selected new timeline|ready to accept' /var/log/postgresql/postgresql-16-from_replica.log
+2026-10-19 21:11:20.434 UTC [3828] LOG:  consistent recovery state reached at 0/19716F48
+2026-10-19 21:11:20.434 UTC [3825] LOG:  database system is ready to accept read-only connections
+2026-10-19 21:11:20.434 UTC [3828] LOG:  recovery stopping after reaching consistency
+2026-10-19 21:11:20.442 UTC [3828] LOG:  selected new timeline ID: 2
+2026-10-19 21:11:24.196 UTC [3825] LOG:  database system is ready to accept connections
++ pg_lsclusters
+Ver Cluster      Port Status Owner    Data directory                      Log file
+16  from_replica 5433 online postgres /var/lib/postgresql/16/from_replica /var/log/postgresql/postgresql-16-from_replica.log
+16  main         5432 online postgres /var/lib/postgresql/16/main         /var/log/postgresql/postgresql-16-main.log
++ su postgres -c 'psql -p 5433 -d wholesale_loyalty'
+ pg_is_in_recovery 
+-------------------
+ f
+(1 row)
+
+ operations |        last_operation         
+------------+-------------------------------
+     631514 | 2026-10-19 21:08:33.799444+00
+(1 row)
+
+ broken_accounts 
+-----------------
+               0
+(1 row)
+
++ su postgres -c '/usr/lib/postgresql/16/bin/pg_amcheck -p 5433 -d wholesale_loyalty --install-missing --heapallindexed && echo AMCHECK_OK'
+AMCHECK_OK

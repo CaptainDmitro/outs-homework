@@ -1,0 +1,75 @@
++ sudo lxc exec bk-primary -- su postgres -c 'psql -d wholesale_loyalty -Atc '\''select count(*) from bonus_operations'\'''
+568590
++ sudo lxc exec bk-primary -- su postgres -c 'nohup /usr/lib/postgresql/16/bin/pgbench -n -f /var/lib/postgresql/accrual.sql -c 8 -j 1 -T 120 -P 10 wholesale_loyalty > /tmp/pgbench.log 2>&1 &'
++ sleep 40
++ sudo lxc exec bk-replica -- bash -s
++ date -u +%T
+21:05:17
++ su postgres -c 'pg_probackup-16 backup -B /backup --instance loyalty -D /var/lib/postgresql/16/main -b FULL --stream -j 2 --compress'
+INFO: Backup start, pg_probackup version: 2.5.16, instance: loyalty, backup ID: TN6AKT, backup mode: FULL, wal mode: STREAM, remote: false, compress-algorithm: zlib, compress-level: 1
+INFO: This PostgreSQL instance was initialized with data block checksums. Data block corruption will be detected
+WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+INFO: Backup TN6AKT is going to be taken from standby
+INFO: Database backup start
+INFO: wait for pg_backup_start()
+INFO: Wait for WAL segment /backup/backups/loyalty/TN6AKT/database/pg_wal/000000010000000000000012 to be streamed
+INFO: PGDATA size: 90MB
+INFO: Current Start LSN: 0/12000060, TLI: 1
+INFO: Start transferring data files
+INFO: Data files are transferred, time elapsed: 1s
+INFO: wait for pg_stop_backup()
+INFO: pg_stop backup() successfully executed
+INFO: stop_lsn: 0/16671CC8
+INFO: Getting the Recovery Time from WAL
+INFO: Syncing backup files to disk
+INFO: Backup files are synced, time elapsed: 10s
+INFO: Validating backup TN6AKT
+INFO: Backup TN6AKT data files are valid
+INFO: Backup TN6AKT resident size: 105MB
+INFO: Backup TN6AKT completed
++ date -u +%T
+21:05:39
++ sudo lxc exec bk-primary -- su postgres -c 'psql -c '\''select application_name, replay_lag from pg_stat_replication'\'''
+ application_name |   replay_lag    
+------------------+-----------------
+ 16/main          | 00:00:00.586935
+(1 row)
+
++ sleep 90
++ sudo lxc exec bk-primary -- cat /tmp/pgbench.log
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+progress: 10.0 s, 206.7 tps, lat 38.421 ms stddev 198.891, 0 failed
+progress: 20.0 s, 466.4 tps, lat 17.153 ms stddev 34.721, 0 failed
+progress: 30.0 s, 462.5 tps, lat 16.772 ms stddev 34.937, 0 failed
+progress: 40.0 s, 453.2 tps, lat 18.190 ms stddev 47.024, 0 failed
+progress: 50.0 s, 71.0 tps, lat 112.612 ms stddev 778.852, 0 failed
+progress: 60.0 s, 228.9 tps, lat 34.787 ms stddev 70.097, 0 failed
+progress: 70.0 s, 226.5 tps, lat 35.472 ms stddev 150.759, 0 failed
+progress: 80.0 s, 463.5 tps, lat 17.272 ms stddev 34.117, 0 failed
+progress: 90.0 s, 466.3 tps, lat 17.142 ms stddev 33.160, 0 failed
+progress: 100.0 s, 487.4 tps, lat 16.410 ms stddev 32.692, 0 failed
+progress: 110.0 s, 465.0 tps, lat 17.202 ms stddev 36.281, 0 failed
+progress: 120.0 s, 479.1 tps, lat 16.687 ms stddev 34.859, 0 failed
+transaction type: /var/lib/postgresql/accrual.sql
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 1
+maximum number of tries: 1
+duration: 120 s
+number of transactions actually processed: 44773
+number of failed transactions: 0 (0.000%)
+latency average = 21.441 ms
+latency stddev = 118.833 ms
+initial connection time = 21.541 ms
+tps = 373.002746 (without initial connection time)
++ sudo lxc exec bk-primary -- su postgres -c 'psql -d wholesale_loyalty -Atc '\''select count(*) from bonus_operations'\'''
+613363
++ sudo lxc exec bk-replica -- su postgres -c 'pg_probackup-16 show -B /backup --instance loyalty'
+=====================================================================================================================================
+ Instance  Version  ID      Recovery Time           Mode   WAL Mode  TLI  Time    Data   WAL  Zratio  Start LSN   Stop LSN    Status 
+=====================================================================================================================================
+ loyalty   16       TN6AKT  2026-10-19 21:05:27+00  FULL   STREAM    1/0   22s    25MB  80MB    3.55  0/12000060  0/16671CC8  OK     
+ loyalty   16       TN6AF0  2026-10-19 21:01:52+00  FULL   STREAM    1/0   17s    25MB  32MB    3.26  0/12000060  0/1329B028  OK     
+ loyalty   16       TN6A2I  2026-10-19 20:54:23+00  DELTA  ARCHIVE   1/1    7s  2628kB  16MB    2.60  0/B000060   0/C0000B8   OK     
+ loyalty   16       TN6A22  2026-10-19 20:54:13+00  FULL   ARCHIVE   1/0   15s    24MB  16MB    3.26  0/8000028   0/90000B8   OK     
