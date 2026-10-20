@@ -1,0 +1,27 @@
++ sudo grep -E 'checkpoint (starting|complete)|received fast shutdown|database system is ready' /var/log/postgresql/postgresql-16-main.log
++ awk '$2 >= "21:54" && $2 < "22:30"'
++ cut -c1-200
+2026-10-19 21:55:13.390 UTC [70027] LOG:  received fast shutdown request
+2026-10-19 21:55:13.397 UTC [70034] LOG:  checkpoint starting: shutdown immediate
+2026-10-19 21:55:14.599 UTC [70034] LOG:  checkpoint complete: wrote 61147 buffers (23.3%); 0 WAL file(s) added, 0 removed, 27 recycled; write=1.200 s, sync=0.001 s, total=1.203 s; sync files=0, longe
+2026-10-19 21:55:16.091 UTC [72275] LOG:  database system is ready to accept connections
+2026-10-19 21:55:18.396 UTC [72283] LOG:  checkpoint starting: immediate force wait
+2026-10-19 21:55:18.405 UTC [72283] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.002 s, total=0.010 s; sync files=3, longest=0.0
+2026-10-19 21:56:22.249 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 21:57:56.869 UTC [72283] LOG:  checkpoint complete: wrote 942 buffers (5.7%); 0 WAL file(s) added, 0 removed, 33 recycled; write=74.383 s, sync=19.428 s, total=94.621 s; sync files=311, lon
+2026-10-19 21:58:30.783 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 21:59:04.033 UTC [72283] LOG:  checkpoint complete: wrote 2060 buffers (12.6%); 0 WAL file(s) added, 0 removed, 33 recycled; write=32.704 s, sync=0.489 s, total=33.425 s; sync files=38, lon
+2026-10-19 21:59:04.033 UTC [72283] LOG:  checkpoint starting: immediate force wait
+2026-10-19 21:59:04.058 UTC [72283] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 11 recycled; write=0.003 s, sync=0.002 s, total=0.025 s; sync files=2, longest=0.
+2026-10-19 22:00:19.584 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 22:01:39.496 UTC [72283] LOG:  checkpoint complete: wrote 1813 buffers (11.1%); 0 WAL file(s) added, 0 removed, 33 recycled; write=71.614 s, sync=7.096 s, total=79.912 s; sync files=27, lon
+2026-10-19 22:01:44.398 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 22:03:10.510 UTC [72283] LOG:  checkpoint complete: wrote 1490 buffers (9.1%); 0 WAL file(s) added, 0 removed, 33 recycled; write=75.895 s, sync=10.010 s, total=86.112 s; sync files=22, lon
+2026-10-19 22:03:29.745 UTC [72275] LOG:  received fast shutdown request
+2026-10-19 22:03:29.755 UTC [72283] LOG:  checkpoint starting: shutdown immediate
+2026-10-19 22:03:37.737 UTC [72283] LOG:  checkpoint complete: wrote 9862 buffers (60.2%); 0 WAL file(s) added, 0 removed, 29 recycled; write=7.749 s, sync=0.194 s, total=7.985 s; sync files=18, longe
+2026-10-19 22:03:38.058 UTC [74509] LOG:  database system is ready to accept connections
+2026-10-19 22:07:42.522 UTC [74509] LOG:  received fast shutdown request
+2026-10-19 22:07:42.533 UTC [74510] LOG:  checkpoint starting: shutdown immediate
+2026-10-19 22:09:09.951 UTC [74510] LOG:  checkpoint complete: wrote 197411 buffers (75.3%); 0 WAL file(s) added, 0 removed, 45 recycled; write=87.350 s, sync=0.005 s, total=87.421 s; sync files=26, l
+2026-10-19 22:09:10.417 UTC [75963] LOG:  database system is ready to accept connections

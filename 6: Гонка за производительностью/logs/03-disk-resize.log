@@ -1,0 +1,27 @@
++ lsblk /dev/vda
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+vda     253:0    0   81G  0 disk 
+├─vda1  253:1    0   19G  0 part /
+├─vda14 253:14   0    4M  0 part 
+├─vda15 253:15   0  106M  0 part /boot/efi
+└─vda16 259:0    0  913M  0 part /boot
++ findmnt -no FSTYPE /
+ext4
++ sudo growpart /dev/vda 1
+CHANGED: partition=1 start=2099200 old: size=39851151 end=41950350 new: size=167774663 end=169873862
++ sudo resize2fs /dev/vda1
+resize2fs 1.47.0 (5-Feb-2023)
+Filesystem at /dev/vda1 is mounted on /; on-line resizing required
+old_desc_blocks = 3, new_desc_blocks = 10
+The filesystem on /dev/vda1 is now 20971520 (4k) blocks long.
+
++ lsblk /dev/vda
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+vda     253:0    0   81G  0 disk 
+├─vda1  253:1    0   80G  0 part /
+├─vda14 253:14   0    4M  0 part 
+├─vda15 253:15   0  106M  0 part /boot/efi
+└─vda16 259:0    0  913M  0 part /boot
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        78G   18G   61G  23% /

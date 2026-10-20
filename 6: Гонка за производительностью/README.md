@@ -2,7 +2,7 @@
 
 ## 1. Развернуть инстанс PostgreSQL на виртуальной машине
 
-ВМ: тот же VDS, что в ДЗ №4–5 (KVM, Ubuntu 24.04, 4 vCPU, 8 ГБ RAM, один виртуальный диск `/dev/vda1`), вместо Яндекс.Облака ([logs/01-host.log](logs/01-host.log)). PostgreSQL 16 установил прямо на ВМ из репозитория Ubuntu ([logs/02-install.log](logs/02-install.log)):
+ВМ: тот же VDS, что в ДЗ №4–5 (KVM, Ubuntu 24.04, 4 vCPU, 8 ГБ RAM, один виртуальный диск), вместо Яндекс.Облака ([logs/01-host.log](logs/01-host.log)). PostgreSQL 16 установил прямо на ВМ из репозитория Ubuntu ([logs/02-install.log](logs/02-install.log)):
 
 ```bash
 sudo apt-get install -y -q postgresql-16 postgresql-contrib
@@ -17,47 +17,74 @@ $ sudo -u postgres psql -c 'select version()'
  PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
 ```
 
-**Проблема:** на диске ВМ свободно всего 1,9 ГБ: остальное место занимают LXD-контейнеры из прошлых ДЗ.
+**Проблема:** на диске ВМ было свободно всего 1,9 ГБ (остальное занимают LXD-контейнеры из прошлых ДЗ). В такой объём не помещаются ни нормальная тестовая база, ни WAL при большом `max_wal_size`.
 
-**Решение:** взял масштаб pgbench 30 (БД 456 МБ) и оставил `max_wal_size = 1GB`, чтобы данные и WAL поместились на диск.
+**Решение:** увеличил виртуальный диск ВМ до 81 ГБ. После этого диск `vda` стал 81 ГБ, но раздел `/dev/vda1` и ext4 на нём остались 19 ГБ. Растянул раздел и файловую систему онлайн, без перезагрузки ([logs/03-disk-resize.log](logs/03-disk-resize.log)):
+
+```bash
+sudo growpart /dev/vda 1
+sudo resize2fs /dev/vda1
+```
+
+```
+CHANGED: partition=1 start=2099200 old: size=39851151 end=41950350 new: size=167774663 end=169873862
+...
+The filesystem on /dev/vda1 is now 20971520 (4k) blocks long.
+
+$ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        78G   18G   61G  23% /
+```
 
 ## 2. Протестировать производительность с помощью pgbench
 
-Инициализация и прогон на настройках по умолчанию: TPC-B, 24 клиента, 4 потока, 60 секунд. Клиентов меньше, чем строк в `pgbench_branches` (30), поэтому они почти не ждут блокировок на одной строке ([logs/03-pgbench-baseline.log](logs/03-pgbench-baseline.log)):
+Настройки PostgreSQL — по умолчанию. Создал базу pgbench с масштабом 100 (1,5 ГБ, 10 млн строк в `pgbench_accounts`). Перед тестом сделал `checkpoint`, чтобы запись после загрузки данных не попала в замер. Тест — TPC-B, 24 клиента, 4 потока, 120 секунд, два прогона подряд. Клиентов меньше, чем строк в `pgbench_branches` (100), поэтому они почти не ждут блокировок на одной строке ([logs/04-pgbench-baseline.log](logs/04-pgbench-baseline.log)):
 
 ```bash
 sudo -u postgres createdb bench
-sudo -u postgres pgbench -i -s 30 bench
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+sudo -u postgres pgbench -i -s 100 bench
+sudo -u postgres psql -c checkpoint
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
 ```
 
 ```
  pg_size_pretty
 ----------------
- 456 MB
+ 1503 MB
 
+max_wal_size|1024|MB
 shared_buffers|16384|8kB
 synchronous_commit|on|
 fsync|on|
-max_wal_size|1024|MB
-checkpoint_timeout|300|s
 ...
-progress: 10.0 s, 1075.0 tps, lat 21.617 ms stddev 54.535, 0 failed
-progress: 20.0 s, 210.3 tps, lat 112.932 ms stddev 301.014, 0 failed
-progress: 30.0 s, 323.5 tps, lat 76.232 ms stddev 136.771, 0 failed
-progress: 40.0 s, 137.3 tps, lat 175.501 ms stddev 465.582, 0 failed
-progress: 50.0 s, 230.9 tps, lat 103.981 ms stddev 209.887, 0 failed
-progress: 60.0 s, 245.7 tps, lat 94.133 ms stddev 187.951, 0 failed
+progress: 30.0 s, 1260.6 tps, lat 19.014 ms stddev 36.669, 0 failed
+progress: 40.0 s, 320.6 tps, lat 73.805 ms stddev 121.557, 0 failed
+progress: 50.0 s, 83.6 tps, lat 277.917 ms stddev 128.054, 0 failed
+progress: 60.0 s, 247.4 tps, lat 101.713 ms stddev 137.762, 0 failed
 ...
-latency average = 64.693 ms
-tps = 370.866417 (without initial connection time)
+latency average = 32.622 ms
+tps = 733.811960 (without initial connection time)
+...
+progress: 50.0 s, 914.8 tps, lat 25.873 ms stddev 46.660, 0 failed
+progress: 60.0 s, 94.8 tps, lat 255.527 ms stddev 117.766, 0 failed
+progress: 70.0 s, 1057.6 tps, lat 22.733 ms stddev 43.827, 0 failed
+...
+latency average = 43.904 ms
+tps = 544.698931 (without initial connection time)
 ```
 
-Узкое место — диск: база (456 МБ) не помещается в `shared_buffers` по умолчанию (128 МБ), поэтому грязные страницы постоянно вытесняются на диск. Кроме того, каждый коммит ждёт `fsync` WAL на медленном диске VDS. TPS после первых 10 секунд падает до 140–320, а задержка доходит до 100–175 мс.
+Итог базового замера: 545–734 TPS, средняя задержка 33–44 мс. TPS всё время скачет от ~90 до ~1260.
 
 ## 3. Оптимизировать настройки PostgreSQL
 
-Сначала задал только безопасные параметры, которые не влияют на надёжность. Их подбирал под ВМ с 4 vCPU и 8 ГБ RAM ([logs/04-tuning-safe.log](logs/04-tuning-safe.log)):
+Узкие места при настройках по умолчанию:
+
+- база (1,5 ГБ) не помещается в `shared_buffers` (128 МБ), поэтому грязные страницы постоянно вытесняются на диск;
+- `max_wal_size = 1GB` мал для такой нагрузки: чекпоинты запускаются по объёму WAL один за другим (см. п. 4);
+- каждый коммит ждёт `fsync` WAL на медленном диске VDS.
+
+Сначала задал только безопасные параметры, которые не влияют на надёжность. Их подбирал под ВМ с 4 vCPU и 8 ГБ RAM ([logs/05-tuning-safe.log](logs/05-tuning-safe.log)):
 
 ```sql
 alter system set shared_buffers = '2GB';              -- 25% RAM, вся БД помещается в кэш
@@ -65,8 +92,8 @@ alter system set effective_cache_size = '6GB';        -- кэш ОС + shared_bu
 alter system set maintenance_work_mem = '512MB';
 alter system set work_mem = '16MB';
 alter system set wal_buffers = '64MB';
-alter system set max_wal_size = '1GB';                -- больше не позволяет место на диске
-alter system set min_wal_size = '512MB';
+alter system set max_wal_size = '8GB';                -- чекпоинты по таймеру, а не по объёму WAL
+alter system set min_wal_size = '2GB';
 alter system set checkpoint_timeout = '15min';        -- реже чекпоинты
 alter system set checkpoint_completion_target = 0.9;  -- запись чекпоинта размазана по времени
 alter system set wal_compression = 'lz4';             -- меньше объём WAL на медленный диск
@@ -78,54 +105,48 @@ alter system set effective_io_concurrency = 200;
 
 ```bash
 sudo systemctl restart postgresql@16-main
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
 ```
 
 ```
-progress: 10.0 s, 2526.7 tps, lat 9.418 ms stddev 20.377, 0 failed
-progress: 20.0 s, 2467.8 tps, lat 9.726 ms stddev 20.612, 0 failed
-progress: 30.0 s, 2900.6 tps, lat 8.274 ms stddev 15.203, 0 failed
-progress: 40.0 s, 2511.8 tps, lat 9.549 ms stddev 25.887, 0 failed
-progress: 50.0 s, 2923.1 tps, lat 8.206 ms stddev 16.125, 0 failed
-progress: 60.0 s, 3008.8 tps, lat 7.967 ms stddev 15.201, 0 failed
+progress: 10.0 s, 2358.4 tps, lat 10.140 ms stddev 18.077, 0 failed
+progress: 20.0 s, 2654.5 tps, lat 8.991 ms stddev 16.167, 0 failed
+progress: 30.0 s, 3006.2 tps, lat 8.017 ms stddev 15.088, 0 failed
+progress: 40.0 s, 3985.7 tps, lat 6.012 ms stddev 10.335, 0 failed
+progress: 50.0 s, 4813.4 tps, lat 4.984 ms stddev 8.591, 0 failed
 ...
-latency average = 8.805 ms
-tps = 2722.768190 (without initial connection time)
+latency average = 5.471 ms
+tps = 4382.832670 (without initial connection time)
+...
+progress: 10.0 s, 5234.3 tps, lat 4.570 ms stddev 7.375, 0 failed
+progress: 20.0 s, 5211.9 tps, lat 4.600 ms stddev 7.016, 0 failed
+...
+progress: 120.0 s, 5219.3 tps, lat 4.595 ms stddev 12.188, 0 failed
+...
+latency average = 4.579 ms
+tps = 5234.885968 (without initial connection time)
 ```
+
+Первые ~40 секунд первого прогона TPS ниже: после рестарта `shared_buffers` пуст и прогревается. Во втором прогоне кэш уже тёплый, и TPS держится ровно на 5000–5470.
 
 ## 4. Проверить, насколько выросла производительность
 
-После безопасного тюнинга TPS вырос с 371 до 2723 (в 7,3 раза), а средняя задержка упала с 64,7 до 8,8 мс.
+После безопасного тюнинга TPS вырос с 545–734 до 4383–5235, средняя задержка упала с 33–44 до 4,6–5,5 мс. На прогретом кэше это в 7–10 раз лучше по обоим показателям. Провалы TPS до ~90 исчезли.
 
-**Проблема:** прирост в 7 раз выглядел подозрительно. В первом базовом прогоне TPS за первые 10 секунд был 1075, а потом резко упал. Возможно, базовый замер испортила запись на диск, оставшаяся после `pgbench -i`.
-
-**Решение:** сохранил настроенный `postgresql.auto.conf`, сбросил параметры к значениям по умолчанию (`alter system reset all`) и повторил базовый замер дважды. Затем вернул настройки ([logs/05-baseline-recheck.log](logs/05-baseline-recheck.log)):
-
-```bash
-sudo cp /var/lib/postgresql/16/main/postgresql.auto.conf /var/lib/postgresql/16/tuned-safe.auto.conf
-sudo -u postgres psql -c 'alter system reset all'
-sudo systemctl restart postgresql@16-main
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
-sudo cp /var/lib/postgresql/16/tuned-safe.auto.conf /var/lib/postgresql/16/main/postgresql.auto.conf
-sudo systemctl restart postgresql@16-main
-```
+Эффект от `max_wal_size` видно по логу сервера ([logs/07-checkpoints.log](logs/07-checkpoints.log)). Базовые прогоны шли с 21:59:04 по 22:03:08. С 22:00:19 и до конца теста чекпоинты по объёму WAL (`checkpoint starting: wal`) шли подряд: каждый длился 80–86 секунд, и следующий начинался через 5 секунд после конца предыдущего. В конце каждого был `sync` на 7–10 секунд. После тюнинга (22:03:38–22:07:42) не было ни одного чекпоинта до рестарта:
 
 ```
-128MB
-0
+2026-10-19 21:59:04.033 UTC [72283] LOG:  checkpoint starting: immediate force wait
+2026-10-19 22:00:19.584 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 22:01:39.496 UTC [72283] LOG:  checkpoint complete: wrote 1813 buffers (11.1%); ... write=71.614 s, sync=7.096 s, total=79.912 s; ...
+2026-10-19 22:01:44.398 UTC [72283] LOG:  checkpoint starting: wal
+2026-10-19 22:03:10.510 UTC [72283] LOG:  checkpoint complete: wrote 1490 buffers (9.1%); ... write=75.895 s, sync=10.010 s, total=86.112 s; ...
+2026-10-19 22:03:29.745 UTC [72275] LOG:  received fast shutdown request
 ...
-latency average = 60.166 ms
-tps = 398.731640 (without initial connection time)
-...
-latency average = 90.281 ms
-tps = 264.313115 (without initial connection time)
-...
-2GB
-1000
+2026-10-19 22:03:38.058 UTC [74509] LOG:  database system is ready to accept connections
+2026-10-19 22:07:42.522 UTC [74509] LOG:  received fast shutdown request
 ```
-
-На настройках по умолчанию снова получилось 264–399 TPS, то есть базовый замер верный, а прирост в ~7 раз настоящий.
 
 ## 5. Настроить кластер на оптимальную производительность, не обращая внимания на стабильность БД
 
@@ -146,8 +167,8 @@ alter system set autovacuum = off;              -- не тратить CPU и д
 
 ```bash
 sudo systemctl restart postgresql@16-main
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
-sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 60 bench
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
+sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
 ```
 
 ```
@@ -156,15 +177,17 @@ full_page_writes|off|
 synchronous_commit|off|
 wal_level|minimal|
 ...
-progress: 10.0 s, 9066.9 tps, lat 2.638 ms stddev 1.051, 0 failed
-progress: 20.0 s, 9301.8 tps, lat 2.578 ms stddev 0.982, 0 failed
-progress: 30.0 s, 9670.0 tps, lat 2.480 ms stddev 0.949, 0 failed
-progress: 40.0 s, 8934.5 tps, lat 2.684 ms stddev 1.258, 0 failed
-progress: 50.0 s, 9150.3 tps, lat 2.621 ms stddev 1.055, 0 failed
-progress: 60.0 s, 9290.4 tps, lat 2.581 ms stddev 1.041, 0 failed
+latency average = 2.559 ms
+tps = 9369.165444 (without initial connection time)
 ...
-latency average = 2.596 ms
-tps = 9235.801976 (without initial connection time)
+progress: 10.0 s, 9208.4 tps, lat 2.585 ms stddev 1.035, 0 failed
+progress: 20.0 s, 9769.1 tps, lat 2.455 ms stddev 0.926, 0 failed
+progress: 30.0 s, 9890.9 tps, lat 2.425 ms stddev 0.996, 0 failed
+...
+progress: 120.0 s, 9776.3 tps, lat 2.452 ms stddev 1.005, 0 failed
+...
+latency average = 2.513 ms
+tps = 9543.992949 (without initial connection time)
 ```
 
-Два прогона дали 8866 и 9236 TPS: в 3,4 раза больше безопасного тюнинга и в 23–35 раз больше, чем на настройках по умолчанию (264–399 TPS). Средняя задержка снизилась до 2,6 мс и почти перестала скакать (stddev ~1 мс). Цена — при сбое ОС или ВМ база может потерять последние транзакции и повредиться.
+Без гарантий надёжности кластер выдаёт ~9500 TPS: в 1,8 раза больше безопасного тюнинга и в 13–17 раз больше, чем на настройках по умолчанию. Задержка стабильная, около 2,5 мс. Цена — при сбое ОС или ВМ база может потерять последние транзакции и повредиться.

@@ -1,0 +1,87 @@
++ sudo -u postgres psql -v ON_ERROR_STOP=1
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
++ sudo systemctl restart postgresql@16-main
++ sudo -u postgres psql -Atc 'select name, setting, unit from pg_settings where sourcefile like '\''%auto%'\'' order by name'
+checkpoint_completion_target|0.9|
+checkpoint_timeout|900|s
+commit_delay|1000|
+commit_siblings|5|
+effective_cache_size|786432|8kB
+effective_io_concurrency|200|
+maintenance_work_mem|524288|kB
+max_wal_size|8192|MB
+min_wal_size|2048|MB
+random_page_cost|1.1|
+shared_buffers|262144|8kB
+wal_buffers|8192|8kB
+wal_compression|lz4|
+work_mem|16384|kB
++ sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+starting vacuum...end.
+progress: 10.0 s, 2358.4 tps, lat 10.140 ms stddev 18.077, 0 failed
+progress: 20.0 s, 2654.5 tps, lat 8.991 ms stddev 16.167, 0 failed
+progress: 30.0 s, 3006.2 tps, lat 8.017 ms stddev 15.088, 0 failed
+progress: 40.0 s, 3985.7 tps, lat 6.012 ms stddev 10.335, 0 failed
+progress: 50.0 s, 4813.4 tps, lat 4.984 ms stddev 8.591, 0 failed
+progress: 60.0 s, 5180.1 tps, lat 4.629 ms stddev 7.944, 0 failed
+progress: 70.0 s, 5298.1 tps, lat 4.525 ms stddev 7.541, 0 failed
+progress: 80.0 s, 4794.1 tps, lat 5.002 ms stddev 11.486, 0 failed
+progress: 90.0 s, 4895.8 tps, lat 4.898 ms stddev 10.127, 0 failed
+progress: 100.0 s, 5290.7 tps, lat 4.531 ms stddev 6.776, 0 failed
+progress: 110.0 s, 4888.6 tps, lat 4.905 ms stddev 12.183, 0 failed
+progress: 120.0 s, 5421.6 tps, lat 4.422 ms stddev 7.646, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 100
+query mode: simple
+number of clients: 24
+number of threads: 4
+maximum number of tries: 1
+duration: 120 s
+number of transactions actually processed: 525896
+number of failed transactions: 0 (0.000%)
+latency average = 5.471 ms
+latency stddev = 10.777 ms
+initial connection time = 28.532 ms
+tps = 4382.832670 (without initial connection time)
++ sudo -u postgres pgbench -c 24 -j 4 -P 10 -T 120 bench
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+starting vacuum...end.
+progress: 10.0 s, 5234.3 tps, lat 4.570 ms stddev 7.375, 0 failed
+progress: 20.0 s, 5211.9 tps, lat 4.600 ms stddev 7.016, 0 failed
+progress: 30.0 s, 5185.8 tps, lat 4.623 ms stddev 8.255, 0 failed
+progress: 40.0 s, 5085.3 tps, lat 4.715 ms stddev 14.040, 0 failed
+progress: 50.0 s, 5364.0 tps, lat 4.469 ms stddev 7.597, 0 failed
+progress: 60.0 s, 5467.6 tps, lat 4.385 ms stddev 7.709, 0 failed
+progress: 70.0 s, 5190.6 tps, lat 4.619 ms stddev 7.826, 0 failed
+progress: 80.0 s, 5037.8 tps, lat 4.759 ms stddev 13.909, 0 failed
+progress: 90.0 s, 5147.8 tps, lat 4.657 ms stddev 7.689, 0 failed
+progress: 100.0 s, 5370.4 tps, lat 4.464 ms stddev 7.618, 0 failed
+progress: 110.0 s, 5314.3 tps, lat 4.510 ms stddev 7.616, 0 failed
+progress: 120.0 s, 5219.3 tps, lat 4.595 ms stddev 12.188, 0 failed
+transaction type: <builtin: TPC-B (sort of)>
+scaling factor: 100
+query mode: simple
+number of clients: 24
+number of threads: 4
+maximum number of tries: 1
+duration: 120 s
+number of transactions actually processed: 628316
+number of failed transactions: 0 (0.000%)
+latency average = 4.579 ms
+latency stddev = 9.377 ms
+initial connection time = 21.643 ms
+tps = 5234.885968 (without initial connection time)
