@@ -1,0 +1,92 @@
++ docker manifest inspect docker.io/bitnami/postgresql:14.5.0-debian-11-r35
+no such manifest: docker.io/bitnami/postgresql:14.5.0-debian-11-r35
++ echo 'bitnami: exit 1'
+bitnami: exit 1
++ docker manifest inspect docker.io/bitnamilegacy/postgresql:14.5.0-debian-11-r35
+bitnamilegacy: exit 0
++ echo 'bitnamilegacy: exit 0'
++ helm install pg oci://registry-1.docker.io/bitnamicharts/postgresql --version 11.9.13 -n bananaflow --create-namespace -f values.yaml --wait --timeout 10m
+Pulled: registry-1.docker.io/bitnamicharts/postgresql:11.9.13
+Digest: sha256:452595a60ee8ce5f76ec69aa25de2719da019d9ee91fbb0ed4ae669c79951764
+NAME: pg
+LAST DEPLOYED: Tue Oct 20 15:37:40 2026
+NAMESPACE: bananaflow
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: postgresql
+CHART VERSION: 11.9.13
+APP VERSION: 14.5.0
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
+
+    pg-postgresql-primary.bananaflow.svc.cluster.local - Read/Write connection
+
+    pg-postgresql-read.bananaflow.svc.cluster.local - Read only connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_ADMIN_PASSWORD=$(kubectl get secret --namespace bananaflow pg-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+
+To get the password for "banana" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace bananaflow pg-postgresql -o jsonpath="{.data.password}" | base64 -d)
+
+To connect to your database run the following command:
+
+    kubectl run pg-postgresql-client --rm --tty -i --restart='Never' --namespace bananaflow --image docker.io/bitnamilegacy/postgresql:14.5.0-debian-11-r35 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+      --command -- psql --host pg-postgresql-primary -U banana -d logistics -p 5432
+
+    > NOTE: If you access the container using bash, make sure that you execute "/opt/bitnami/scripts/postgresql/entrypoint.sh /bin/bash" in order to avoid the error "psql: local user with ID 1001} does not exist"
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace bananaflow svc/pg-postgresql-primary 5432:5432 &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U banana -d logistics -p 5432
+NAME	NAMESPACE 	REVISION	UPDATED                                	STATUS  	CHART             	APP VERSION
+pg  	bananaflow	1       	2026-10-20 15:37:40.525018281 +0000 UTC	deployed	postgresql-11.9.13	14.5.0     
++ helm list -n bananaflow
++ kubectl get statefulset,svc,pvc,pods -n bananaflow -o wide
+NAME                                     READY   AGE   CONTAINERS   IMAGES
+statefulset.apps/pg-postgresql-primary   1/1     47s   postgresql   docker.io/bitnamilegacy/postgresql:14.5.0-debian-11-r35
+statefulset.apps/pg-postgresql-read      1/1     47s   postgresql   docker.io/bitnamilegacy/postgresql:14.5.0-debian-11-r35
+
+NAME                               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/pg-postgresql-primary      ClusterIP   10.98.155.1     <none>        5432/TCP   47s   app.kubernetes.io/component=primary,app.kubernetes.io/instance=pg,app.kubernetes.io/name=postgresql
+service/pg-postgresql-primary-hl   ClusterIP   None            <none>        5432/TCP   47s   app.kubernetes.io/component=primary,app.kubernetes.io/instance=pg,app.kubernetes.io/name=postgresql
+service/pg-postgresql-read         ClusterIP   10.109.64.245   <none>        5432/TCP   47s   app.kubernetes.io/component=read,app.kubernetes.io/instance=pg,app.kubernetes.io/name=postgresql
+service/pg-postgresql-read-hl      ClusterIP   None            <none>        5432/TCP   47s   app.kubernetes.io/component=read,app.kubernetes.io/instance=pg,app.kubernetes.io/name=postgresql
+
+NAME                                                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/data-pg-postgresql-primary-0   Bound    pvc-30c39316-4590-47bf-a328-92e5d0ccb8d0   1Gi        RWO            standard       <unset>                 47s   Filesystem
+persistentvolumeclaim/data-pg-postgresql-read-0      Bound    pvc-7f92ff6c-3a92-4f73-9c85-12ed9ac7b829   1Gi        RWO            standard       <unset>                 47s   Filesystem
+
+NAME                          READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pod/pg-postgresql-primary-0   1/1     Running   0          47s   10.244.0.5   minikube   <none>           <none>
+pod/pg-postgresql-read-0      1/1     Running   0          47s   10.244.0.4   minikube   <none>           <none>
++ sleep 3
++ kubectl port-forward -n bananaflow svc/pg-postgresql-primary 15433:5432
++ psql -h localhost -p 15433 -U banana -d logistics
+                                              version                                              
+---------------------------------------------------------------------------------------------------
+ PostgreSQL 14.5 on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+(1 row)
+
+CREATE TABLE
+INSERT 0 3
+ id |   port    | tons 
+----+-----------+------
+  1 | Brisbane  |  300
+  2 | Sydney    |  300
+  3 | Melbourne |  120
+(3 rows)
+
+ client_addr | state 
+-------------+-------
+             | 
+(1 row)
+
++ kill %1
