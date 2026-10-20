@@ -2,7 +2,7 @@
 
 ## 1. Создание проекта
 
-Проект `bananaflow-19900101`. Вместо ВМ в облаке использовал локальную ВМ в UTM на Mac, вместо Ubuntu на ней Debian 11 (4 vCPU, 1 ГБ RAM).
+Проект `bananaflow-19980112`. Вместо ВМ в облаке использовал локальную ВМ в UTM на Mac, вместо Ubuntu на ней Debian 11 (4 vCPU, 1 ГБ RAM).
 
 ```
 $ cat /etc/os-release | head -2; nproc; free -h
