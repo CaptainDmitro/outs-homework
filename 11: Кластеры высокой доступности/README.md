@@ -159,7 +159,7 @@ streaming|2|10.130.0.10|5442
 
 **Проблема:** после failover внутри основного кластера standby переставал получать WAL. В итоге при отказе площадки потерялись строки, записанные после первого failover: в `pg-e` после промоута были только id 1–4, а новые строки снова начались с 34 ([logs/19-standby-timeline-failed.log](logs/19-standby-timeline-failed.log)). Заодно в логах standby было `no pg_hba.conf entry for replication connection from host "127.0.0.1"`: Patroni не мог прочитать локальный таймлайн.
 
-**Решение:** в `pg_hba` добавлено `host replication replicator 127.0.0.1/32`. Основная причина нашлась позже. Walreceiver подключался к HAProxy в ту же секунду, когда умирал лидер. HAProxy отдавал соединение уже мёртвому серверу, серверная сторона закрывалась, а клиентская оставалась открытой без таймеров ([logs/21-standby-walreceiver-hang-failed.log](logs/21-standby-walreceiver-hang-failed.log)):
+**Решение:** в `pg_hba` добавлено `host replication replicator 127.0.0.1/32`. Основная причина нашлась позже. Walreceiver подключался к HAProxy в ту же секунду, когда умирал лидер. HAProxy отдавал соединение уже мёртвому серверу, серверная сторона закрывалась, а клиентская оставалась открытой без таймеров ([logs/21-standby-walreceiver-hang-failed.log](logs/21-standby-walreceiver-hang-failed.log), [logs/23b-haproxy-stuck-session-failed.log](logs/23b-haproxy-stuck-session-failed.log)):
 
 ```
 0x60e03fe3c9b0: [20/Oct/2026:20:21:41.739559] id=46 proto=tcpv4 source=10.131.0.10:49010
@@ -169,7 +169,7 @@ streaming|2|10.130.0.10|5442
   scb=... state=CLO ...
 ```
 
-Walreceiver подключается асинхронно и не ограничивает время подключения (`connect_timeout`/`PGCONNECT_TIMEOUT` он не соблюдает), поэтому ждал ответа вечно. Не помогли ни отдельный listener с `timeout client 30s`, `timeout queue` и `option redispatch`, ни HAProxy 3.0 ([logs/23-failover-node-walreceiver-hang-failed.log](logs/23-failover-node-walreceiver-hang-failed.log)). Поэтому HAProxy убран из пути репликации: порты узлов `pg-d` опубликованы как 5441–5443, а в `standby_cluster` указан список хостов и портов libpq. Упавший узел сразу даёт `Connection refused`, и walreceiver переходит к следующему. Строку `/tmp/pgpass`, которую пишет Patroni, libpq не сопоставляет с парами хост:порт из списка, поэтому пароль репликации передан через `PGPASSWORD` в окружении узлов.
+Walreceiver подключается асинхронно и не ограничивает время подключения (`connect_timeout`/`PGCONNECT_TIMEOUT` он не соблюдает, [logs/23-failover-node-walreceiver-hang-failed.log](logs/23-failover-node-walreceiver-hang-failed.log)), поэтому ждал ответа вечно. Не помогли ни отдельный listener с `timeout client 30s`, `timeout queue` и `option redispatch`, ни HAProxy 3.0 ([logs/23b-haproxy-stuck-session-failed.log](logs/23b-haproxy-stuck-session-failed.log)). Поэтому HAProxy убран из пути репликации: порты узлов `pg-d` опубликованы как 5441–5443, а в `standby_cluster` указан список хостов и портов libpq. Упавший узел сразу даёт `Connection refused`, и walreceiver переходит к следующему. Строку `/tmp/pgpass`, которую пишет Patroni, libpq не сопоставляет с парами хост:порт из списка, поэтому пароль репликации передан через `PGPASSWORD` в окружении узлов.
 
 ## 4. Отказоустойчивый DNS / балансировщик
 
