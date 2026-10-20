@@ -1,0 +1,147 @@
++ POST compute/v2.1/servers/278dd68c-2908-4887-8c9f-17c7600ff2cc/action {"os-getConsoleOutput":{}} | sed -n "/=== BENCH BEGIN/,/=== BENCH END/p"
+=== BENCH BEGIN vk
+
+PLAY [���������������������� �� managed PostgreSQL �� ���������������� ��������������] *********************
+
+TASK [�������������� ~/.postgresql] ***************************************************
+changed: [localhost]
+
+TASK [���������������� �������������������� ������������] **********************************************
+skipping: [localhost]
+
+TASK [������������ �� ~/.pgpass] ******************************************************
+changed: [localhost] => (item=vk)
+
+TASK [���������������� ��������������] ********************************************************
+ok: [localhost] => (item=vk)
+
+TASK [���������� ���������������� ����������������] *************************************************
+ok: [localhost] => (item=vk) => {
+    "msg": [
+        "                                                 version                                                  ",
+        "----------------------------------------------------------------------------------------------------------",
+        " PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-28), 64-bit",
+        "(1 row)",
+        "",
+        "              now              | current_user | current_database | pg_is_in_recovery ",
+        "-------------------------------+--------------+------------------+-------------------",
+        " 2026-10-20 17:49:02.021378+00 | banana       | bananaflow       | f",
+        "(1 row)",
+        "",
+        " ssl | version ",
+        "-----+---------",
+        " f   | ",
+        "(1 row)"
+    ]
+}
+
+TASK [������������ �� ���������������� select 1 ������ ������������ latency] ***************************
+changed: [localhost]
+
+TASK [Latency �������������� select 1 (1 ������������, 30 ��)] *******************************
+ok: [localhost] => (item=vk)
+
+TASK [���������� latency] ***********************************************************
+ok: [localhost] => (item=vk) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11)",
+        "transaction type: /tmp/select1.sql",
+        "scaling factor: 1",
+        "query mode: simple",
+        "number of clients: 1",
+        "number of threads: 1",
+        "maximum number of tries: 1",
+        "duration: 30 s",
+        "number of transactions actually processed: 184760",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 0.162 ms",
+        "latency stddev = 0.065 ms",
+        "initial connection time = 13.339 ms",
+        "tps = 6161.376235 (without initial connection time)",
+        "progress: 10.0 s, 5870.8 tps, lat 0.170 ms stddev 0.093, 0 failed",
+        "progress: 20.0 s, 6205.8 tps, lat 0.161 ms stddev 0.036, 0 failed",
+        "progress: 30.0 s, 6399.3 tps, lat 0.156 ms stddev 0.053, 0 failed"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=7    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+
+PLAY [���������������������� ������������������������ pgbench] ****************************************
+
+TASK [�������������������������� pgbench (scale 10)] ****************************************
+changed: [localhost] => (item=vk)
+
+TASK [���������� ��������������������������] *****************************************************
+ok: [localhost] => (item=vk) => {
+    "msg": [
+        "1000000 of 1000000 tuples (100%) done (elapsed 1.33 s, remaining 0.00 s)",
+        "creating primary keys...",
+        "done in 1.98 s (drop tables 0.00 s, create tables 0.01 s, client-side generate 1.53 s, primary keys 0.45 s)."
+    ]
+}
+
+TASK [TPC-B (8 ����������������, 60 ��)] ************************************************
+ok: [localhost] => (item=vk)
+
+TASK [���������� TPC-B] *************************************************************
+ok: [localhost] => (item=vk) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11)",
+        "transaction type: <builtin: TPC-B (sort of)>",
+        "scaling factor: 10",
+        "query mode: simple",
+        "number of clients: 8",
+        "number of threads: 8",
+        "maximum number of tries: 1",
+        "duration: 60 s",
+        "number of transactions actually processed: 76412",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 6.277 ms",
+        "latency stddev = 3.492 ms",
+        "initial connection time = 50.386 ms",
+        "tps = 1274.082803 (without initial connection time)",
+        "starting vacuum...end.",
+        "progress: 10.0 s, 1255.0 tps, lat 6.341 ms stddev 3.230, 0 failed",
+        "progress: 20.0 s, 1266.5 tps, lat 6.315 ms stddev 3.058, 0 failed",
+        "progress: 30.0 s, 1264.2 tps, lat 6.328 ms stddev 5.084, 0 failed",
+        "progress: 40.0 s, 1297.0 tps, lat 6.169 ms stddev 2.918, 0 failed",
+        "progress: 50.0 s, 1288.1 tps, lat 6.208 ms stddev 3.013, 0 failed",
+        "progress: 60.0 s, 1269.6 tps, lat 6.303 ms stddev 3.159, 0 failed"
+    ]
+}
+
+TASK [Select-only (8 ����������������, 60 ��)] ******************************************
+ok: [localhost] => (item=vk)
+
+TASK [���������� select-only] *******************************************************
+ok: [localhost] => (item=vk) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11)",
+        "transaction type: <builtin: select only>",
+        "scaling factor: 10",
+        "query mode: simple",
+        "number of clients: 8",
+        "number of threads: 8",
+        "maximum number of tries: 1",
+        "duration: 60 s",
+        "number of transactions actually processed: 1630936",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 0.294 ms",
+        "latency stddev = 0.139 ms",
+        "initial connection time = 63.539 ms",
+        "tps = 27210.871188 (without initial connection time)",
+        "starting vacuum...end.",
+        "progress: 10.0 s, 27747.2 tps, lat 0.286 ms stddev 0.151, 0 failed",
+        "progress: 20.0 s, 27893.6 tps, lat 0.287 ms stddev 0.159, 0 failed",
+        "progress: 30.0 s, 28780.4 tps, lat 0.278 ms stddev 0.068, 0 failed",
+        "progress: 40.0 s, 26608.6 tps, lat 0.300 ms stddev 0.100, 0 failed",
+        "progress: 50.0 s, 25081.9 tps, lat 0.319 ms stddev 0.170, 0 failed"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+=== BENCH END vk
