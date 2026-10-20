@@ -1,0 +1,36 @@
++ yc vpc network create --name otus-pg-net
+ERROR: execute command: run command: x-request-id = 9ca5d052-7413-468c-b502-2ceaaa0a604a x-server-trace-id = d9d2efd9ef0f0703:0ffe8cfa2900c1f9:5ce507e32e025c9d:1 x-client-trace-id = fd961aab-ff60-4814-879d-da35cfb078a0 rpc error: code = PermissionDenied desc = Operation is not permitted in the folder
+
+
+x-request-id: 9ca5d052-7413-468c-b502-2ceaaa0a604a
+x-server-trace-id: d9d2efd9ef0f0703:0ffe8cfa2900c1f9:5ce507e32e025c9d:1
+x-client-trace-id: fd961aab-ff60-4814-879d-da35cfb078a0
+
+Use x-request-id, x-server-trace-id, x-client-trace-id for investigation of issues in cloud support
+
+gRPC status details:
+- '@type': type.googleapis.com/google.rpc.LocalizedMessage
+  locale: en
+  message: Operation is not permitted in the folder
+- '@type': type.googleapis.com/google.rpc.RequestInfo
+  request_id: 9ca5d052-7413-468c-b502-2ceaaa0a604a
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-00.004-yc_vpc_network_create.txt
++ yc vpc subnet create --name otus-pg-subnet-d --network-name otus-pg-net --zone ru-central1-d --range 10.10.0.0/24
+ERROR: execute command: run command: network with name "otus-pg-net" not found
+
+
+x-client-trace-id: a0a3017a-3acb-45ce-b56e-b925795a401f
+
+Use x-client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-00.605-yc_vpc_subnet_create.txt
++ curl -s ifconfig.me
+95.85.243.6+ echo
+
++ yc vpc security-group create --name otus-pg-sg --network-name otus-pg-net --rule 'description=psql from my IP,direction=ingress,port=6432,protocol=tcp,v4-cidrs=[95.85.249.52/32]'
+ERROR: execute command: run command: network with name "otus-pg-net" not found
+
+
+x-client-trace-id: e848a627-3c8e-4d85-b44a-51bef216fb24
+
+Use x-client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-01.832-yc_vpc_security-group_create.txt

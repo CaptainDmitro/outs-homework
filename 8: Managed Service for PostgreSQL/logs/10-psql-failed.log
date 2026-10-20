@@ -1,0 +1,8 @@
++ psql --version
+psql (PostgreSQL) 18.6
++ export PGPASSWORD=otus_pass_8
++ PGPASSWORD=otus_pass_8
++ psql 'host=rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net port=6432 sslmode=verify-full dbname=bananaflow user=banana target_session_attrs=read-write'
+psql: error: connection to server at "rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net" (153.51.113.144), port 6432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.

@@ -1,0 +1,47 @@
++ yc vpc subnet list
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+|          ID          |         NAME          |      NETWORK ID      | ROUTE TABLE ID |     ZONE      |      RANGE      |
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+| ajcd2bbrfbagcv6p73t1 | default-ru-central1-e | enpano5e90s4f5rb251i |                | ru-central1-e | [10.131.0.0/24] |
+| e2l0kgar52nqr7mj7841 | default-ru-central1-b | enpano5e90s4f5rb251i |                | ru-central1-b | [10.129.0.0/24] |
+| e9b4enn4c7gsk0mmd0mk | default-ru-central1-a | enpano5e90s4f5rb251i |                | ru-central1-a | [10.128.0.0/24] |
+| fl8cjtnhpo4im199nvpg | default-ru-central1-d | enpano5e90s4f5rb251i |                | ru-central1-d | [10.130.0.0/24] |
++----------------------+-----------------------+----------------------+----------------+---------------+-----------------+
+
++ for i in 1 2 3 4
++ curl -s ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4
++ curl -s ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4
++ curl -s ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4
++ curl -s ifconfig.me
+95.85.249.52+ echo
+
++ yc vpc security-group create --name otus-pg-sg --network-name default --rule 'description=psql from my IP,direction=ingress,port=6432,protocol=tcp,v4-cidrs=[95.85.249.52/32,95.85.243.6/32]'
+id: enp4g2tqhtcnub933ujh
+folder_id: b1ggl0bj9uf239gi24if
+created_at: "2026-10-20T16:08:27Z"
+name: otus-pg-sg
+network_id: enpano5e90s4f5rb251i
+status: ACTIVE
+rules:
+  - id: enpavn9kefjq26883aem
+    description: psql from my IP
+    direction: INGRESS
+    ports:
+      from_port: "6432"
+      to_port: "6432"
+    protocol_name: TCP
+    protocol_number: "6"
+    cidr_blocks:
+      v4_cidr_blocks:
+        - 95.85.249.52/32
+        - 95.85.243.6/32
+

@@ -1,0 +1,40 @@
++ yc resource-manager folder list
++----------------------+---------+--------+----------+
+|          ID          |  NAME   | LABELS |  STATUS  |
++----------------------+---------+--------+----------+
+| b1g7k5ajd1fq4nupfrhg | default |        | DELETING |
++----------------------+---------+--------+----------+
+
++ yc resource-manager folder create --name otus-hw8 --description 'OTUS HW8: Managed PostgreSQL'
+ERROR: rpc error: code = PermissionDenied desc = Permission denied
+
+
+client-request-id: 2640a7e0-eee0-4e09-8127-fdae94c93c5b
+client-trace-id: ef96b72d-b61a-41bb-97da-bce6b1e123d4
+
+Use client-request-id, client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-51.339-yc_resource-manager_folder_create.txt
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4 5 6
++ curl -s ifconfig.me
+95.85.243.6+ echo
+

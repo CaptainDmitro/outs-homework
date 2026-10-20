@@ -1,0 +1,63 @@
++ psql --version
+psql (PostgreSQL) 18.6
++ export PGPASSWORD=otus_pass_8
++ PGPASSWORD=otus_pass_8
++ psql 'host=rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net port=6432 sslmode=verify-full dbname=bananaflow user=banana target_session_attrs=read-write'
+                      Connection Information
+      Parameter       |                   Value
+----------------------+-------------------------------------------
+ Database             | bananaflow
+ Client User          | banana
+ Host                 | rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net
+ Host Address         | 153.51.113.144
+ Server Port          | 6432
+ Options              |
+ Protocol Version     | 3.0
+ Password Used        | true
+ GSSAPI Authenticated | false
+ Backend PID          | 1410298881
+ SSL Connection       | true
+ SSL Library          | OpenSSL
+ SSL Protocol         | TLSv1.3
+ SSL Key Bits         | 256
+ SSL Cipher           | TLS_AES_256_GCM_SHA384
+ SSL Compression      | false
+ ALPN                 | none
+ Superuser            | off
+ Hot Standby          | unknown
+(19 rows)
+
+                                                                       version
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+(1 row)
+
+ inet_client_addr | current_user | current_database | pg_is_in_recovery
+------------------+--------------+------------------+-------------------
+ 127.0.0.1        | banana       | bananaflow       | f
+(1 row)
+
+ ssl
+-----
+ on
+(1 row)
+
+CREATE TABLE
+INSERT 0 3
+ id |   cargo    | weight_kg
+----+------------+-----------
+  1 | bananas    |   1200.50
+  2 | mangoes    |    340.00
+  3 | pineapples |    815.25
+(3 rows)
+
+ count |   sum
+-------+---------
+     3 | 2355.75
+(1 row)
+
+ pg_size_pretty
+----------------
+ 7758 kB
+(1 row)
+

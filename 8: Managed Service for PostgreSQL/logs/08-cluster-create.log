@@ -1,0 +1,51 @@
++ yc postgres cluster create --name otus-pg --environment production --network-name default --security-group-ids enp4g2tqhtcnub933ujh --host zone-id=ru-central1-e,subnet-name=default-ru-central1-e,assign-public-ip=true --postgresql-version 17 --resource-preset b2.medium --disk-type network-ssd --disk-size 10 --disk-size-autoscaling planned-usage-threshold=80,emergency-usage-threshold=90,disk-size-limit=21474836480 --maintenance-window type=weekly,day=SUN,hour=3 --user name=banana,password=otus_pass_8 --database name=bananaflow,owner=banana
+...done (9m47s)
+id: c9qssrecqhfgosn3jo9b
+folder_id: b1ggl0bj9uf239gi24if
+created_at: "2026-10-20T16:09:30.794873Z"
+name: otus-pg
+environment: PRODUCTION
+monitoring:
+  - name: Console
+    description: Console charts
+    link: https://console.cloud.yandex.ru/folders/b1ggl0bj9uf239gi24if/managed-postgresql/cluster/c9qssrecqhfgosn3jo9b/monitoring
+config:
+  version: "17"
+  postgresql_config_17:
+    effective_config:
+      ...
+    user_config:
+      password_encryption: PASSWORD_ENCRYPTION_SCRAM_SHA_256
+    default_config:
+      ...
+  resources:
+    resource_preset_id: b2.medium
+    disk_size: "10737418240"
+    disk_type_id: network-ssd
+  autofailover: true
+  backup_window_start:
+    hours: 22
+    minutes: 15
+    seconds: 30
+    nanos: 100
+  backup_retain_period_days: "7"
+  access: {}
+  performance_diagnostics:
+    sessions_sampling_interval: "60"
+    statements_sampling_interval: "600"
+  disk_size_autoscaling:
+    planned_usage_threshold: "80"
+    emergency_usage_threshold: "90"
+    disk_size_limit: "21474836480"
+  full_version: "17.11"
+  connection_manager:
+    enabled: true
+network_id: enpano5e90s4f5rb251i
+status: RUNNING
+maintenance_window:
+  weekly_maintenance_window:
+    day: SUN
+    hour: "3"
+security_group_ids:
+  - enp4g2tqhtcnub933ujh
+

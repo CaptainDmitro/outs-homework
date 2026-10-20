@@ -1,0 +1,28 @@
++ yc vpc network create --folder-name otus-hw8 --name otus-pg-net
+ERROR: execute command: run command: x-request-id = 0fe2cbba-851f-47c7-849f-5c685a86fd59 x-server-trace-id = 69d3c6dfd32b1fed:1d740f6c16cc0124:1d3301169ed66225:1 x-client-trace-id = 385f1e2d-3810-4d2d-88bd-38cf19c40a22 rpc error: code = InvalidArgument desc = Validation failed:
+  - folder_id: Field is required
+Make sure that you pass valid folder-id flag or set it to the active profile
+Set property using: yc config set folder-id
+
+
+
+x-client-trace-id: 385f1e2d-3810-4d2d-88bd-38cf19c40a22
+
+Use x-client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-54.948-yc_vpc_network_create.txt
++ yc vpc subnet create --folder-name otus-hw8 --name otus-pg-subnet-d --network-name otus-pg-net --zone ru-central1-d --range 10.10.0.0/24
+ERROR: execute command: run command: can't resolve object by name without folder id
+
+
+x-client-trace-id: a4bcafd8-e5a0-44da-9ae1-c4bb307a4823
+
+Use x-client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-55.863-yc_vpc_subnet_create.txt
++ yc vpc security-group create --folder-name otus-hw8 --name otus-pg-sg --network-name otus-pg-net --rule 'description=psql from my IP,direction=ingress,port=6432,protocol=tcp,v4-cidrs=[95.85.249.52/32,95.85.243.6/32]'
+ERROR: execute command: run command: can't resolve object by name without folder id
+
+
+x-client-trace-id: f0e967af-c0ce-4a7e-8a4c-c2c545c234fb
+
+Use x-client-trace-id for investigation of issues in cloud support
+If you are going to ask for help of cloud support, please send the following trace file: /Users/dmitry/.config/yandex-cloud/logs/2026-10-20T18-48-56.537-yc_vpc_security-group_create.txt

@@ -1,0 +1,75 @@
++ route -n get 153.51.113.144
++ grep interface
+  interface: utun13
++ for i in 1 2 3 4
++ curl -s https://ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4
++ curl -s https://ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4
++ curl -s https://ifconfig.me
+95.85.249.52+ echo
+
++ for i in 1 2 3 4
++ curl -s https://ifconfig.me
+95.85.243.6+ echo
+
++ for i in 1 2 3 4
++ curl -s https://yandex.ru/internet/api/v0/ip
+"85.172.184.54"+ echo
+
++ for i in 1 2 3 4
++ curl -s https://yandex.ru/internet/api/v0/ip
+"85.172.184.54"+ echo
+
++ for i in 1 2 3 4
++ curl -s https://yandex.ru/internet/api/v0/ip
+"85.172.184.54"+ echo
+
++ for i in 1 2 3 4
++ curl -s https://yandex.ru/internet/api/v0/ip
+"85.172.184.54"+ echo
+
++ yc vpc security-group update-rules otus-pg-sg --delete-rule-id enpavn9kefjq26883aem --add-rule 'description=psql from my IP,direction=ingress,port=6432,protocol=tcp,v4-cidrs=[85.172.184.54/32]'
+id: enp4g2tqhtcnub933ujh
+folder_id: b1ggl0bj9uf239gi24if
+created_at: "2026-10-20T16:08:27Z"
+name: otus-pg-sg
+network_id: enpano5e90s4f5rb251i
+status: ACTIVE
+rules:
+  - id: enpafu8qqotu1p7eqqoh
+    description: psql from my IP
+    direction: INGRESS
+    ports:
+      from_port: "6432"
+      to_port: "6432"
+    protocol_name: TCP
+    protocol_number: "6"
+    cidr_blocks:
+      v4_cidr_blocks:
+        - 85.172.184.54/32
+
++ yc vpc security-group get otus-pg-sg --format json
++ jq .rules
+[
+  {
+    "id": "enpafu8qqotu1p7eqqoh",
+    "description": "psql from my IP",
+    "direction": "INGRESS",
+    "ports": {
+      "from_port": "6432",
+      "to_port": "6432"
+    },
+    "protocol_name": "TCP",
+    "protocol_number": "6",
+    "cidr_blocks": {
+      "v4_cidr_blocks": [
+        "85.172.184.54/32"
+      ]
+    }
+  }
+]

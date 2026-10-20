@@ -1,0 +1,78 @@
++ yc postgres cluster list
++----------------------+---------+---------------------+----------------+---------+
+|          ID          |  NAME   |     CREATED AT      |     HEALTH     | STATUS  |
++----------------------+---------+---------------------+----------------+---------+
+| c9qssrecqhfgosn3jo9b | otus-pg | 2026-10-20 16:09:30 | HEALTH_UNKNOWN | RUNNING |
++----------------------+---------+---------------------+----------------+---------+
+
++ yc postgres cluster get otus-pg --format json
++ jq '{name, environment, status, health, version: .config.version, resources: .config.resources, disk_size_autoscaling: .config.disk_size_autoscaling, access: .config.access, maintenance_window, security_group_ids}'
+{
+  "name": "otus-pg",
+  "environment": "PRODUCTION",
+  "status": "RUNNING",
+  "health": null,
+  "version": "17",
+  "resources": {
+    "resource_preset_id": "b2.medium",
+    "disk_size": "10737418240",
+    "disk_type_id": "network-ssd"
+  },
+  "disk_size_autoscaling": {
+    "planned_usage_threshold": "80",
+    "emergency_usage_threshold": "90",
+    "disk_size_limit": "21474836480"
+  },
+  "access": {},
+  "maintenance_window": {
+    "weekly_maintenance_window": {
+      "day": "SUN",
+      "hour": "3"
+    }
+  },
+  "security_group_ids": [
+    "enp4g2tqhtcnub933ujh"
+  ]
+}
++ yc postgres host list --cluster-name otus-pg
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+|                   NAME                    |      CLUSTER ID      |  ROLE  | HEALTH |    ZONE ID    | PUBLIC IP | REPLICATION SOURCE |
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+| rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net | c9qssrecqhfgosn3jo9b | MASTER | ALIVE  | ru-central1-e | true      |                    |
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+
++ yc postgres user list --cluster-name otus-pg
++--------+-------------+----------------------+------------+
+|  NAME  | PERMISSIONS |    CONNECTION ID     | CONN LIMIT |
++--------+-------------+----------------------+------------+
+| banana | bananaflow  | a59k8iqmoecptiq5us03 |         50 |
++--------+-------------+----------------------+------------+
+
++ yc postgres database list --cluster-name otus-pg
++------------+----------------------+--------+------------+---------+------------+-------------------+
+|    NAME    |      CLUSTER ID      | OWNER  | LC COLLATE | LC TYPE | EXTENSIONS | TEMPLATE DATABASE |
++------------+----------------------+--------+------------+---------+------------+-------------------+
+| bananaflow | c9qssrecqhfgosn3jo9b | banana | C          | C       |            |                   |
++------------+----------------------+--------+------------+---------+------------+-------------------+
+
++ yc vpc security-group get otus-pg-sg --format json
++ jq .rules
+[
+  {
+    "id": "enpavn9kefjq26883aem",
+    "description": "psql from my IP",
+    "direction": "INGRESS",
+    "ports": {
+      "from_port": "6432",
+      "to_port": "6432"
+    },
+    "protocol_name": "TCP",
+    "protocol_number": "6",
+    "cidr_blocks": {
+      "v4_cidr_blocks": [
+        "95.85.249.52/32",
+        "95.85.243.6/32"
+      ]
+    }
+  }
+]
