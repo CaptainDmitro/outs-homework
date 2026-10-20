@@ -1,0 +1,42 @@
++ du -sh --apparent-size /data/tpch
+21G	/data/tpch
++ du -sh /var/lib/postgresql/17/main /var/lib/clickhouse
+61G	/var/lib/postgresql/17/main
+du: cannot access '/var/lib/clickhouse/store/e02/e02c418b-672f-4cb2-89c9-38eef783961d/all_21119_21119_1': No such file or directory
+du: cannot access '/var/lib/clickhouse/store/e02/e02c418b-672f-4cb2-89c9-38eef783961d/all_21128_21128_1': No such file or directory
+16G	/var/lib/clickhouse
++ psql -c 'SELECT c.relname AS table, c.reltuples::bigint AS rows,
+                pg_size_pretty(pg_table_size(c.oid)) AS heap,
+                pg_size_pretty(pg_indexes_size(c.oid)) AS indexes,
+                pg_size_pretty(pg_total_relation_size(c.oid)) AS total
+         FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+         WHERE n.nspname = '\''public'\'' AND c.relkind = '\''r'\''
+         ORDER BY pg_total_relation_size(c.oid) DESC'
+  table   |   rows    |  heap   | indexes |  total
+----------+-----------+---------+---------+---------
+ lineitem | 119995552 | 18 GB   | 4402 MB | 22 GB
+ orders   |  30001332 | 4195 MB | 842 MB  | 5037 MB
+ partsupp |  15996928 | 2735 MB | 343 MB  | 3078 MB
+ part     |   3999943 | 640 MB  | 86 MB   | 726 MB
+ customer |   2999614 | 561 MB  | 64 MB   | 626 MB
+ supplier |    200000 | 35 MB   | 4408 kB | 39 MB
+ region   |         5 | 40 kB   | 16 kB   | 56 kB
+ nation   |        25 | 40 kB   | 16 kB   | 56 kB
+(8 rows)
+
++ psql -c 'SELECT pg_size_pretty(pg_database_size('\''tpch'\''))'
+ pg_size_pretty
+----------------
+ 31 GB
+(1 row)
+
++ clickhouse-client --format PrettyCompactMonoBlock -q '
+  SELECT table, sum(rows) AS rows, count() AS parts,
+         formatReadableSize(sum(data_compressed_bytes)) AS compressed,
+         formatReadableSize(sum(data_uncompressed_bytes)) AS uncompressed,
+         round(sum(data_uncompressed_bytes) / sum(data_compressed_bytes), 1) AS ratio
+  FROM system.parts WHERE database = '\''tpch'\'' AND active
+  GROUP BY table ORDER BY sum(data_compressed_bytes) DESC
+  WITH TOTALS'
+Code: 62. DB::Exception: Syntax error: failed at position 404 (TOTALS) (line 7, col 8): TOTALS. Expected one of: FILL, end of query. (SYNTAX_ERROR)
+

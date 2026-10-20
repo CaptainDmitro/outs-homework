@@ -1,5 +1,6 @@
 set -x
 CH="clickhouse-client -d tpch"
+START=$(date -u '+%F %T')
 # фоновые слияния после загрузки должны закончиться до замеров
 until [ "$($CH -q 'SELECT count() FROM system.merges')" = 0 ]; do sleep 10; done
 # холодный старт: вторая СУБД остановлена, кеш ОС сброшен, кеши ClickHouse пустые после рестарта
@@ -21,8 +22,8 @@ done
 $CH -q 'SYSTEM FLUSH LOGS'
 $CH --format PrettyCompactMonoBlock -q "
   SELECT event_time, query_duration_ms AS ms, read_rows, formatReadableSize(read_bytes) AS read,
-         formatReadableSize(memory_usage) AS memory, substring(replaceAll(query, '\n', ' '), 1, 40) AS query
+         formatReadableSize(memory_usage) AS memory, substring(replaceAll(query, '\n', ' '), 1, 40) AS query_text
   FROM system.query_log
-  WHERE type = 'QueryFinish' AND query_kind = 'Select' AND query LIKE '%FROM lineitem%' AND event_time > now() - INTERVAL 1 HOUR
+  WHERE type = 'QueryFinish' AND query_kind = 'Select' AND query LIKE '%FROM lineitem%' AND event_time >= '$START'
   ORDER BY event_time"
 systemctl start postgresql
