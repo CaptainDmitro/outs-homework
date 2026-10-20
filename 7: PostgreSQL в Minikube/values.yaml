@@ -1,0 +1,23 @@
+image:
+  registry: docker.io
+  repository: bitnamilegacy/postgresql
+  tag: 14.5.0-debian-11-r35
+
+auth:
+  username: banana
+  password: otus_pass
+  database: logistics
+  postgresPassword: otus_pass
+  replicationUsername: repl_user
+  replicationPassword: otus_pass
+
+architecture: replication
+
+primary:
+  persistence:
+    size: 1Gi
+
+readReplicas:
+  replicaCount: 1
+  persistence:
+    size: 1Gi

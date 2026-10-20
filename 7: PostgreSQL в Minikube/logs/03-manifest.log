@@ -1,0 +1,32 @@
++ kubectl apply -f postgres.yaml
+persistentvolumeclaim/postgres-data created
+deployment.apps/postgres created
+service/postgres created
++ kubectl rollout status deployment/postgres --timeout=180s
+Waiting for deployment "postgres" rollout to finish: 0 of 1 updated replicas are available...
+deployment "postgres" successfully rolled out
++ kubectl get deploy,svc,pvc,pods -l app=postgres -o wide
+NAME                            READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pod/postgres-74cb65b865-b28dm   1/1     Running   0          30s   10.244.0.3   minikube   <none>           <none>
++ kubectl get svc postgres
+NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+postgres   ClusterIP   10.98.155.58   <none>        5432/TCP   33s
++ sleep 3
++ kubectl port-forward svc/postgres 15432:5432
++ psql -h localhost -p 15432 -U banana -d logistics -c 'select version();'
+                                                       version                                                        
+----------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
++ psql -h localhost -p 15432 -U banana -d logistics
+CREATE TABLE
+INSERT 0 3
+ id |   port    | tons 
+----+-----------+------
+  1 | Brisbane  |  300
+  2 | Sydney    |  300
+  3 | Melbourne |  120
+(3 rows)
+
++ kill %1

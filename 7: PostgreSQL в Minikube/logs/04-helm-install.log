@@ -1,0 +1,14 @@
++ curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
++ bash
+Downloading https://get.helm.sh/helm-v3.22.1-linux-amd64.tar.gz
+Verifying checksum... Done.
+Preparing to install helm into /usr/local/bin
+helm installed into /usr/local/bin/helm
++ helm version
+version.BuildInfo{Version:"v3.22.1", GitCommit:"d6c1a0e4027caa6abc7892e7ea9f0cda7447baa3", GitTreeState:"clean", GoVersion:"go1.26.9"}
++ helm show chart oci://registry-1.docker.io/bitnamicharts/postgresql --version 11.9.13
++ grep -E '^(appVersion|version)'
+Pulled: registry-1.docker.io/bitnamicharts/postgresql:11.9.13
+Digest: sha256:452595a60ee8ce5f76ec69aa25de2719da019d9ee91fbb0ed4ae669c79951764
+appVersion: 14.5.0
+version: 11.9.13

@@ -1,0 +1,17 @@
++ minikube start --driver=docker --cpus=2 --memory=4g
+* minikube v1.39.0 on Ubuntu 24.04 (amd64)
+* Using the docker driver based on user configuration
+* Using Docker driver with root privileges
+* Starting "minikube" primary control-plane node in "minikube" cluster
+* Pulling base image v0.0.51 ...
+* Downloading Kubernetes v1.37.0 preload ...
+    > gcr.io/k8s-minikube/kicbase:  507.61 MiB / 507.61 MiB  100.00% 22.57 MiB 
+* Preparing Kubernetes v1.37.0 on containerd 2.3.4 ...
+* Configuring CNI (Container Networking Interface) ...
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: storage-provisioner, default-storageclass
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
++ kubectl get nodes -o wide
+NAME       STATUS     ROLES           AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION              CONTAINER-RUNTIME
+minikube   NotReady   control-plane   5s    v1.37.0   192.168.49.2   <none>        Debian GNU/Linux 12 (bookworm)   6.8.0-147-generic (amd64)   containerd://2.3.4

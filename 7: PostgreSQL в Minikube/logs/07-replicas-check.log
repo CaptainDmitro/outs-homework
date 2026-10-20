@@ -1,0 +1,33 @@
++ for p in pg-postgresql-read-0 pg-postgresql-read-1
++ pf=350043
++ sleep 3
++ kubectl port-forward -n bananaflow pod/pg-postgresql-read-0 15434:5432
++ psql -h localhost -p 15434 -U banana -d logistics -c 'select inet_server_addr(), pg_is_in_recovery(), * from shipments;'
+ inet_server_addr | pg_is_in_recovery | id |   port    | tons 
+------------------+-------------------+----+-----------+------
+ 127.0.0.1        | t                 |  1 | Brisbane  |  300
+ 127.0.0.1        | t                 |  2 | Sydney    |  300
+ 127.0.0.1        | t                 |  3 | Melbourne |  120
+(3 rows)
+
++ kill 350043
++ wait 350043
++ for p in pg-postgresql-read-0 pg-postgresql-read-1
++ pf=350137
++ sleep 3
++ kubectl port-forward -n bananaflow pod/pg-postgresql-read-1 15434:5432
++ psql -h localhost -p 15434 -U banana -d logistics -c 'select inet_server_addr(), pg_is_in_recovery(), * from shipments;'
+ inet_server_addr | pg_is_in_recovery | id |   port    | tons 
+------------------+-------------------+----+-----------+------
+ 127.0.0.1        | t                 |  1 | Brisbane  |  300
+ 127.0.0.1        | t                 |  2 | Sydney    |  300
+ 127.0.0.1        | t                 |  3 | Melbourne |  120
+(3 rows)
+
++ kill 350137
++ wait 350137
++ kubectl get pods -n bananaflow
+NAME                      READY   STATUS    RESTARTS   AGE
+pg-postgresql-primary-0   1/1     Running   0          117s
+pg-postgresql-read-0      1/1     Running   0          117s
+pg-postgresql-read-1      1/1     Running   0          53s

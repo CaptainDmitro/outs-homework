@@ -1,0 +1,59 @@
++ helm upgrade pg oci://registry-1.docker.io/bitnamicharts/postgresql --version 11.9.13 -n bananaflow -f values.yaml --set readReplicas.replicaCount=2 --wait --timeout 10m
++ head -8
+Pulled: registry-1.docker.io/bitnamicharts/postgresql:11.9.13
+Digest: sha256:452595a60ee8ce5f76ec69aa25de2719da019d9ee91fbb0ed4ae669c79951764
+Release "pg" has been upgraded. Happy Helming!
+NAME: pg
+LAST DEPLOYED: Tue Oct 20 15:38:43 2026
+NAMESPACE: bananaflow
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+NOTES:
++ kubectl get statefulset -n bananaflow
+NAME                    READY   AGE
+pg-postgresql-primary   1/1     86s
+pg-postgresql-read      2/2     86s
++ kubectl get pods -n bananaflow -o wide
+NAME                      READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pg-postgresql-primary-0   1/1     Running   0          86s   10.244.0.5   minikube   <none>           <none>
+pg-postgresql-read-0      1/1     Running   0          86s   10.244.0.4   minikube   <none>           <none>
+pg-postgresql-read-1      1/1     Running   0          22s   10.244.0.6   minikube   <none>           <none>
++ sleep 3
++ kubectl port-forward -n bananaflow svc/pg-postgresql-primary 15433:5432
++ psql -h localhost -p 15433 -U postgres -d logistics -c 'select client_addr, application_name, state, sync_state from pg_stat_replication;'
+ client_addr | application_name |   state   | sync_state 
+-------------+------------------+-----------+------------
+ 10.244.0.4  | my_application   | streaming | async
+ 10.244.0.6  | my_application   | streaming | async
+(2 rows)
+
++ kill %1
++ for p in pg-postgresql-read-0 pg-postgresql-read-1
++ sleep 3
++ kubectl port-forward -n bananaflow pod/pg-postgresql-read-0 15434:5432
++ psql -h localhost -p 15434 -U banana -d logistics -c 'select pg_is_in_recovery(), * from shipments;'
+ pg_is_in_recovery | id |   port    | tons 
+-------------------+----+-----------+------
+ t                 |  1 | Brisbane  |  300
+ t                 |  2 | Sydney    |  300
+ t                 |  3 | Melbourne |  120
+(3 rows)
+
++ kill %1
+bash: line 14: kill: %1: no such job
++ sleep 1
++ for p in pg-postgresql-read-0 pg-postgresql-read-1
++ sleep 3
++ kubectl port-forward -n bananaflow pod/pg-postgresql-read-1 15434:5432
++ psql -h localhost -p 15434 -U banana -d logistics -c 'select pg_is_in_recovery(), * from shipments;'
+ pg_is_in_recovery | id |   port    | tons 
+-------------------+----+-----------+------
+ t                 |  1 | Brisbane  |  300
+ t                 |  2 | Sydney    |  300
+ t                 |  3 | Melbourne |  120
+(3 rows)
+
++ kill %1
+bash: line 14: kill: %1: no such job
++ sleep 1
