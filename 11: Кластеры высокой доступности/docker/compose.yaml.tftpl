@@ -1,0 +1,57 @@
+x-node: &node
+  image: patroni-etcd:16
+  init: true
+  restart: unless-stopped
+
+x-env: &env
+  PATRONI_SCOPE: ${scope}
+  ETCD_CLUSTER: node1=http://172.20.0.11:2380,node2=http://172.20.0.12:2380,node3=http://172.20.0.13:2380
+
+services:
+%{ for i in [1, 2, 3] ~}
+  node${i}:
+    <<: *node
+    container_name: node${i}
+    hostname: node${i}
+    environment:
+      <<: *env
+      PATRONI_NAME: node${i}
+      NODE_IP: 172.20.0.1${i}
+    volumes:
+      - ./patroni.yml:/etc/patroni.yml:ro
+      - node${i}-pg:/var/lib/postgresql
+      - node${i}-etcd:/var/lib/etcd
+    networks:
+      pgnet:
+        ipv4_address: 172.20.0.1${i}
+%{ endfor ~}
+
+  haproxy:
+    image: patroni-etcd:16
+    container_name: haproxy
+    restart: unless-stopped
+    entrypoint: ["haproxy", "-f", "/etc/haproxy/haproxy.cfg"]
+    volumes:
+      - ./haproxy.cfg:/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "5432:5432"
+      - "5000:5000"
+      - "5001:5001"
+      - "7000:7000"
+      - "8404:8404"
+    depends_on: [node1, node2, node3]
+    networks:
+      pgnet:
+        ipv4_address: 172.20.0.10
+
+networks:
+  pgnet:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+%{ for i in [1, 2, 3] ~}
+  node${i}-pg:
+  node${i}-etcd:
+%{ endfor ~}

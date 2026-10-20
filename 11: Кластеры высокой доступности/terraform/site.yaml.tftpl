@@ -1,0 +1,28 @@
+#cloud-config
+ssh_authorized_keys:
+  - ${ssh_key}
+write_files:
+  - path: /opt/pg-ha/Dockerfile
+    encoding: b64
+    content: ${dockerfile}
+  - path: /opt/pg-ha/entrypoint.sh
+    encoding: b64
+    content: ${entrypoint}
+    permissions: "0755"
+  - path: /opt/pg-ha/patroni.yml
+    encoding: b64
+    content: ${patroni}
+    permissions: "0644"
+  - path: /opt/pg-ha/haproxy.cfg
+    encoding: b64
+    content: ${haproxy}
+  - path: /opt/pg-ha/compose.yaml
+    encoding: b64
+    content: ${compose}
+runcmd:
+  # пакеты ставим здесь: apt.packages в cloud-init ждёт блокировку APT только 30 с
+  - apt-get -o DPkg::Lock::Timeout=600 update
+  - DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 install -y docker.io docker-compose-v2 dnsutils
+  - usermod -aG docker ubuntu
+  - cd /opt/pg-ha && docker build -t patroni-etcd:16 . && docker compose up -d
+  - docker ps

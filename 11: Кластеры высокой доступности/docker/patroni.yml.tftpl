@@ -1,0 +1,56 @@
+restapi:
+  listen: 0.0.0.0:8008
+
+etcd3:
+  hosts: 172.20.0.11:2379,172.20.0.12:2379,172.20.0.13:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+%{ if standby_host != "" ~}
+    standby_cluster:
+      host: ${standby_host}
+      port: ${standby_port}
+      create_replica_methods:
+        - basebackup
+%{ endif ~}
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: "on"
+        wal_log_hints: "on"
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_keep_size: 256MB
+      pg_hba:
+        - local all all trust
+        - host replication replicator 127.0.0.1/32 scram-sha-256
+        - host replication replicator 10.0.0.0/8 scram-sha-256
+        - host replication replicator 172.16.0.0/12 scram-sha-256
+        - host all all 0.0.0.0/0 scram-sha-256
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+postgresql:
+  listen: 0.0.0.0:5432
+  data_dir: /var/lib/postgresql/16/data
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /tmp/pgpass
+  authentication:
+    superuser:
+      username: postgres
+      password: otus_pass_11
+    replication:
+      username: replicator
+      password: rep_pass_11
+    rewind:
+      username: rewind_user
+      password: rewind_pass_11
+  parameters:
+    unix_socket_directories: /var/run/postgresql
