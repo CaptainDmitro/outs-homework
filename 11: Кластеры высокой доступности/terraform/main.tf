@@ -20,9 +20,10 @@ locals {
   ssh_key = trimspace(file(pathexpand(var.ssh_public_key)))
 
   # Две площадки: основной кластер Patroni в зоне d, standby-кластер в зоне e.
+  # Standby ходит напрямую к трём узлам основного кластера (порты 5441-5443 ВМ pg-d).
   sites = {
-    d = { ip = "10.130.0.10", scope = "bananaflow-d", standby_host = "" }
-    e = { ip = "10.131.0.10", scope = "bananaflow-e", standby_host = "10.130.0.10" }
+    d = { ip = "10.130.0.10", scope = "bananaflow-d", standby_from = "" }
+    e = { ip = "10.131.0.10", scope = "bananaflow-e", standby_from = "10.130.0.10" }
   }
 }
 
@@ -96,8 +97,8 @@ resource "yandex_compute_instance" "site" {
       haproxy    = filebase64("${path.module}/../docker/haproxy.cfg")
       compose    = base64encode(templatefile("${path.module}/../docker/compose.yaml.tftpl", { scope = each.value.scope }))
       patroni = base64encode(templatefile("${path.module}/../docker/patroni.yml.tftpl", {
-        standby_host = each.value.standby_host
-        standby_port = 5000
+        standby_host = each.value.standby_from == "" ? "" : join(",", [for p in [5441, 5442, 5443] : each.value.standby_from])
+        standby_port = "5441,5442,5443"
       }))
     })
   }

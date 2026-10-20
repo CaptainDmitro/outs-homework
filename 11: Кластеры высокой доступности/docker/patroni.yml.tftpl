@@ -12,8 +12,8 @@ bootstrap:
     maximum_lag_on_failover: 1048576
 %{ if standby_host != "" ~}
     standby_cluster:
-      host: ${standby_host}
-      port: ${standby_port}
+      host: "${standby_host}"
+      port: "${standby_port}"
       create_replica_methods:
         - basebackup
 %{ endif ~}
