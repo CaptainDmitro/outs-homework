@@ -1,0 +1,44 @@
+psql (18.6 (Debian 18.6-1.pgdg11+2))
+Type "help" for help.
+
+postgres=# \set AUTOCOMMIT off
+postgres=# \echo :AUTOCOMMIT
+off
+postgres=# <product_name text, quantity int, destination text);
+CREATE TABLE
+postgres=*# <ty, destination) values('bananas', 1000, 'Europe');
+INSERT 0 1
+postgres=*# <uantity, destination) values('coffee', 500, 'USA');
+INSERT 0 1
+postgres=*# commit;
+COMMIT
+postgres=# show transaction isolation level;
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+
+postgres=*# commit;
+COMMIT
+postgres=# begin;
+BEGIN
+postgres=*# <uantity, destination) values('sugar', 300, 'Asia');
+INSERT 0 1
+postgres=*# commit;
+COMMIT
+postgres=# begin;
+BEGIN
+postgres=*# set transaction isolation level repeatable read;
+SET
+postgres=*# show transaction isolation level;
+ transaction_isolation 
+-----------------------
+ repeatable read
+(1 row)
+
+postgres=*# <ty, destination) values('bananas', 2000, 'Africa');
+INSERT 0 1
+postgres=*# commit;
+COMMIT
+postgres=# \q
+Connection to 192.168.64.3 closed.

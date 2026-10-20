@@ -1,0 +1,74 @@
+psql (18.6 (Debian 18.6-1.pgdg11+2))
+Type "help" for help.
+
+postgres=# \set AUTOCOMMIT off
+postgres=# \echo :AUTOCOMMIT
+off
+postgres=# show transaction isolation level;
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+
+postgres=*# commit;
+COMMIT
+postgres=# begin;
+BEGIN
+postgres=*# select * from shipments;
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | coffee       |      500 | USA
+(2 rows)
+
+postgres=*# select * from shipments;
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | coffee       |      500 | USA
+  3 | sugar        |      300 | Asia
+(3 rows)
+
+postgres=*# commit;
+COMMIT
+postgres=# begin;
+BEGIN
+postgres=*# set transaction isolation level repeatable read;
+SET
+postgres=*# show transaction isolation level;
+ transaction_isolation 
+-----------------------
+ repeatable read
+(1 row)
+
+postgres=*# select * from shipments;
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | coffee       |      500 | USA
+  3 | sugar        |      300 | Asia
+(3 rows)
+
+postgres=*# select * from shipments;
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | coffee       |      500 | USA
+  3 | sugar        |      300 | Asia
+(3 rows)
+
+postgres=*# commit;
+COMMIT
+postgres=# select * from shipments;
+ id | product_name | quantity | destination 
+----+--------------+----------+-------------
+  1 | bananas      |     1000 | Europe
+  2 | coffee       |      500 | USA
+  3 | sugar        |      300 | Asia
+  4 | bananas      |     2000 | Africa
+(4 rows)
+
+postgres=*# commit;
+COMMIT
+postgres=# \q
+Connection to 192.168.64.3 closed.

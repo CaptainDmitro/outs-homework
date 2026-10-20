@@ -1,0 +1,34 @@
+[1] session 1: \set AUTOCOMMIT off
+[2] session 2: \set AUTOCOMMIT off
+[3] session 1: \echo :AUTOCOMMIT
+[4] session 2: \echo :AUTOCOMMIT
+[5] session 1: create table shipments(id serial, product_name text, quantity int, destination text);
+[6] session 1: insert into shipments(product_name, quantity, destination) values('bananas', 1000, 'Europe');
+[7] session 1: insert into shipments(product_name, quantity, destination) values('coffee', 500, 'USA');
+[8] session 1: commit;
+[9] session 1: show transaction isolation level;
+[10] session 2: show transaction isolation level;
+[11] session 1: commit;
+[12] session 2: commit;
+[13] session 1: begin;
+[14] session 2: begin;
+[15] session 1: insert into shipments(product_name, quantity, destination) values('sugar', 300, 'Asia');
+[16] session 2: select * from shipments;
+[17] session 1: commit;
+[18] session 2: select * from shipments;
+[19] session 2: commit;
+[20] session 1: begin;
+[21] session 1: set transaction isolation level repeatable read;
+[22] session 2: begin;
+[23] session 2: set transaction isolation level repeatable read;
+[24] session 1: show transaction isolation level;
+[25] session 2: show transaction isolation level;
+[26] session 1: insert into shipments(product_name, quantity, destination) values('bananas', 2000, 'Africa');
+[27] session 2: select * from shipments;
+[28] session 1: commit;
+[29] session 2: select * from shipments;
+[30] session 2: commit;
+[31] session 2: select * from shipments;
+[32] session 2: commit;
+[33] session 1: \q
+[34] session 2: \q

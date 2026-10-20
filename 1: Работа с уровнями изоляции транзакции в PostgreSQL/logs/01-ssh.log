@@ -1,0 +1,16 @@
++ ssh-add /Users/dmitry/ai_advent_deploy_key
+Identity added: /Users/dmitry/ai_advent_deploy_key (github-actions-deploy)
++ ssh-add -l
+256 SHA256:Wkt9J+DjjjKnjfOdzTkGUEN4m5weskGKxqm2iy3Rfnw github-actions-deploy (ED25519)
++ ssh -i /Users/dmitry/ai_advent_deploy_key debian@192.168.64.3 'cat ~/.ssh/authorized_keys | cut -c1-60; hostname; cat /etc/os-release | head -2; nproc; free -h'
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPEERU2K+lfOZQu6Ff9Zn9+W
+debian
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+4
+               total        used        free      shared  buff/cache   available
+Mem:           974Mi       247Mi       255Mi        26Mi       471Mi       625Mi
+Swap:          950Mi          0B       950Mi
++ ssh-keygen -y -f /Users/dmitry/ai_advent_deploy_key
++ cut -c1-60
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPEERU2K+lfOZQu6Ff9Zn9+W
