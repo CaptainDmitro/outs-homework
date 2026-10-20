@@ -1,0 +1,298 @@
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start postgresql
++ pg_isready -q
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q1-agg.sql
+Timing is on.
+ l_returnflag | l_linestatus |    sum_qty    |  sum_base_price  |   sum_disc_price   |      sum_charge      |       avg_qty       |     avg_price      |        avg_disc        | count_order
+--------------+--------------+---------------+------------------+--------------------+----------------------+---------------------+--------------------+------------------------+-------------
+ A            | F            |  755169104.00 | 1132393551078.85 | 1075769269507.2800 | 1118803345410.881341 | 25.5008349737729458 | 38239.092301936228 | 0.05000589089336098513 |    29613505
+ N            | F            |   19739848.00 |   29582901058.72 |   28103693343.3129 |   29230208447.211007 | 25.5314210919099435 | 38262.376896239971 | 0.04996134042286256773 |      773159
+ N            | O            | 1486771871.00 | 2229413402673.42 | 2117943983015.2160 | 2202675535336.866619 | 25.4987572036252345 | 38235.368969579808 | 0.04999711444238138270 |    58307621
+ R            | F            |  755284493.00 | 1132556540140.25 | 1075930611640.1078 | 1118968269619.380181 | 25.5062025786547166 | 38246.802115395091 | 0.05000074767498912680 |    29611797
+(4 rows)
+
+Time: 19680.749 ms (00:19.681)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q1-agg.sql
+Timing is on.
+ l_returnflag | l_linestatus |    sum_qty    |  sum_base_price  |   sum_disc_price   |      sum_charge      |       avg_qty       |     avg_price      |        avg_disc        | count_order
+--------------+--------------+---------------+------------------+--------------------+----------------------+---------------------+--------------------+------------------------+-------------
+ A            | F            |  755169104.00 | 1132393551078.85 | 1075769269507.2800 | 1118803345410.881341 | 25.5008349737729458 | 38239.092301936228 | 0.05000589089336098513 |    29613505
+ N            | F            |   19739848.00 |   29582901058.72 |   28103693343.3129 |   29230208447.211007 | 25.5314210919099435 | 38262.376896239971 | 0.04996134042286256773 |      773159
+ N            | O            | 1486771871.00 | 2229413402673.42 | 2117943983015.2160 | 2202675535336.866619 | 25.4987572036252345 | 38235.368969579808 | 0.04999711444238138270 |    58307621
+ R            | F            |  755284493.00 | 1132556540140.25 | 1075930611640.1078 | 1118968269619.380181 | 25.5062025786547166 | 38246.802115395091 | 0.05000074767498912680 |    29611797
+(4 rows)
+
+Time: 16036.330 ms (00:16.036)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q1-agg.sql
+Timing is on.
+ l_returnflag | l_linestatus |    sum_qty    |  sum_base_price  |   sum_disc_price   |      sum_charge      |       avg_qty       |     avg_price      |        avg_disc        | count_order
+--------------+--------------+---------------+------------------+--------------------+----------------------+---------------------+--------------------+------------------------+-------------
+ A            | F            |  755169104.00 | 1132393551078.85 | 1075769269507.2800 | 1118803345410.881341 | 25.5008349737729458 | 38239.092301936228 | 0.05000589089336098513 |    29613505
+ N            | F            |   19739848.00 |   29582901058.72 |   28103693343.3129 |   29230208447.211007 | 25.5314210919099435 | 38262.376896239971 | 0.04996134042286256773 |      773159
+ N            | O            | 1486771871.00 | 2229413402673.42 | 2117943983015.2160 | 2202675535336.866619 | 25.4987572036252345 | 38235.368969579808 | 0.04999711444238138270 |    58307621
+ R            | F            |  755284493.00 | 1132556540140.25 | 1075930611640.1078 | 1118968269619.380181 | 25.5062025786547166 | 38246.802115395091 | 0.05000074767498912680 |    29611797
+(4 rows)
+
+Time: 15378.508 ms (00:15.379)
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start postgresql
++ pg_isready -q
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q2-filter.sql
+Timing is on.
+    revenue
+----------------
+ 209604862.4912
+(1 row)
+
+Time: 55663.493 ms (00:55.663)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q2-filter.sql
+Timing is on.
+    revenue
+----------------
+ 209604862.4912
+(1 row)
+
+Time: 2376.303 ms (00:02.376)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q2-filter.sql
+Timing is on.
+    revenue
+----------------
+ 209604862.4912
+(1 row)
+
+Time: 2436.613 ms (00:02.437)
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start postgresql
++ pg_isready -q
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q3-join.sql
+Timing is on.
+ l_orderkey |   revenue   | o_orderdate | o_shippriority
+------------+-------------+-------------+----------------
+   16384100 | 450194.8280 | 1995-03-02  |              0
+   95386692 | 449323.5984 | 1995-02-20  |              0
+   17349504 | 440084.9056 | 1995-03-08  |              0
+   34684896 | 434803.9319 | 1995-03-11  |              0
+   62597284 | 433809.9854 | 1995-03-04  |              0
+   30596321 | 425393.7914 | 1995-02-19  |              0
+   92905604 | 424721.0092 | 1995-03-14  |              0
+   62821248 | 423699.3457 | 1995-02-11  |              0
+  117312357 | 423609.1834 | 1995-03-13  |              0
+   35506627 | 423096.5940 | 1995-03-13  |              0
+(10 rows)
+
+Time: 29140.155 ms (00:29.140)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q3-join.sql
+Timing is on.
+ l_orderkey |   revenue   | o_orderdate | o_shippriority
+------------+-------------+-------------+----------------
+   16384100 | 450194.8280 | 1995-03-02  |              0
+   95386692 | 449323.5984 | 1995-02-20  |              0
+   17349504 | 440084.9056 | 1995-03-08  |              0
+   34684896 | 434803.9319 | 1995-03-11  |              0
+   62597284 | 433809.9854 | 1995-03-04  |              0
+   30596321 | 425393.7914 | 1995-02-19  |              0
+   92905604 | 424721.0092 | 1995-03-14  |              0
+   62821248 | 423699.3457 | 1995-02-11  |              0
+  117312357 | 423609.1834 | 1995-03-13  |              0
+   35506627 | 423096.5940 | 1995-03-13  |              0
+(10 rows)
+
+Time: 10169.610 ms (00:10.170)
++ for run in 1 2 3
++ psql -X -P pager=off -c '\timing on' -f /opt/bench/q3-join.sql
+Timing is on.
+ l_orderkey |   revenue   | o_orderdate | o_shippriority
+------------+-------------+-------------+----------------
+   16384100 | 450194.8280 | 1995-03-02  |              0
+   95386692 | 449323.5984 | 1995-02-20  |              0
+   17349504 | 440084.9056 | 1995-03-08  |              0
+   34684896 | 434803.9319 | 1995-03-11  |              0
+   62597284 | 433809.9854 | 1995-03-04  |              0
+   30596321 | 425393.7914 | 1995-02-19  |              0
+   92905604 | 424721.0092 | 1995-03-14  |              0
+   62821248 | 423699.3457 | 1995-02-11  |              0
+  117312357 | 423609.1834 | 1995-03-13  |              0
+   35506627 | 423096.5940 | 1995-03-13  |              0
+(10 rows)
+
+Time: 10407.035 ms (00:10.407)
++ for q in q1-agg q2-filter q3-join
++ echo 'EXPLAIN (ANALYZE, BUFFERS)'
++ cat /opt/bench/q1-agg.sql
++ psql -X -P pager=off
+                                                                         QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=3015789.49..3015797.15 rows=6 width=236) (actual time=16546.020..16554.519 rows=4 loops=1)
+   Group Key: l_returnflag, l_linestatus
+   Buffers: shared hit=920 read=2309278
+   ->  Gather Merge  (cost=3015789.49..3015795.43 rows=48 width=236) (actual time=16545.960..16554.418 rows=36 loops=1)
+         Workers Planned: 8
+         Workers Launched: 8
+         Buffers: shared hit=920 read=2309278
+         ->  Sort  (cost=3014789.35..3014789.36 rows=6 width=236) (actual time=16519.476..16519.478 rows=4 loops=9)
+               Sort Key: l_returnflag, l_linestatus
+               Sort Method: quicksort  Memory: 26kB
+               Buffers: shared hit=920 read=2309278
+               Worker 0:  Sort Method: quicksort  Memory: 26kB
+               Worker 1:  Sort Method: quicksort  Memory: 26kB
+               Worker 2:  Sort Method: quicksort  Memory: 26kB
+               Worker 3:  Sort Method: quicksort  Memory: 26kB
+               Worker 4:  Sort Method: quicksort  Memory: 26kB
+               Worker 5:  Sort Method: quicksort  Memory: 26kB
+               Worker 6:  Sort Method: quicksort  Memory: 26kB
+               Worker 7:  Sort Method: quicksort  Memory: 26kB
+               ->  Partial HashAggregate  (cost=3014789.13..3014789.27 rows=6 width=236) (actual time=16519.433..16519.439 rows=4 loops=9)
+                     Group Key: l_returnflag, l_linestatus
+                     Batches: 1  Memory Usage: 24kB
+                     Buffers: shared hit=864 read=2309278
+                     Worker 0:  Batches: 1  Memory Usage: 24kB
+                     Worker 1:  Batches: 1  Memory Usage: 24kB
+                     Worker 2:  Batches: 1  Memory Usage: 24kB
+                     Worker 3:  Batches: 1  Memory Usage: 24kB
+                     Worker 4:  Batches: 1  Memory Usage: 24kB
+                     Worker 5:  Batches: 1  Memory Usage: 24kB
+                     Worker 6:  Batches: 1  Memory Usage: 24kB
+                     Worker 7:  Batches: 1  Memory Usage: 24kB
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..2497635.05 rows=14775831 width=25) (actual time=235.835..2583.095 rows=13145120 loops=9)
+                           Filter: (l_shipdate <= '1998-09-02'::date)
+                           Rows Removed by Filter: 187614
+                           Buffers: shared hit=864 read=2309278
+ Planning:
+   Buffers: shared hit=188 read=6
+ Planning Time: 2.706 ms
+ JIT:
+   Functions: 75
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 12.557 ms (Deform 6.919 ms), Inlining 750.994 ms, Optimization 831.842 ms, Emission 539.382 ms, Total 2134.776 ms
+ Execution Time: 16574.072 ms
+(43 rows)
+
++ for q in q1-agg q2-filter q3-join
++ echo 'EXPLAIN (ANALYZE, BUFFERS)'
++ cat /opt/bench/q2-filter.sql
++ psql -X -P pager=off
+                                                                             QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=1253994.78..1253994.79 rows=1 width=32) (actual time=3033.215..3089.064 rows=1 loops=1)
+   Buffers: shared hit=1 read=839227
+   ->  Gather  (cost=1253994.04..1253994.75 rows=7 width=32) (actual time=3028.299..3089.027 rows=8 loops=1)
+         Workers Planned: 7
+         Workers Launched: 7
+         Buffers: shared hit=1 read=839227
+         ->  Partial Aggregate  (cost=1252994.04..1252994.05 rows=1 width=32) (actual time=3007.889..3007.890 rows=1 loops=8)
+               Buffers: shared hit=1 read=839227
+               ->  Parallel Bitmap Heap Scan on lineitem  (cost=17701.03..1252848.87 rows=29033 width=12) (actual time=793.234..2994.085 rows=24275 loops=8)
+                     Recheck Cond: ((l_shipdate >= '1994-01-01'::date) AND (l_shipdate < '1994-02-01'::date))
+                     Filter: ((l_discount >= 0.05) AND (l_discount <= 0.07) AND (l_quantity < '24'::numeric))
+                     Rows Removed by Filter: 168762
+                     Heap Blocks: exact=105344
+                     Buffers: shared hit=1 read=839227
+                     ->  Bitmap Index Scan on lineitem_shipdate_idx  (cost=0.00..17650.22 rows=1614485 width=0) (actual time=386.452..386.453 rows=1544294 loops=1)
+                           Index Cond: ((l_shipdate >= '1994-01-01'::date) AND (l_shipdate < '1994-02-01'::date))
+                           Buffers: shared hit=1 read=1304
+ Planning:
+   Buffers: shared hit=116
+ Planning Time: 0.580 ms
+ JIT:
+   Functions: 58
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 6.067 ms (Deform 2.573 ms), Inlining 580.347 ms, Optimization 330.450 ms, Emission 251.485 ms, Total 1168.349 ms
+ Execution Time: 3106.621 ms
+(25 rows)
+
++ for q in q1-agg q2-filter q3-join
++ echo 'EXPLAIN (ANALYZE, BUFFERS)'
++ cat /opt/bench/q3-join.sql
++ psql -X -P pager=off
+                                                                                 QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=4201663.91..4201663.94 rows=10 width=48) (actual time=11740.632..11876.166 rows=10 loops=1)
+   Buffers: shared hit=83167708 read=2024894
+   ->  Sort  (cost=4201663.91..4217366.53 rows=6281046 width=48) (actual time=11503.939..11639.472 rows=10 loops=1)
+         Sort Key: (sum((lineitem.l_extendedprice * ('1'::numeric - lineitem.l_discount)))) DESC, orders.o_orderdate
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=83167708 read=2024894
+         ->  GroupAggregate  (cost=3116476.51..4065932.77 rows=6281046 width=48) (actual time=11089.230..11583.895 rows=227611 loops=1)
+               Group Key: lineitem.l_orderkey, orders.o_orderdate, orders.o_shippriority
+               Buffers: shared hit=83167705 read=2024894
+               ->  Gather Merge  (cost=3116476.51..3893204.00 rows=6281046 width=28) (actual time=11089.168..11308.546 rows=601556 loops=1)
+                     Workers Planned: 8
+                     Workers Launched: 8
+                     Buffers: shared hit=83167705 read=2024894
+                     ->  Sort  (cost=3115476.36..3117439.19 rows=785131 width=28) (actual time=11061.950..11067.566 rows=66840 loops=9)
+                           Sort Key: lineitem.l_orderkey, orders.o_orderdate, orders.o_shippriority
+                           Sort Method: quicksort  Memory: 6305kB
+                           Buffers: shared hit=83167705 read=2024894
+                           Worker 0:  Sort Method: quicksort  Memory: 6218kB
+                           Worker 1:  Sort Method: quicksort  Memory: 6267kB
+                           Worker 2:  Sort Method: quicksort  Memory: 6225kB
+                           Worker 3:  Sort Method: quicksort  Memory: 6197kB
+                           Worker 4:  Sort Method: quicksort  Memory: 4546kB
+                           Worker 5:  Sort Method: quicksort  Memory: 6202kB
+                           Worker 6:  Sort Method: quicksort  Memory: 6187kB
+                           Worker 7:  Sort Method: quicksort  Memory: 6165kB
+                           ->  Parallel Hash Join  (cost=83094.25..3038601.93 rows=785131 width=28) (actual time=667.338..11026.087 rows=66840 loops=9)
+                                 Hash Cond: (orders.o_custkey = customer.c_custkey)
+                                 Buffers: shared hit=83167521 read=2024894
+                                 ->  Nested Loop  (cost=0.57..2945220.55 rows=3919120 width=32) (actual time=12.196..10257.154 rows=333003 loops=9)
+                                       Buffers: shared hit=83167433 read=1953052
+                                       ->  Parallel Seq Scan on lineitem  (cost=0.00..2497635.05 rows=8052018 width=20) (actual time=0.074..2223.478 rows=7187573 loops=9)
+                                             Filter: (l_shipdate > '1995-03-15'::date)
+                                             Rows Removed by Filter: 6145161
+                                             Buffers: shared hit=357090 read=1953052
+                                       ->  Memoize  (cost=0.57..0.60 rows=1 width=20) (actual time=0.001..0.001 rows=0 loops=64688156)
+                                             Cache Key: lineitem.l_orderkey
+                                             Cache Mode: logical
+                                             Hits: 5495761  Misses: 1891604  Evictions: 0  Overflows: 0  Memory Usage: 139573kB
+                                             Buffers: shared hit=82810343
+                                             Worker 0:  Hits: 5402962  Misses: 1859255  Evictions: 0  Overflows: 0  Memory Usage: 137174kB
+                                             Worker 1:  Hits: 5409648  Misses: 1862176  Evictions: 0  Overflows: 0  Memory Usage: 137421kB
+                                             Worker 2:  Hits: 5405554  Misses: 1857413  Evictions: 0  Overflows: 0  Memory Usage: 137044kB
+                                             Worker 3:  Hits: 5357289  Misses: 1844633  Evictions: 0  Overflows: 0  Memory Usage: 136142kB
+                                             Worker 4:  Hits: 5164730  Misses: 1778842  Evictions: 0  Overflows: 0  Memory Usage: 131257kB
+                                             Worker 5:  Hits: 5348669  Misses: 1841118  Evictions: 0  Overflows: 0  Memory Usage: 135839kB
+                                             Worker 6:  Hits: 5257725  Misses: 1809370  Evictions: 0  Overflows: 0  Memory Usage: 133542kB
+                                             Worker 7:  Hits: 5283751  Misses: 1817656  Evictions: 0  Overflows: 0  Memory Usage: 134129kB
+                                             ->  Index Scan using orders_pkey on orders  (cost=0.56..0.59 rows=1 width=20) (actual time=0.003..0.003 rows=0 loops=16562067)
+                                                   Index Cond: (o_orderkey = lineitem.l_orderkey)
+                                                   Filter: (o_orderdate < '1995-03-15'::date)
+                                                   Rows Removed by Filter: 1
+                                                   Buffers: shared hit=82810343
+                                 ->  Parallel Hash  (cost=81215.79..81215.79 rows=150231 width=4) (actual time=653.513..653.514 rows=66765 loops=9)
+                                       Buckets: 1048576  Batches: 1  Memory Usage: 31808kB
+                                       Buffers: shared read=71842
+                                       ->  Parallel Seq Scan on customer  (cost=0.00..81215.79 rows=150231 width=4) (actual time=174.766..624.064 rows=66765 loops=9)
+                                             Filter: (c_mktsegment = 'BUILDING'::bpchar)
+                                             Rows Removed by Filter: 266568
+                                             Buffers: shared read=71842
+ Planning:
+   Buffers: shared hit=276 read=20
+ Planning Time: 8.485 ms
+ JIT:
+   Functions: 220
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 11.869 ms (Deform 6.002 ms), Inlining 642.652 ms, Optimization 677.272 ms, Emission 485.750 ms, Total 1817.542 ms
+ Execution Time: 11909.285 ms
+(67 rows)
+
++ systemctl start clickhouse-server
