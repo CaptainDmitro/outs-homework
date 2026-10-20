@@ -1,0 +1,9 @@
+LOAD CSV
+     FROM ALL FILENAMES MATCHING ~/orders.tbl/
+          IN DIRECTORY '/data/tpch'
+     INTO postgresql://postgres:otus_pass@localhost/tpch
+          TARGET TABLE orders
+     WITH truncate,
+          fields terminated by '|',
+          fields not enclosed,
+          workers = 8, concurrency = 1, batch rows = 50000;

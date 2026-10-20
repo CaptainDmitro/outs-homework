@@ -1,0 +1,61 @@
+#cloud-config
+write_files:
+  - path: /opt/agent/agent.py
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env python3
+      # Агент стенда: забирает скрипт из метаданных сервера (cmd_id, cmd_n, c000...)
+      # и после выполнения пишет вывод (gzip + base64) в серийную консоль.
+      import base64, gzip, json, os, subprocess, threading, time, urllib.request
+
+      MD = "http://169.254.169.254/openstack/latest/meta_data.json"
+      RUNS = "/opt/agent/runs"
+      os.makedirs(RUNS, exist_ok=True)
+      lock = threading.Lock()
+
+      def tty(text):
+          with lock, open("/dev/ttyS0", "w") as f:
+              f.write(text)
+
+      def run(cid):
+          path = f"{RUNS}/{cid}"
+          tty(f"\n=== START {cid}\n")
+          with open(path + ".log", "wb") as log:
+              rc = subprocess.call(["bash", path + ".sh"], stdout=log, stderr=subprocess.STDOUT,
+                                   stdin=subprocess.DEVNULL, cwd="/root", env={**os.environ, "HOME": "/root"})
+          data = base64.b64encode(gzip.compress(open(path + ".log", "rb").read())).decode()
+          lines = "".join(f"B64:{data[i:i + 200]}\n" for i in range(0, len(data), 200))
+          tty(f"\n=== OUT {cid} BEGIN\n{lines}=== OUT {cid} END rc={rc}\n")
+
+      tty("\n=== AGENT READY\n")
+      while True:
+          try:
+              meta = json.load(urllib.request.urlopen(MD, timeout=5)).get("meta", {})
+              cid = meta.get("cmd_id")
+              if cid and not os.path.exists(f"{RUNS}/{cid}.sh"):
+                  b64 = "".join(meta[f"c{i:03d}"] for i in range(int(meta["cmd_n"])))
+                  with open(f"{RUNS}/{cid}.sh", "wb") as f:
+                      f.write(gzip.decompress(base64.b64decode(b64)))
+                  threading.Thread(target=run, args=(cid,)).start()
+          except Exception as e:
+              tty(f"\n=== AGENT ERROR {e!r}\n")
+              time.sleep(50)
+          time.sleep(10)
+  - path: /etc/systemd/system/agent.service
+    content: |
+      [Unit]
+      Description=bench agent
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      ExecStart=/usr/bin/python3 /opt/agent/agent.py
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+runcmd:
+  - dmesg -n 1
+  - systemctl daemon-reload
+  - systemctl enable agent
+  - systemctl start --no-block agent
