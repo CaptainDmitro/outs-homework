@@ -1,0 +1,29 @@
+yandex_vpc_security_group.ha: Creating...
+yandex_vpc_security_group.ha: Still creating... [00m10s elapsed]
+yandex_vpc_security_group.ha: Still creating... [00m20s elapsed]
+yandex_dns_zone.internal: Creating...
+yandex_dns_zone.internal: Creation complete after 1s [id=dns46vvmvrvtm3k8kt5c]
+yandex_dns_recordset.pg: Creating...
+yandex_dns_recordset.pg: Creation complete after 0s [id=dns46vvmvrvtm3k8kt5c/pg/A]
+yandex_vpc_security_group.ha: Creation complete after 22s [id=enpdu7kjn7lgubbdu33r]
+yandex_compute_instance.client: Creating...
+yandex_compute_instance.site["d"]: Creating...
+yandex_compute_instance.site["a"]: Creating...
+yandex_compute_instance.client: Still creating... [00m10s elapsed]
+yandex_compute_instance.site["a"]: Still creating... [00m10s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m10s elapsed]
+yandex_compute_instance.client: Still creating... [00m20s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m20s elapsed]
+yandex_compute_instance.client: Still creating... [00m30s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m30s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m40s elapsed]
+yandex_compute_instance.client: Still creating... [00m40s elapsed]
+yandex_compute_instance.client: Creation complete after 46s [id=bg0rc9vt46pkit4rn2e5]
+yandex_compute_instance.site["d"]: Creation complete after 50s [id=fv4tqajbjd2dm0g64m9i]
+
+Error: Error while requesting API to create instance: x-request-id = 5cfa7a9e-2e6d-41c6-affd-36e415760256 x-server-trace-id = 494a2f2fc3d7d0d2:0965340c06655bf3:aca2930fc506fdab:1 x-client-trace-id = a838c323-0bcd-4b25-af46-f378a57b7eea rpc error: code = FailedPrecondition desc = Zone ru-central1-a is not available
+
+  with yandex_compute_instance.site["a"],
+  on main.tf line 58, in resource "yandex_compute_instance" "site":
+  58: resource "yandex_compute_instance" "site" {
+

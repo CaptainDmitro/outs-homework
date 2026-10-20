@@ -1,0 +1,33 @@
+### pg-e: standby-лидер node3 через ~3 мин после отказа лидера в кластере d
++ sudo docker exec node3 ps -eo pid,etime,cmd | grep -E "postgres:|patroni"
+     42       04:11 postgres: bananaflow-e: startup recovering 000000010000000000000005
+    136       03:00 postgres: bananaflow-e: walreceiver 
++ sudo docker exec node3 psql ... -c "select name, setting from pg_settings where name in (...)" -c "select pg_last_wal_receive_lsn(), pg_last_wal_replay_lsn(), ..."
+primary_conninfo|user=replicator passfile=/tmp/pgpass host=10.130.0.10 port=5000 sslmode=prefer application_name=node3 gssencmode=prefer channel_binding=prefer
+primary_slot_name|
+recovery_target_timeline|latest
+restore_command|
+wal_receiver_timeout|60000
+wal_retrieve_retry_interval|5000
+0/5431D38|0/5431D38|1
++ sudo docker exec node3 ss -tnpo | grep -v 2379 | grep -v 2380 | grep -v 8008
+ESTAB 0      0               172.20.0.13:42982          10.130.0.10:5000  timer:(keepalive,116min,0)
+
+### pg-d: HAProxy держит клиентскую сторону, серверной нет
++ sudo docker exec haproxy sh -c "ss -tno | grep :5000"
+ESTAB      0      0        172.20.0.10:5000   10.131.0.10:42982
+
+### pg-e: убиваем зависший walreceiver
++ sudo docker exec node3 pkill -f walreceiver
++ sleep 8
++ sudo docker exec node3 psql ... -c "select status, received_tli, sender_host from pg_stat_wal_receiver" -c "select max(id) from ha_test"
+streaming|2|10.130.0.10
+140
++ sudo docker logs --since 20s node3 2>&1 | grep "UTC \["
+2026-10-20 20:05:16.596 UTC [136] FATAL:  terminating walreceiver process due to administrator command
+2026-10-20 20:05:16.645 UTC [387] LOG:  fetching timeline history file for timeline 2 from primary server
+2026-10-20 20:05:16.660 UTC [387] LOG:  started streaming WAL from primary at 0/5000000 on timeline 1
+2026-10-20 20:05:16.701 UTC [387] LOG:  replication terminated by primary server
+2026-10-20 20:05:16.701 UTC [387] DETAIL:  End of WAL reached on timeline 1 at 0/5431D38.
+2026-10-20 20:05:16.706 UTC [42] LOG:  new target timeline is 2
+2026-10-20 20:05:16.716 UTC [387] LOG:  restarted WAL streaming at 0/5000000 on timeline 2

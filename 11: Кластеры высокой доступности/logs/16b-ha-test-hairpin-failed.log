@@ -1,0 +1,47 @@
+### pg-e: ha-test.sh через pg.bananaflow.internal (внутренний NLB 10.131.0.100), фрагмент вывода
+### $ ssh pg-e 'sed -n "/19:37:0/,$p" /home/ubuntu/ha-test.log | head -60; tail -3 /home/ubuntu/ha-test.log'
+19:37:00 72|bananaflow-d|172.20.0.11
+19:37:01 73|bananaflow-d|172.20.0.11
+19:37:02 74|bananaflow-d|172.20.0.11
+19:37:03 75|bananaflow-d|172.20.0.11
+19:37:04 76|bananaflow-d|172.20.0.11
+19:37:05 77|bananaflow-d|172.20.0.11
+19:37:06 78|bananaflow-d|172.20.0.11
+19:37:07 79|bananaflow-d|172.20.0.11
+19:37:08 80|bananaflow-d|172.20.0.11
+19:37:09 81|bananaflow-d|172.20.0.11
+19:37:10 82|bananaflow-d|172.20.0.11
+19:37:12 83|bananaflow-d|172.20.0.11
+19:37:13 84|bananaflow-d|172.20.0.11
+19:37:14 85|bananaflow-d|172.20.0.11
+19:37:19 86|bananaflow-d|172.20.0.11
+19:37:20 87|bananaflow-d|172.20.0.11
+19:37:21 88|bananaflow-d|172.20.0.11
+19:37:22 89|bananaflow-d|172.20.0.11
+19:37:25 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:28 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:29 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: server closed the connection unexpectedly
+19:37:30 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: server closed the connection unexpectedly
+19:37:31 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: server closed the connection unexpectedly
+19:37:34 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:37 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:40 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:43 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:47 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:50 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:53 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:56 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:37:59 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:02 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:05 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:08 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:11 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:14 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:17 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+
+### $ ssh pg-e 'date +%T; tail -4 /home/ubuntu/ha-test.log'
+19:38:24
+19:38:14 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:17 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:20 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired
+19:38:23 psql: error: connection to server at "pg.bananaflow.internal" (10.131.0.100), port 5432 failed: timeout expired

@@ -1,0 +1,39 @@
+yandex_compute_instance.site["d"]: Destroying... [id=fv4j2naosq7q0tl9fjp1]
+yandex_dns_recordset.pg: Modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A]
+yandex_compute_instance.site["e"]: Creating...
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 00m10s elapsed]
+yandex_dns_recordset.pg: Still modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A, 00m10s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m10s elapsed]
+yandex_dns_recordset.pg: Still modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A, 00m20s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 00m20s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m20s elapsed]
+yandex_dns_recordset.pg: Modifications complete after 20s [id=dns46vvmvrvtm3k8kt5c/pg/A]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 00m30s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m30s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 00m40s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m40s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 00m50s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m50s elapsed]
+yandex_compute_instance.site["e"]: Creation complete after 50s [id=bg0mrt0tpkgof27hm265]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 01m00s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4j2naosq7q0tl9fjp1, 01m10s elapsed]
+yandex_compute_instance.site["d"]: Destruction complete after 1m10s
+yandex_compute_instance.site["d"]: Creating...
+yandex_compute_instance.site["d"]: Still creating... [00m10s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m20s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m30s elapsed]
+yandex_compute_instance.site["d"]: Creation complete after 32s [id=fv41d4caeo447s0flm0o]
+yandex_lb_target_group.pg: Creating...
+yandex_lb_target_group.pg: Still creating... [00m10s elapsed]
+yandex_lb_target_group.pg: Still creating... [00m20s elapsed]
+yandex_lb_target_group.pg: Creation complete after 21s [id=enp6o5l1lj9ou6q388qk]
+yandex_lb_network_load_balancer.pg: Creating...
+yandex_lb_network_load_balancer.pg: Still creating... [00m10s elapsed]
+
+Error: Error while requesting API to create network load balancer: x-request-id = 820a3f1e-108e-497d-b445-e296e3a59200 x-server-trace-id = d0cc87a01d81b3a6:f7e33ce74ded2995:fdd93d24b5f35760:1 x-client-trace-id = bc372dab-e4a9-4d79-a974-3495d0d1e66b rpc error: code = InvalidArgument desc = Validation failed:
+  - listener_specs[0].name: Field does not match the pattern /|[a-z][-a-z0-9]{1,61}[a-z0-9]/
+
+  with yandex_lb_network_load_balancer.pg,
+  on main.tf line 115, in resource "yandex_lb_network_load_balancer" "pg":
+ 115: resource "yandex_lb_network_load_balancer" "pg" {
+

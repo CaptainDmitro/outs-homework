@@ -1,0 +1,16 @@
+2026-10-20 19:16:40,993 - apt.py[DEBUG]: Waiting for APT lock
+2026-10-20 19:16:40,999 - apt.py[DEBUG]: APT lock available
+2026-10-20 19:16:40,999 - subp.py[DEBUG]: Running command ['eatmydata', 'apt-get', '--option=Dpkg::Options::=--force-confold', '--option=Dpkg::options::=--force-unsafe-io', '--assume-yes', '--quiet', 'update'] with allowed return codes [0] (shell=False, capture=False)
+2026-10-20 19:17:25,956 - performance.py[DEBUG]: Running ['eatmydata', 'apt-get', '--option=Dpkg::Options::=--force-confold', '--option=Dpkg::options::=--force-unsafe-io', '--assume-yes', '--quiet', 'update'] took 44.372 seconds
+2026-10-20 19:17:25,956 - distros[DEBUG]: Skipping update for package manager 'snap': not available.
+2026-10-20 19:17:25,957 - helpers.py[DEBUG]: update-sources already ran (freq=once-per-instance)
+2026-10-20 19:17:25,957 - subp.py[DEBUG]: Running command ['apt-cache', 'pkgnames'] with allowed return codes [0] (shell=False, capture=True)
+2026-10-20 19:17:26,132 - performance.py[DEBUG]: Running ['apt-cache', 'pkgnames'] took 0.176 seconds
+2026-10-20 19:17:26,153 - apt.py[DEBUG]: Waiting for APT lock
+2026-10-20 19:17:56,160 - log_util.py[WARNING]: Failure when attempting to install packages: ['docker.io', 'docker-compose-v2', 'postgresql-client', 'dnsutils']
+2026-10-20 19:17:56,160 - log_util.py[DEBUG]: Failure when attempting to install packages: ['docker.io', 'docker-compose-v2', 'postgresql-client', 'dnsutils']
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/cloudinit/config/cc_package_update_upgrade_install.py", line 92, in handle
+    cloud.distro.install_packages(pkglist)
+  File "/usr/lib/python3/dist-packages/cloudinit/distros/__init__.py", line 266, in install_packages
+    failed = manager.install_packages(to_try)

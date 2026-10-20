@@ -1,0 +1,16 @@
+7000 ok
+5001 ok
+8404 ok
+5000 FAIL
++ Cluster: bananaflow-e (initializing) -------------+----+-----------+
+| Member | Host        | Role    | State            | TL | Lag in MB |
++--------+-------------+---------+------------------+----+-----------+
+| node1  | 172.20.0.11 | Replica | stopped          |    |   unknown |
+| node2  | 172.20.0.12 | Replica | stopped          |    |   unknown |
+| node3  | 172.20.0.13 | Replica | creating replica |    |   unknown |
++--------+-------------+---------+------------------+----+-----------+
+2026-10-20 19:11:03.253267 I | rafthttp: established a TCP streaming connection with peer 44f6dc5f3178339e (stream Message writer)
+2026-10-20 19:11:12,819 INFO: Lock owner: None; I am node2
+2026-10-20 19:11:12,862 INFO: waiting for standby_leader to bootstrap
+2026-10-20 19:11:22,819 INFO: Lock owner: None; I am node2
+2026-10-20 19:11:22,819 INFO: waiting for standby_leader to bootstrap

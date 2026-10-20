@@ -1,0 +1,50 @@
+Cloud-init v. 26.1-0ubuntu1~24.04.1 running 'init-local' at Tue, 20 Oct 2026 18:51:41 +0000. Up 10.03 seconds.
+Cloud-init v. 26.1-0ubuntu1~24.04.1 running 'init' at Tue, 20 Oct 2026 18:51:44 +0000. Up 12.94 seconds.
+ci-info: +++++++++++++++++++++++++++++++++++++++Net device info+++++++++++++++++++++++++++++++++++++++
+ci-info: +--------+------+------------------------------+---------------+--------+-------------------+
+ci-info: | Device |  Up  |           Address            |      Mask     | Scope  |     Hw-Address    |
+...
+
+#16 [node1] exporting to image
+#16 exporting layers 17.6s done
+#16 exporting manifest sha256:8ad66ce8c1f042e97af6d17cf0a00a28909001d7142deb583555a631340e6210
+#16 exporting manifest sha256:8ad66ce8c1f042e97af6d17cf0a00a28909001d7142deb583555a631340e6210 0.1s done
+#16 exporting config sha256:f680e62ed0eb38a4b7ac88c32c74c60a48cf99f8cc683b21060e9ee7f44714b6
+#16 ...
+
+#15 [node2] exporting to image
+#15 exporting layers 17.6s done
+#15 exporting manifest sha256:527c869de654034f41c521c8ef2b41bbca06d3bd9162a929746091d2129be829 0.1s done
+#15 exporting config sha256:ece7e612f98f2f94694dc21a8200ce6ed445014b2920564061f32108439498c9 0.1s done
+#15 exporting attestation manifest sha256:c1ee1d2cfe1ef440831347372d8f1ec1af7c8e996903fecaf235ea5533ded37f
+#15 exporting attestation manifest sha256:c1ee1d2cfe1ef440831347372d8f1ec1af7c8e996903fecaf235ea5533ded37f 0.2s done
+#15 exporting manifest list sha256:dbb8863b95a3eca459723423147997d5cc39e241e86bc3ff54537ed2c81137bf
+#15 exporting manifest list sha256:dbb8863b95a3eca459723423147997d5cc39e241e86bc3ff54537ed2c81137bf 0.1s done
+#15 naming to docker.io/library/patroni-etcd:16
+#15 naming to docker.io/library/patroni-etcd:16 0.0s done
+#15 ERROR: image "docker.io/library/patroni-etcd:16": already exists
+
+#14 [node3] exporting to image
+#14 exporting layers 17.6s done
+#14 exporting manifest sha256:8243a9899aa02bc34d6f0fc14d57d9687a5de1fdbb81c6b97ee49fcbff4c713e 0.1s done
+#14 exporting config sha256:67f19e9b5e92eb68e7adeba1649339fca5a4c3e13873830afeac4e5fca61bb25 0.1s done
+#14 exporting attestation manifest sha256:6696d1806c3e662bdd4b882e7475cd31c0dba0e8f653d49bd58d3fb1257a5328 0.2s done
+#14 exporting manifest list sha256:d4449394789dc42e04ac69dd29cb063dce6917f83bb52390454d90b08e5c4d71 0.1s done
+#14 naming to docker.io/library/patroni-etcd:16 done
+#14 unpacking to docker.io/library/patroni-etcd:16
+#14 unpacking to docker.io/library/patroni-etcd:16 0.3s done
+#14 CANCELED
+
+#16 [node1] exporting to image
+#16 exporting config sha256:f680e62ed0eb38a4b7ac88c32c74c60a48cf99f8cc683b21060e9ee7f44714b6 0.1s done
+#16 exporting attestation manifest sha256:3d9eeb588b0137478dc0b3fb934e16867fbd5263d728ac63ee8f53a6ac790e68 0.2s done
+#16 exporting manifest list sha256:d76f92539127c7ccd8e72c048ab49f92cb901bce871d52ee63ac69d478ef4021 0.1s done
+#16 naming to docker.io/library/patroni-etcd:16 0.0s done
+#16 unpacking to docker.io/library/patroni-etcd:16 0.3s done
+#16 CANCELED
+------
+ > [node2] exporting to image:
+------
+failed to solve: image "docker.io/library/patroni-etcd:16": already exists
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+Cloud-init v. 26.1-0ubuntu1~24.04.1 finished at Tue, 20 Oct 2026 18:54:43 +0000. Datasource DataSourceEc2.  Up 191.81 seconds

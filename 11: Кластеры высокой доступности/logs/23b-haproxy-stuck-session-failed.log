@@ -1,0 +1,48 @@
+### pg-d: отдельный listen standby_source (:5000) с option redispatch, timeout queue 5s, timeout client 30s, timeout server 90s; убит лидер
+$ ssh pg-d 'date +%T; sudo docker kill node2; sleep 60; sudo docker logs --since 70s haproxy 2>&1 | grep standby_source | grep 10.131 | head -8; sudo docker start node2'
+20:19:41
+10.131.0.10:57452 [20/Oct/2026:20:19:04.717] standby_source standby_source/node2 1/0/37190 9359531 -- 2/1/0/0/0 0/0
+10.131.0.10:59516 [20/Oct/2026:20:19:57.542] standby_source standby_source/<NOSRV> -1/-1/0 0 SC 3/2/1/0/0 0/0
+...
+$ ssh pg-e 'sudo docker exec node3 psql ... -c "select pid, status, received_tli from pg_stat_wal_receiver" -c "select max(id) from ha_test"'
+195
+2026-10-20 20:19:41.899 UTC [695] FATAL:  could not receive data from WAL stream: server closed the connection unexpectedly
+2026-10-20 20:19:41.900 UTC [55] LOG:  invalid record length at 0/547FE20: expected at least 24, got 0
+
+### pg-d: через минуту сессия standby всё ещё открыта
+$ ssh pg-d 'sudo docker exec haproxy ss -tno | grep ":5000"'
+ESTAB    0      0        172.20.0.10:5000    10.131.0.10:47210
+
+### pg-d: включён stats socket, снова убит лидер, состояние сессий HAProxy
+$ ssh pg-d '... date +%T; sudo docker kill $L; sleep 40; echo "show sess all" | ... /tmp/admin.sock | grep -B2 -A25 10.131.0.10'
+leader=node1
+20:21:41
+0x60e03fe3c9b0: [20/Oct/2026:20:21:41.739559] id=46 proto=tcpv4 source=10.131.0.10:49010
+  flags=0x2900a, conn_retries=2, conn_exp=<NEVER> conn_et=0x010 srv_conn=(nil), pend_pos=(nil) waiting=0 epoch=0
+  frontend=standby_source (id=5 mode=tcp), listener=? (id=1) addr=172.20.0.10:5000
+  backend=standby_source (id=5 mode=tcp) addr=172.20.0.10:33420
+  server=node1 (id=1) addr=172.20.0.11:5432
+  task=0x71794403c440 (state=0x00 nice=1024 calls=7 rate=0 exp=<NEVER> tid=0(1/0) age=20778d21h)
+  scf=0x60e03ff084e0 flags=0x00014000 state=EST endp=CONN,0x60e03ff0da40,0x050c0001 sub=1 rex=<NEVER> wex=<NEVER>
+      co0=0x71794403cf60 ctrl=tcpv4 xprt=RAW mux=PASS data=STRM target=LISTENER:0x60e03fe19220
+      flags=0x80000300 fd=16 fd.state=121 updt=0 fd.tmask=0x1
+  scb=0x60e03ff086a0 flags=0x00034005 state=CLO endp=CONN,0x60e03ff04480,0x000c0001 sub=2 rex=<NEVER> wex=<NEVER>
+      co1=0x71794403d540 ctrl=tcpv4 xprt=RAW mux=PASS data=STRM target=SERVER:0x60e03fe19750
+      flags=0x10400300 fd=18 fd.state=10010 updt=0 fd.tmask=0x1
+  req=0x60e03fe3c9d0 (f=0x808000 an=0x0 pipe=0 tofwd=-1 total=8)
+      an_exp=<NEVER> buf=0x60e03fe3c9d8 data=0x60e03ff003a0 o=8 p=8 i=0 size=16384
+  res=0x60e03fe3ca20 (f=0x80000000 an=0x0 pipe=0 tofwd=0 total=0)
+      an_exp=<NEVER> buf=0x60e03fe3ca28 data=(nil) o=0 p=0 i=0 size=0
+
+### pg-d: HAProxy 3.0 вместо 2.8.16 из Ubuntu, три раунда "убить лидера" (max(id) на standby-лидере pg-e после каждого)
+HAProxy version 2.8.16-0ubuntu0.24.04.3 2026/06/19 - https://haproxy.org/
+HAProxy version 3.0.30-47d806b 2026/10/14 - https://haproxy.org/
+round leader=node2 20:25:24
+378
+20:26:14 406|bananaflow-d|172.20.0.13
+round leader=node3 20:26:42
+378
+20:27:32 435|bananaflow-d|172.20.0.11
+round leader=node1 20:28:00
+378
+20:28:52 468|bananaflow-d|172.20.0.12

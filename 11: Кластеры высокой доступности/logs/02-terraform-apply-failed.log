@@ -1,0 +1,44 @@
+yandex_compute_instance.client: Destroying... [id=bg0rc9vt46pkit4rn2e5]
+yandex_compute_instance.site["d"]: Destroying... [id=fv4tqajbjd2dm0g64m9i]
+yandex_dns_recordset.pg: Modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A]
+yandex_compute_instance.site["e"]: Creating...
+yandex_dns_recordset.pg: Still modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A, 00m10s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 00m10s elapsed]
+yandex_compute_instance.client: Still destroying... [id=bg0rc9vt46pkit4rn2e5, 00m10s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m10s elapsed]
+yandex_compute_instance.client: Still destroying... [id=bg0rc9vt46pkit4rn2e5, 00m20s elapsed]
+yandex_dns_recordset.pg: Still modifying... [id=dns46vvmvrvtm3k8kt5c/pg/A, 00m20s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 00m20s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m20s elapsed]
+yandex_dns_recordset.pg: Modifications complete after 21s [id=dns46vvmvrvtm3k8kt5c/pg/A]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 00m30s elapsed]
+yandex_compute_instance.client: Still destroying... [id=bg0rc9vt46pkit4rn2e5, 00m30s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m30s elapsed]
+yandex_compute_instance.client: Still destroying... [id=bg0rc9vt46pkit4rn2e5, 00m40s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 00m40s elapsed]
+yandex_compute_instance.site["e"]: Still creating... [00m40s elapsed]
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 00m50s elapsed]
+yandex_compute_instance.client: Still destroying... [id=bg0rc9vt46pkit4rn2e5, 00m50s elapsed]
+yandex_compute_instance.client: Destruction complete after 50s
+yandex_compute_instance.client: Creating...
+yandex_compute_instance.site["d"]: Still destroying... [id=fv4tqajbjd2dm0g64m9i, 01m00s elapsed]
+yandex_compute_instance.site["d"]: Destruction complete after 1m1s
+yandex_compute_instance.site["d"]: Creating...
+yandex_compute_instance.site["d"]: Still creating... [00m10s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m20s elapsed]
+yandex_compute_instance.site["d"]: Still creating... [00m30s elapsed]
+yandex_compute_instance.site["d"]: Creation complete after 36s [id=fv4j2naosq7q0tl9fjp1]
+
+Error: Error while waiting operation to create instance: operation (id=bg0lt4lcjl1frb4kg75t) failed: rpc error: code = FailedPrecondition desc = FAILED_PRECONDITION: Address in use
+
+  with yandex_compute_instance.site["e"],
+  on main.tf line 58, in resource "yandex_compute_instance" "site":
+  58: resource "yandex_compute_instance" "site" {
+
+
+Error: Error while requesting API to create instance: x-request-id = 19d0d557-aabd-49af-9ee9-e678ddcb73fd x-server-trace-id = 93f9dd6e5636261d:aaa8446c4b947151:cab95706e4c5f3cc:1 x-client-trace-id = 0c2e30c1-45f0-4cb1-830a-472901272373 rpc error: code = FailedPrecondition desc = Zone ru-central1-b is not available
+
+  with yandex_compute_instance.client,
+  on main.tf line 102, in resource "yandex_compute_instance" "client":
+ 102: resource "yandex_compute_instance" "client" {
+

@@ -1,0 +1,75 @@
++ sleep 5
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698845461522747425) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Leader  | running   |  1 |           |
+| node2  | 172.20.0.12 | Replica | streaming |  1 |         0 |
+| node3  | 172.20.0.13 | Replica | streaming |  1 |         0 |
++--------+-------------+---------+-----------+----+-----------+
++ date +%T
+20:14:07
++ sudo docker kill node1
+node1
++ sleep 45
++ date +%T
+20:14:52
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698845461522747425) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node2  | 172.20.0.12 | Replica | streaming |  2 |         0 |
+| node3  | 172.20.0.13 | Leader  | running   |  2 |           |
++--------+-------------+---------+-----------+----+-----------+
++ sudo docker exec node2 patronictl -c /etc/patroni.yml history
++----+----------+------------------------------+----------------------------------+------------+
+| TL |      LSN | Reason                       | Timestamp                        | New Leader |
++----+----------+------------------------------+----------------------------------+------------+
+|  1 | 88430752 | no recovery target specified | 2026-10-20T20:14:30.673092+00:00 | node3      |
++----+----------+------------------------------+----------------------------------+------------+
++ sudo docker logs --since 60s node2
++ grep -E 'promot|leader|Lock owner'
++ grep -v etcd
++ tail -5
+2026-10-20 20:14:31,675 INFO: no action. I am (node2), a secondary, and following a leader (node3)
+2026-10-20 20:14:32,474 INFO: Lock owner: node3; I am node2
+2026-10-20 20:14:32,514 INFO: no action. I am (node2), a secondary, and following a leader (node3)
+2026-10-20 20:14:42,919 INFO: no action. I am (node2), a secondary, and following a leader (node3)
+2026-10-20 20:14:54,956 INFO: no action. I am (node2), a secondary, and following a leader (node3)
++ sudo docker logs --since 60s node3
++ tail -4
++ grep -E 'promot|leader|Lock owner'
++ grep -v etcd
+2026-10-20 20:14:32,321 INFO: no action. I am (node3), the leader with the lock
+2026-10-20 20:14:32,518 INFO: no action. I am (node3), the leader with the lock
+2026-10-20 20:14:42,839 INFO: no action. I am (node3), the leader with the lock
+2026-10-20 20:14:54,955 INFO: no action. I am (node3), the leader with the lock
+20:14:57
++ date +%T
++ sudo docker start node1
+node1
++ sleep 30
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698845461522747425) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica | streaming |  2 |         0 |
+| node2  | 172.20.0.12 | Replica | streaming |  2 |         0 |
+| node3  | 172.20.0.13 | Leader  | running   |  2 |           |
++--------+-------------+---------+-----------+----+-----------+
+
+### pg-e: standby-кластер следует за новым таймлайном
++ sudo docker exec node1 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-e (7698845461522747425) ------+----+-----------+
+| Member | Host        | Role           | State     | TL | Lag in MB |
++--------+-------------+----------------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica        | streaming |  1 |         0 |
+| node2  | 172.20.0.12 | Replica        | streaming |  1 |         0 |
+| node3  | 172.20.0.13 | Standby Leader | running   |  1 |           |
++--------+-------------+----------------+-----------+----+-----------+
++ sudo docker exec node3 psql -h /var/run/postgresql -U postgres -d bananaflow -XAt -c 'select status, received_tli, sender_host, sender_port from pg_stat_wal_receiver' -c 'select max(id) from ha_test'
+10
++ sudo docker logs --since 2m node3
++ grep 'UTC \['
+2026-10-20 20:14:07.503 UTC [56] FATAL:  could not receive data from WAL stream: server closed the connection unexpectedly
+2026-10-20 20:14:07.504 UTC [55] LOG:  invalid record length at 0/54558A0: expected at least 24, got 0

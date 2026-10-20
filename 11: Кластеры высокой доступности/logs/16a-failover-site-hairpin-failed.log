@@ -1,0 +1,71 @@
+$ date +%T; yc compute instance stop pg-d
+22:37:13
+22:37:44
+$ yc load-balancer network-load-balancer target-states pg-nlb --target-group-id enp6o5l1lj9ou6q388qk
++----------------------+-------------+-----------+
+|      SUBNET ID       |   ADDRESS   |  STATUS   |
++----------------------+-------------+-----------+
+| ajcd2bbrfbagcv6p73t1 | 10.131.0.10 | UNHEALTHY |
+| fl8cjtnhpo4im199nvpg | 10.130.0.10 | UNHEALTHY |
++----------------------+-------------+-----------+
+
+
+### pg-e
+19:37:45
++ date +%T
++ sudo docker exec node1 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-e (7698835606141308961) ------+----+-----------+
+| Member | Host        | Role           | State     | TL | Lag in MB |
++--------+-------------+----------------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica        | streaming |  1 |         0 |
+| node2  | 172.20.0.12 | Standby Leader | running   |  1 |           |
+| node3  | 172.20.0.13 | Replica        | streaming |  1 |         0 |
++--------+-------------+----------------+-----------+----+-----------+
++ sudo docker exec node1 patronictl -c /etc/patroni.yml edit-config --force -s standby_cluster=null
+--- 
++++ 
+@@ -16,9 +16,4 @@
+   use_pg_rewind: true
+   use_slots: true
+ retry_timeout: 10
+-standby_cluster:
+-  create_replica_methods:
+-  - basebackup
+-  host: 10.130.0.10
+-  port: 5000
+ ttl: 30
+Configuration changed
++ sleep 20
+19:38:06
++ date +%T
++ sudo docker exec node1 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-e (7698835606141308961) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica | streaming |  2 |         0 |
+| node2  | 172.20.0.12 | Leader  | running   |  2 |           |
+| node3  | 172.20.0.13 | Replica | streaming |  2 |         0 |
++--------+-------------+---------+-----------+----+-----------+
++ sudo docker exec node1 patronictl -c /etc/patroni.yml show-config
++ grep -c standby_cluster
+0
++ sudo docker logs --since 40s node2
++ grep -E 'promot|leader'
++ head -5
+2026-10-20 19:37:33,085 INFO: no action. I am (node2), the standby leader with the lock
+2026-10-20 19:37:43,083 INFO: no action. I am (node2), the standby leader with the lock
+2026-10-20 19:37:46,930 INFO: promoted self to leader because I had the session lock
+server promoting
+2026-10-20 19:37:46.941 UTC [66] LOG:  received promote request
++ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8404/health
+200
+
+$ date +%T; yc load-balancer network-load-balancer target-states pg-nlb --target-group-id enp6o5l1lj9ou6q388qk
+22:38:13
++----------------------+-------------+-----------+
+|      SUBNET ID       |   ADDRESS   |  STATUS   |
++----------------------+-------------+-----------+
+| ajcd2bbrfbagcv6p73t1 | 10.131.0.10 | HEALTHY   |
+| fl8cjtnhpo4im199nvpg | 10.130.0.10 | UNHEALTHY |
++----------------------+-------------+-----------+
+
