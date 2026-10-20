@@ -1,0 +1,148 @@
++ yc compute instance get-serial-port-output otus-pg-client | sed -n "/=== BENCH BEGIN/,/=== BENCH END/p"
+=== BENCH BEGIN yandex
+
+PLAY [Подключение к managed PostgreSQL и тестовые запросы] *********************
+
+TASK [Каталог ~/.postgresql] ***************************************************
+changed: [localhost]
+
+TASK [Корневой сертификат облака] **********************************************
+changed: [localhost] => (item=yandex)
+
+TASK [Запись в ~/.pgpass] ******************************************************
+changed: [localhost] => (item=yandex)
+
+TASK [Тестовые запросы] ********************************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод тестовых запросов] *************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "                                                                       version                                                                       ",
+        "-----------------------------------------------------------------------------------------------------------------------------------------------------",
+        " PostgreSQL 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit",
+        "(1 row)",
+        "",
+        "              now              | current_user | current_database | pg_is_in_recovery ",
+        "-------------------------------+--------------+------------------+-------------------",
+        " 2026-10-20 20:51:45.536255+03 | banana       | bananaflow       | f",
+        "(1 row)",
+        "",
+        " ssl | version ",
+        "-----+---------",
+        " f   | ",
+        "(1 row)"
+    ]
+}
+
+TASK [Скрипт с запросом select 1 для замера latency] ***************************
+changed: [localhost]
+
+TASK [Latency запроса select 1 (1 клиент, 30 с)] *******************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод latency] ***********************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c))",
+        "transaction type: /tmp/select1.sql",
+        "scaling factor: 1",
+        "query mode: simple",
+        "number of clients: 1",
+        "number of threads: 1",
+        "maximum number of tries: 1",
+        "duration: 30 s",
+        "number of transactions actually processed: 86651",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 0.346 ms",
+        "latency stddev = 0.197 ms",
+        "initial connection time = 12.338 ms",
+        "tps = 2889.536255 (without initial connection time)",
+        "progress: 10.0 s, 2941.7 tps, lat 0.339 ms stddev 0.191, 0 failed",
+        "progress: 20.0 s, 2868.0 tps, lat 0.348 ms stddev 0.212, 0 failed",
+        "progress: 30.0 s, 2855.4 tps, lat 0.350 ms stddev 0.187, 0 failed"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+PLAY [Нагрузочное тестирование pgbench] ****************************************
+
+TASK [Инициализация pgbench (scale 10)] ****************************************
+changed: [localhost] => (item=yandex)
+
+TASK [Вывод инициализации] *****************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "1000000 of 1000000 tuples (100%) done (elapsed 0.21 s, remaining 0.00 s)",
+        "creating primary keys...",
+        "done in 18.94 s (drop tables 0.00 s, create tables 0.01 s, client-side generate 17.09 s, primary keys 1.83 s)."
+    ]
+}
+
+TASK [TPC-B (8 клиентов, 60 с)] ************************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод TPC-B] *************************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c))",
+        "transaction type: <builtin: TPC-B (sort of)>",
+        "scaling factor: 10",
+        "query mode: simple",
+        "number of clients: 8",
+        "number of threads: 8",
+        "maximum number of tries: 1",
+        "duration: 60 s",
+        "number of transactions actually processed: 48954",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 9.793 ms",
+        "latency stddev = 13.898 ms",
+        "initial connection time = 72.326 ms",
+        "tps = 816.799814 (without initial connection time)",
+        "starting vacuum...end.",
+        "progress: 10.0 s, 699.0 tps, lat 11.358 ms stddev 33.325, 0 failed",
+        "progress: 20.0 s, 821.8 tps, lat 9.734 ms stddev 6.743, 0 failed",
+        "progress: 30.0 s, 835.1 tps, lat 9.574 ms stddev 5.773, 0 failed",
+        "progress: 40.0 s, 898.0 tps, lat 8.912 ms stddev 4.825, 0 failed",
+        "progress: 50.0 s, 848.8 tps, lat 9.430 ms stddev 7.061, 0 failed",
+        "progress: 60.0 s, 792.0 tps, lat 10.097 ms stddev 6.952, 0 failed"
+    ]
+}
+
+TASK [Select-only (8 клиентов, 60 с)] ******************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод select-only] *******************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c))",
+        "transaction type: <builtin: select only>",
+        "scaling factor: 10",
+        "query mode: simple",
+        "number of clients: 8",
+        "number of threads: 8",
+        "maximum number of tries: 1",
+        "duration: 60 s",
+        "number of transactions actually processed: 444362",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 1.079 ms",
+        "latency stddev = 1.208 ms",
+        "initial connection time = 77.104 ms",
+        "tps = 7415.314836 (without initial connection time)",
+        "starting vacuum...end.",
+        "progress: 10.0 s, 6873.6 tps, lat 1.155 ms stddev 0.702, 0 failed",
+        "progress: 20.0 s, 6699.5 tps, lat 1.194 ms stddev 2.648, 0 failed",
+        "progress: 30.0 s, 7765.9 tps, lat 1.030 ms stddev 0.694, 0 failed",
+        "progress: 40.0 s, 7389.5 tps, lat 1.082 ms stddev 0.674, 0 failed",
+        "progress: 50.0 s, 8192.8 tps, lat 0.976 ms stddev 0.673, 0 failed",
+        "progress: 60.0 s, 7514.6 tps, lat 1.064 ms stddev 0.677, 0 failed"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+=== BENCH END yandex

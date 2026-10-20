@@ -1,0 +1,299 @@
++ terraform apply -auto-approve -no-color
+data.yandex_compute_image.ubuntu: Reading...
+data.yandex_vpc_subnet.e: Reading...
+data.yandex_mdb_postgresql_cluster.pg: Reading...
+data.yandex_compute_image.ubuntu: Still reading... [00m10s elapsed]
+data.yandex_vpc_subnet.e: Still reading... [00m10s elapsed]
+data.yandex_mdb_postgresql_cluster.pg: Still reading... [00m10s elapsed]
+data.yandex_mdb_postgresql_cluster.pg: Still reading... [00m20s elapsed]
+data.yandex_compute_image.ubuntu: Still reading... [00m20s elapsed]
+data.yandex_vpc_subnet.e: Still reading... [00m20s elapsed]
+data.yandex_vpc_subnet.e: Read complete after 21s [id=ajcd2bbrfbagcv6p73t1]
+data.yandex_compute_image.ubuntu: Read complete after 23s [id=fd8j8obes6voa9vvl6h8]
+data.yandex_mdb_postgresql_cluster.pg: Read complete after 25s [id=c9qssrecqhfgosn3jo9b]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # yandex_compute_instance.client will be created
+  + resource "yandex_compute_instance" "client" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + gpu_cluster_id            = (known after apply)
+      + hardware_generation       = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + maintenance_grace_period  = (known after apply)
+      + maintenance_policy        = (known after apply)
+      + metadata                  = {
+          + "serial-port-enable" = "1"
+          + "user-data"          = <<-EOT
+                #cloud-config
+                package_update: true
+                packages:
+                  - postgresql-client
+                  - postgresql-contrib
+                  - ansible-core
+                write_files:
+                  - path: /opt/bench/inventory.yml
+                    content: |
+                      all:
+                        hosts:
+                          localhost:
+                            ansible_connection: local
+                            ansible_python_interpreter: /usr/bin/python3
+                        vars:
+                          psql_bin_dir: /usr/bin
+                          clouds:
+                            - name: yandex
+                              host: rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net
+                              port: 6432
+                              dbname: bananaflow
+                              user: banana
+                              password: otus_pass_8
+                              sslmode: verify-full
+                              ca_url: https://storage.yandexcloud.net/cloud-certs/CA.pem
+                      
+                  - path: /opt/bench/conninfo.yml
+                    content: |
+                      conninfo: >-
+                        host={{ item.host }} port={{ item.port }} dbname={{ item.dbname }} user={{ item.user }}
+                        sslmode={{ item.sslmode }}{{ (' sslrootcert=' ~ lookup('env', 'HOME') ~ '/.postgresql/' ~ item.name ~ '-root.crt') if item.ca_url is defined else '' }}
+                      
+                  - path: /opt/bench/playbook.yml
+                    content: |
+                      - name: Подключение к managed PostgreSQL и тестовые запросы
+                        hosts: localhost
+                        gather_facts: false
+                        vars_files:
+                          - conninfo.yml
+                        environment:
+                          PATH: "{{ psql_bin_dir }}:{{ lookup('env', 'PATH') }}"
+                        tasks:
+                          - name: Каталог ~/.postgresql
+                            ansible.builtin.file:
+                              path: "{{ lookup('env', 'HOME') }}/.postgresql"
+                              state: directory
+                              mode: "0700"
+                      
+                          - name: Корневой сертификат облака
+                            ansible.builtin.get_url:
+                              url: "{{ item.ca_url }}"
+                              dest: "{{ lookup('env', 'HOME') }}/.postgresql/{{ item.name }}-root.crt"
+                              mode: "0600"
+                            loop: "{{ clouds | selectattr('ca_url', 'defined') }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                      
+                          - name: Запись в ~/.pgpass
+                            ansible.builtin.lineinfile:
+                              path: "{{ lookup('env', 'HOME') }}/.pgpass"
+                              line: "{{ item.host }}:{{ item.port }}:{{ item.dbname }}:{{ item.user }}:{{ item.password }}"
+                              create: true
+                              mode: "0600"
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                      
+                          - name: Тестовые запросы
+                            ansible.builtin.command: >-
+                              psql "{{ conninfo }}"
+                              -X -c "select version()" -c "select now(), current_user, current_database(), pg_is_in_recovery()" -c "select ssl, version from pg_stat_ssl where pid = pg_backend_pid()"
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                            register: test_queries
+                            changed_when: false
+                      
+                          - name: Вывод тестовых запросов
+                            ansible.builtin.debug:
+                              msg: "{{ item.stdout_lines }}"
+                            loop: "{{ test_queries.results }}"
+                            loop_control:
+                              label: "{{ item.item.name }}"
+                      
+                          - name: Скрипт с запросом select 1 для замера latency
+                            ansible.builtin.copy:
+                              dest: /tmp/select1.sql
+                              content: "select 1;\n"
+                      
+                          - name: Latency запроса select 1 (1 клиент, 30 с)
+                            ansible.builtin.command: >-
+                              pgbench "{{ conninfo }}"
+                              -n -f /tmp/select1.sql -c 1 -T 30 -P 10
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                            register: latency
+                            changed_when: false
+                      
+                          - name: Вывод latency
+                            ansible.builtin.debug:
+                              msg: "{{ item.stdout_lines + item.stderr_lines }}"
+                            loop: "{{ latency.results }}"
+                            loop_control:
+                              label: "{{ item.item.name }}"
+                      
+                  - path: /opt/bench/pgbench.yml
+                    content: |
+                      - name: Нагрузочное тестирование pgbench
+                        hosts: localhost
+                        gather_facts: false
+                        vars_files:
+                          - conninfo.yml
+                        environment:
+                          PATH: "{{ psql_bin_dir }}:{{ lookup('env', 'PATH') }}"
+                        vars:
+                          scale: 10
+                          clients: 8
+                          duration: 60
+                        tasks:
+                          - name: Инициализация pgbench (scale {{ scale }})
+                            ansible.builtin.command: >-
+                              pgbench "{{ conninfo }}"
+                              -i -s {{ scale }} --no-vacuum
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                            register: init
+                      
+                          - name: Вывод инициализации
+                            ansible.builtin.debug:
+                              msg: "{{ item.stderr_lines[-3:] }}"
+                            loop: "{{ init.results }}"
+                            loop_control:
+                              label: "{{ item.item.name }}"
+                      
+                          - name: TPC-B ({{ clients }} клиентов, {{ duration }} с)
+                            ansible.builtin.command: >-
+                              pgbench "{{ conninfo }}"
+                              -c {{ clients }} -j {{ clients }} -T {{ duration }} -P 10
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                            register: tpcb
+                            changed_when: false
+                      
+                          - name: Вывод TPC-B
+                            ansible.builtin.debug:
+                              msg: "{{ item.stdout_lines + item.stderr_lines }}"
+                            loop: "{{ tpcb.results }}"
+                            loop_control:
+                              label: "{{ item.item.name }}"
+                      
+                          - name: Select-only ({{ clients }} клиентов, {{ duration }} с)
+                            ansible.builtin.command: >-
+                              pgbench "{{ conninfo }}"
+                              -S -c {{ clients }} -j {{ clients }} -T {{ duration }} -P 10
+                            loop: "{{ clouds }}"
+                            loop_control:
+                              label: "{{ item.name }}"
+                            register: selonly
+                            changed_when: false
+                      
+                          - name: Вывод select-only
+                            ansible.builtin.debug:
+                              msg: "{{ item.stdout_lines + item.stderr_lines }}"
+                            loop: "{{ selonly.results }}"
+                            loop_control:
+                              label: "{{ item.item.name }}"
+                      
+                runcmd:
+                  - systemctl disable --now postgresql
+                  - export HOME=/root; cd /opt/bench && { echo "=== BENCH BEGIN yandex"; ansible-playbook -i inventory.yml playbook.yml; ansible-playbook -i inventory.yml pgbench.yml; echo "=== BENCH END yandex"; } > /var/log/bench.log 2>&1
+                  - cat /var/log/bench.log > /dev/ttyS0
+            EOT
+        }
+      + name                      = "otus-pg-client"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v3"
+      + reserved_instance_pool_id = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = (known after apply)
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd8j8obes6voa9vvl6h8"
+              + name        = (known after apply)
+              + size        = 10
+              + snapshot_id = (known after apply)
+              + type        = "network-ssd"
+            }
+        }
+
+      + metadata_options (known after apply)
+
+      + network_interface {
+          + index          = (known after apply)
+          + ip_address     = (known after apply)
+          + ipv4           = true
+          + ipv6           = (known after apply)
+          + ipv6_address   = (known after apply)
+          + mac_address    = (known after apply)
+          + nat            = true
+          + nat_ip_address = (known after apply)
+          + nat_ip_version = (known after apply)
+          + subnet_id      = "ajcd2bbrfbagcv6p73t1"
+        }
+
+      + placement_policy (known after apply)
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+
+      + scheduling_policy (known after apply)
+    }
+
+  # yandex_vpc_security_group_rule.psql_subnet will be created
+  + resource "yandex_vpc_security_group_rule" "psql_subnet" {
+      + description            = "psql from client VM subnet"
+      + direction              = "ingress"
+      + from_port              = -1
+      + id                     = (known after apply)
+      + labels                 = (known after apply)
+      + port                   = 6432
+      + predefined_target      = (known after apply)
+      + protocol               = "TCP"
+      + security_group_binding = "enp4g2tqhtcnub933ujh"
+      + security_group_id      = (known after apply)
+      + to_port                = -1
+      + v4_cidr_blocks         = [
+          + "10.131.0.0/24",
+        ]
+      + v6_cidr_blocks         = (known after apply)
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + client_id = (known after apply)
+yandex_vpc_security_group_rule.psql_subnet: Creating...
+yandex_vpc_security_group_rule.psql_subnet: Still creating... [00m10s elapsed]
+yandex_vpc_security_group_rule.psql_subnet: Creation complete after 11s [id=enp9u01ugthedhl58tdv]
+yandex_compute_instance.client: Creating...
+yandex_compute_instance.client: Still creating... [00m10s elapsed]
+yandex_compute_instance.client: Still creating... [00m20s elapsed]
+yandex_compute_instance.client: Still creating... [00m30s elapsed]
+yandex_compute_instance.client: Still creating... [00m40s elapsed]
+yandex_compute_instance.client: Still creating... [00m50s elapsed]
+yandex_compute_instance.client: Creation complete after 59s [id=bg05q9adujhnv9vt572p]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+client_id = "bg05q9adujhnv9vt572p"
