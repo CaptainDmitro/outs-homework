@@ -1,0 +1,35 @@
++ head -2 /etc/os-release
+PRETTY_NAME="Ubuntu 24.04.4 LTS"
+NAME="Ubuntu"
++ uname -r
+6.8.0-134-generic
++ lscpu
++ grep -E '^(CPU\(s\)|Model name|Thread|Core|Socket|L3)'
+CPU(s):                                  8
+Model name:                              Intel Xeon Processor (Icelake)
+Thread(s) per core:                      1
+Core(s) per socket:                      8
+Socket(s):                               1
+L3 cache:                                16 MiB (1 instance)
++ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            31Gi       1.6Gi        27Gi       206Mi       2.9Gi        29Gi
+Swap:             0B          0B          0B
++ lsblk -d -o NAME,SIZE,ROTA,TYPE
+NAME  SIZE ROTA TYPE
+vda   250G    1 disk
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       242G  3.3G  238G   2% /
++ fio --name=seqwrite --filename=/data/fio.test --rw=write --bs=1M --size=8G --direct=1 --ioengine=libaio --iodepth=32
++ grep -E 'IOPS=|lat \(msec\).*avg'
+  write: IOPS=964, BW=965MiB/s (1012MB/s)(8192MiB/8492msec); 0 zone resets
+    clat (msec): min=2, max=122, avg=33.05, stdev= 6.32
+     lat (msec): min=2, max=122, avg=33.16, stdev= 6.32
++ fio --name=seqread --filename=/data/fio.test --rw=read --bs=1M --size=8G --direct=1 --ioengine=libaio --iodepth=32
++ grep -E IOPS=
+  read: IOPS=964, BW=965MiB/s (1012MB/s)(8192MiB/8492msec)
++ fio --name=randread --filename=/data/fio.test --rw=randread --bs=8k --size=8G --direct=1 --ioengine=libaio --iodepth=64 --numjobs=4 --runtime=30 --time_based --group_reporting
++ grep -E IOPS=
+  read: IOPS=10.0k, BW=78.4MiB/s (82.2MB/s)(2354MiB/30026msec)
++ rm /data/fio.test

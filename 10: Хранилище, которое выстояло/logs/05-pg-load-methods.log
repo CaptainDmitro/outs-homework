@@ -1,0 +1,150 @@
++ chmod 644 /data/tpch/lineitem.tbl.1 /data/tpch/lineitem.tbl.2 /data/tpch/lineitem.tbl.3 /data/tpch/lineitem.tbl.4 /data/tpch/lineitem.tbl.5 /data/tpch/lineitem.tbl.6 /data/tpch/lineitem.tbl.7 /data/tpch/lineitem.tbl.8 /data/tpch/nation.tbl /data/tpch/orders.tbl.1 /data/tpch/orders.tbl.2 /data/tpch/orders.tbl.3 /data/tpch/orders.tbl.4 /data/tpch/orders.tbl.5 /data/tpch/orders.tbl.6 /data/tpch/orders.tbl.7 /data/tpch/orders.tbl.8 /data/tpch/part.tbl.1 /data/tpch/part.tbl.2 /data/tpch/part.tbl.3 /data/tpch/part.tbl.4 /data/tpch/part.tbl.5 /data/tpch/part.tbl.6 /data/tpch/part.tbl.7 /data/tpch/part.tbl.8 /data/tpch/partsupp.tbl.1 /data/tpch/partsupp.tbl.2 /data/tpch/partsupp.tbl.3 /data/tpch/partsupp.tbl.4 /data/tpch/partsupp.tbl.5 /data/tpch/partsupp.tbl.6 /data/tpch/partsupp.tbl.7 /data/tpch/partsupp.tbl.8 /data/tpch/region.tbl /data/tpch/supplier.tbl
++ ls -l /data/tpch/lineitem.tbl.6
+-rw-r--r-- 1 root root 1944809031 Oct 20 18:58 /data/tpch/lineitem.tbl.6
++ psql -q -f /opt/bench/pg-schema.sql
++ psql -c '\dt'
+          List of relations
+ Schema |   Name   | Type  |  Owner
+--------+----------+-------+----------
+ public | customer | table | postgres
+ public | lineitem | table | postgres
+ public | nation   | table | postgres
+ public | orders   | table | postgres
+ public | part     | table | postgres
+ public | partsupp | table | postgres
+ public | region   | table | postgres
+ public | supplier | table | postgres
+(8 rows)
+
++ head -n 20000 /data/tpch/orders.tbl.1
++ gen_inserts 1
++ awk '-F|' -v B=1 '{
+    gsub(/\047/, "\047\047")
+    row = sprintf("(%s,%s,\047%s\047,%s,\047%s\047,\047%s\047,\047%s\047,%s,\047%s\047)", $1, $2, $3, $4, $5, $6, $7, $8, $9)
+    printf "%s%s", ((NR - 1) % B ? "," : "INSERT INTO orders VALUES "), row
+    if (NR % B == 0) print ";"
+  } END { if (NR % B) print ";" }'
++ head -n 1000000 /data/tpch/orders.tbl.1
++ gen_inserts 1000
++ awk '-F|' -v B=1000 '{
+    gsub(/\047/, "\047\047")
+    row = sprintf("(%s,%s,\047%s\047,%s,\047%s\047,\047%s\047,\047%s\047,%s,\047%s\047)", $1, $2, $3, $4, $5, $6, $7, $8, $9)
+    printf "%s%s", ((NR - 1) % B ? "," : "INSERT INTO orders VALUES "), row
+    if (NR % B == 0) print ";"
+  } END { if (NR % B) print ";" }'
++ head -2 /data/ins_1x20k.sql
+INSERT INTO orders VALUES (1,738001,'O',215050.73,'1996-01-02','5-LOW','Clerk#000019011',0,'nstructions sleep furiously among ');
+INSERT INTO orders VALUES (2,1560034,'O',56589.77,'1996-12-01','1-URGENT','Clerk#000017584',0,' foxes. pending accounts at the pending, silent asymptot');
++ ls -l /data/ins_1000x1m.sql /data/ins_1x20k.sql
+-rw-r--r-- 1 root root 126958833 Oct 20 19:00 /data/ins_1000x1m.sql
+-rw-r--r-- 1 root root   3041742 Oct 20 19:00 /data/ins_1x20k.sql
++ psql -q -f /data/ins_1x20k.sql
+real 8.773s
++ psql -c 'SELECT count(*) FROM orders'
+ count
+-------
+ 20000
+(1 row)
+
++ psql -c 'TRUNCATE orders'
+TRUNCATE TABLE
++ psql -q -f /data/ins_1000x1m.sql
+real 16.838s
++ psql -c 'SELECT count(*) FROM orders'
+  count
+---------
+ 1000000
+(1 row)
+
++ psql -c 'TRUNCATE orders'
+TRUNCATE TABLE
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.1'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.2'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.3'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.4'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.5'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.6'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.7'\'' (DELIMITER '\''|'\'')'
++ for f in $D/orders.tbl.*
++ psql -qc 'COPY orders FROM '\''/data/tpch/orders.tbl.8'\'' (DELIMITER '\''|'\'')'
+real 57.049s
++ psql -c 'SELECT count(*) FROM orders'
+  count
+----------
+ 30000000
+(1 row)
+
++ psql -c 'TRUNCATE orders'
+TRUNCATE TABLE
++ cat /data/tpch/orders.tbl.1 /data/tpch/orders.tbl.2 /data/tpch/orders.tbl.3 /data/tpch/orders.tbl.4 /data/tpch/orders.tbl.5 /data/tpch/orders.tbl.6 /data/tpch/orders.tbl.7 /data/tpch/orders.tbl.8
++ psql -qc 'COPY orders FROM STDIN (DELIMITER '\''|'\'')'
+real 63.121s
++ psql -c 'SELECT count(*) FROM orders'
+  count
+----------
+ 30000000
+(1 row)
+
++ cat /opt/bench/orders.load
+LOAD CSV
+     FROM ALL FILENAMES MATCHING ~/orders.tbl/
+          IN DIRECTORY '/data/tpch'
+     INTO postgresql://postgres:otus_pass@localhost/tpch
+          TARGET TABLE orders
+     WITH truncate,
+          fields terminated by '|',
+          fields not enclosed,
+          workers = 8, concurrency = 1, batch rows = 50000;
++ pgloader /opt/bench/orders.load
+2026-10-20T19:02:58.010001Z LOG pgloader version "3.6.10~devel"
+2026-10-20T19:11:43.937386Z LOG report summary reset
+             table name     errors       rows      bytes      total time
+-----------------------  ---------  ---------  ---------  --------------
+                  fetch          0          0                     0.004s
+-----------------------  ---------  ---------  ---------  --------------
+      "public"."orders"          0   30000000     3.2 GB        3m1.118s
+-----------------------  ---------  ---------  ---------  --------------
+        Files Processed          0          8                     0.015s
+COPY Threads Completion          0         16                  8m44.923s
+-----------------------  ---------  ---------  ---------  --------------
+      Total import time          ✓   30000000     3.2 GB       8m44.938s
+real 526.223s
++ psql -c 'SELECT count(*) FROM orders'
+  count
+----------
+ 30000000
+(1 row)
+
++ psql -c 'TRUNCATE orders'
+TRUNCATE TABLE
++ ls /data/tpch/orders.tbl.1 /data/tpch/orders.tbl.2 /data/tpch/orders.tbl.3 /data/tpch/orders.tbl.4 /data/tpch/orders.tbl.5 /data/tpch/orders.tbl.6 /data/tpch/orders.tbl.7 /data/tpch/orders.tbl.8
++ xargs -P 8 '-I{}' psql -qc 'COPY orders FROM '\''{}'\'' (DELIMITER '\''|'\'')'
+real 20.755s
++ psql -c 'SELECT count(*) FROM orders'
+  count
+----------
+ 30000000
+(1 row)
+
++ mkdir -p /data/stream
++ cd /data/stream
++ rm -f customer.tbl
++ mkfifo customer.tbl
++ /opt/tpch-dbgen/dbgen -q -f -s 20 -T c
++ sed 's/|$//' customer.tbl
++ psql -qc 'COPY customer FROM STDIN (DELIMITER '\''|'\'')'
++ wait
+real 13.591s
++ psql -c 'SELECT count(*) FROM customer'
+  count
+---------
+ 3000000
+(1 row)
+

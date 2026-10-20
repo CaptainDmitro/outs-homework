@@ -1,0 +1,25 @@
++ CH='clickhouse-client -d tpch'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO lineitem SELECT * FROM file('\''lineitem.tbl*'\'', CSV)'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO partsupp SELECT * FROM file('\''partsupp.tbl*'\'', CSV)'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO part SELECT * FROM file('\''part.tbl*'\'', CSV)'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO supplier SELECT * FROM file('\''supplier.tbl*'\'', CSV)'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO nation SELECT * FROM file('\''nation.tbl*'\'', CSV)'
++ for t in lineitem partsupp part supplier nation region
++ clickhouse-client -d tpch --max_insert_threads=8 '--format_csv_delimiter=|' -q 'INSERT INTO region SELECT * FROM file('\''region.tbl*'\'', CSV)'
+real 62.104s
++ clickhouse-client -d tpch -q 'SELECT table, count() AS parts, sum(rows) AS rows FROM system.parts WHERE database = '\''tpch'\'' AND active GROUP BY table ORDER BY rows DESC' --format PrettyCompactMonoBlock
+   ┌─table────┬─parts─┬──────rows─┐
+1. │ lineitem │    24 │ 119994608 │ -- 119.99 million
+2. │ orders   │     1 │  30000000 │ -- 30.00 million
+3. │ partsupp │    15 │  16000000 │ -- 16.00 million
+4. │ part     │     4 │   4000000 │ -- 4.00 million
+5. │ customer │     3 │   3000000 │ -- 3.00 million
+6. │ supplier │     1 │    200000 │
+7. │ nation   │     1 │        25 │
+8. │ region   │     1 │         5 │
+   └──────────┴───────┴───────────┘

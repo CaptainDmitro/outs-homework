@@ -1,0 +1,124 @@
++ export DEBIAN_FRONTEND=noninteractive
++ DEBIAN_FRONTEND=noninteractive
++ apt-get update -qq
++ apt-get install -y -qq curl ca-certificates gnupg build-essential git fio
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+ systemctl restart cron.service irqbalance.service multipathd.service packagekit.service polkit.service qemu-guest-agent.service rsyslog.service systemd-journald.service systemd-networkd.service systemd-resolved.service systemd-timesyncd.service systemd-udevd.service udisks2.service
+
+Service restarts being deferred:
+ systemctl restart ModemManager.service
+ systemctl restart agent.service
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart serial-getty@ttyS0.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
++ install -d /usr/share/postgresql-common/pgdg
++ curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
++ echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main'
++ curl -fsSL https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key
++ gpg --dearmor -o /usr/share/keyrings/clickhouse-keyring.gpg
++ echo 'deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch=amd64] https://packages.clickhouse.com/deb stable main'
++ apt-get update -qq
++ apt-get install -y -qq postgresql-17 clickhouse-server clickhouse-client
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+
+Service restarts being deferred:
+ systemctl restart agent.service
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart serial-getty@ttyS0.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
++ apt-get install -y -qq --no-install-recommends pgloader
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+
+Service restarts being deferred:
+ systemctl restart agent.service
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart serial-getty@ttyS0.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
++ pg_lsclusters
+Ver Cluster Port Status Owner    Data directory              Log file
+17  main    5432 online postgres /var/lib/postgresql/17/main /var/log/postgresql/postgresql-17-main.log
++ psql --version
+psql (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
++ clickhouse-server --version
+ClickHouse server version 26.9.23.15 (official build).
++ pgloader --version
+pgloader version "3.6.10~devel"
+compiled with SBCL 2.2.9.debian
++ cp /opt/bench/pg-bench.conf /etc/postgresql/17/main/conf.d/bench.conf
++ cat /etc/postgresql/17/main/conf.d/bench.conf
+shared_buffers = 8GB
+effective_cache_size = 24GB
+work_mem = 256MB
+maintenance_work_mem = 2GB
+max_wal_size = 32GB
+checkpoint_timeout = 30min
+wal_compression = lz4
+max_worker_processes = 16
+max_parallel_workers = 8
+max_parallel_workers_per_gather = 8
+max_parallel_maintenance_workers = 4
+random_page_cost = 1.1
+effective_io_concurrency = 200
++ systemctl restart postgresql@17-main
++ runuser -u postgres -- psql -c 'ALTER USER postgres PASSWORD '\''otus_pass'\'''
+psql: error: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
++ runuser -u postgres -- createdb tpch
+createdb: error: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
++ mkdir -p /data/tpch
++ chmod 755 /data /data/tpch
++ cp /opt/bench/ch-bench.xml /etc/clickhouse-server/config.d/bench.xml
++ cat /etc/clickhouse-server/config.d/bench.xml
+<clickhouse>
+    <user_files_path>/data/tpch/</user_files_path>
+</clickhouse>
++ systemctl enable clickhouse-server
+Synchronizing state of clickhouse-server.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable clickhouse-server
++ systemctl restart clickhouse-server
++ sleep 5
++ clickhouse-client -q 'SELECT version()'
+26.9.23.15
++ psql -c 'SELECT version()'
+psql: error: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
++ git clone -q --depth 1 https://github.com/electrum/tpch-dbgen /opt/tpch-dbgen
++ make -C /opt/tpch-dbgen -j8 -s
++ grep -ci warning
+15
++ ls -l /opt/tpch-dbgen/dbgen
+-rwxr-xr-x 1 root root 127584 Oct 20 18:48 /opt/tpch-dbgen/dbgen

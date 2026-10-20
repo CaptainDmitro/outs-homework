@@ -1,0 +1,20 @@
+vkcs_networking_router.bench: Creating...
+vkcs_networking_router.bench: Creation complete after 7s [id=6accafa9-a8ca-455c-b565-8678e6494dea]
+vkcs_networking_router_interface.bench: Creating...
+vkcs_networking_router_interface.bench: Creation complete after 9s [id=8af08059-d7be-4a24-bbfe-f9edcc624140]
+vkcs_compute_instance.bench: Creating...
+vkcs_compute_instance.bench: Still creating... [00m10s elapsed]
+vkcs_compute_instance.bench: Still creating... [00m20s elapsed]
+vkcs_compute_instance.bench: Still creating... [00m30s elapsed]
+vkcs_compute_instance.bench: Still creating... [00m40s elapsed]
+vkcs_compute_instance.bench: Still creating... [00m50s elapsed]
+vkcs_compute_instance.bench: Still creating... [01m00s elapsed]
+vkcs_compute_instance.bench: Still creating... [01m10s elapsed]
+vkcs_compute_instance.bench: Creation complete after 1m16s [id=613fef55-cbcc-42c5-b6b0-0d6c0c4ffa79]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ip = "192.168.199.113"
+server_id = "613fef55-cbcc-42c5-b6b0-0d6c0c4ffa79"

@@ -1,0 +1,164 @@
++ cd /data/tpch
++ for t in L O P S
++ xargs -P 8 -n 2 sh -c '/opt/tpch-dbgen/dbgen -q -f -s 20 -T $0 -C 8 -S $1'
+++ seq 1 8
++ for i in $(seq 1 8)
++ echo L 1
++ for i in $(seq 1 8)
++ echo L 2
++ for i in $(seq 1 8)
++ echo L 3
++ for i in $(seq 1 8)
++ echo L 4
++ for i in $(seq 1 8)
++ echo L 5
++ for i in $(seq 1 8)
++ echo L 6
++ for i in $(seq 1 8)
++ echo L 7
++ for i in $(seq 1 8)
++ echo L 8
++ for t in L O P S
+++ seq 1 8
++ for i in $(seq 1 8)
++ echo O 1
++ for i in $(seq 1 8)
++ echo O 2
++ for i in $(seq 1 8)
++ echo O 3
++ for i in $(seq 1 8)
++ echo O 4
++ for i in $(seq 1 8)
++ echo O 5
++ for i in $(seq 1 8)
++ echo O 6
++ for i in $(seq 1 8)
++ echo O 7
++ for i in $(seq 1 8)
++ echo O 8
++ for t in L O P S
+++ seq 1 8
++ for i in $(seq 1 8)
++ echo P 1
++ for i in $(seq 1 8)
++ echo P 2
++ for i in $(seq 1 8)
++ echo P 3
++ for i in $(seq 1 8)
++ echo P 4
++ for i in $(seq 1 8)
++ echo P 5
++ for i in $(seq 1 8)
++ echo P 6
++ for i in $(seq 1 8)
++ echo P 7
++ for i in $(seq 1 8)
++ echo P 8
++ for t in L O P S
+++ seq 1 8
++ for i in $(seq 1 8)
++ echo S 1
++ for i in $(seq 1 8)
++ echo S 2
++ for i in $(seq 1 8)
++ echo S 3
++ for i in $(seq 1 8)
++ echo S 4
++ for i in $(seq 1 8)
++ echo S 5
++ for i in $(seq 1 8)
++ echo S 6
++ for i in $(seq 1 8)
++ echo S 7
++ for i in $(seq 1 8)
++ echo S 8
++ for t in s n r
++ /opt/tpch-dbgen/dbgen -q -f -s 20 -T s
++ for t in s n r
++ /opt/tpch-dbgen/dbgen -q -f -s 20 -T n
++ for t in s n r
++ /opt/tpch-dbgen/dbgen -q -f -s 20 -T r
+real 92.187s
++ ls -l /data/tpch
+total 21623220
+-rw-r--r-- 1 root root 1948089426 Oct 20 18:57 lineitem.tbl.1
+-rw-r--r-- 1 root root 1960091237 Oct 20 18:57 lineitem.tbl.2
+-rw-r--r-- 1 root root 1958623159 Oct 20 18:57 lineitem.tbl.3
+-rw-r--r-- 1 root root 1958906971 Oct 20 18:57 lineitem.tbl.4
+-rw-r--r-- 1 root root 1959638843 Oct 20 18:57 lineitem.tbl.5
+---x-----x 1 root root 1959810145 Oct 20 18:57 lineitem.tbl.6
+-rw-r--r-- 1 root root 1964467866 Oct 20 18:57 lineitem.tbl.7
+-rw-r--r-- 1 root root 1975773338 Oct 20 18:57 lineitem.tbl.8
+-rw-r--r-- 1 root root       2224 Oct 20 18:57 nation.tbl
+-rw-r--r-- 1 root root  436643347 Oct 20 18:57 orders.tbl.1
+-rw-r--r-- 1 root root  439376700 Oct 20 18:57 orders.tbl.2
+-rw-r--r-- 1 root root  439377260 Oct 20 18:57 orders.tbl.3
+-rw-r--r-- 1 root root  439352930 Oct 20 18:57 orders.tbl.4
+-rw-r--r-- 1 root root  439436408 Oct 20 18:57 orders.tbl.5
+-rw-r--r-- 1 root root  439423738 Oct 20 18:57 orders.tbl.6
+-rw-r--r-- 1 root root  440637586 Oct 20 18:57 orders.tbl.7
+-rw-r--r-- 1 root root  443240397 Oct 20 18:57 orders.tbl.8
+-rw-r--r-- 1 root root   60500293 Oct 20 18:57 part.tbl.1
+-rw-r--r-- 1 root root   60621517 Oct 20 18:57 part.tbl.2
+-rw-r--r-- 1 root root   61103786 Oct 20 18:57 part.tbl.3
+-rw-r--r-- 1 root root   61110561 Oct 20 18:57 part.tbl.4
+-rw-r--r-- 1 root root   61106617 Oct 20 18:57 part.tbl.5
+-rw-r--r-- 1 root root   61105561 Oct 20 18:57 part.tbl.6
+-rw-r--r-- 1 root root   61102385 Oct 20 18:57 part.tbl.7
+-rw-r--r-- 1 root root   61109920 Oct 20 18:57 part.tbl.8
+-rw-r--r-- 1 root root  301088167 Oct 20 18:57 partsupp.tbl.1
+-rw-r--r-- 1 root root  301407379 Oct 20 18:57 partsupp.tbl.2
+-rw-r--r-- 1 root root  303477200 Oct 20 18:57 partsupp.tbl.3
+-rw-r--r-- 1 root root  303322223 Oct 20 18:57 partsupp.tbl.4
+-rw-r--r-- 1 root root  303333873 Oct 20 18:57 partsupp.tbl.5
+-rw-r--r-- 1 root root  303455081 Oct 20 18:57 partsupp.tbl.6
+-rw-r--r-- 1 root root  303370568 Oct 20 18:57 partsupp.tbl.7
+-rw-r--r-- 1 root root  303460895 Oct 20 18:57 partsupp.tbl.8
+-rw-r--r-- 1 root root        389 Oct 20 18:58 region.tbl
+-rw-r--r-- 1 root root   28471512 Oct 20 18:57 supplier.tbl
++ head -2 lineitem.tbl.1
+1|3103787|153803|1|17|30440.71|0.04|0.02|N|O|1996-03-13|1996-02-12|1996-03-22|DELIVER IN PERSON|TRUCK|egular courts above the|
+1|1346182|146183|2|36|44212.32|0.09|0.06|N|O|1996-04-12|1996-02-28|1996-04-20|TAKE BACK RETURN|MAIL|ly final dependencies: slyly bold |
++ xargs -P 8 -n 1 sed -i 's/|$//'
++ ls /data/tpch/lineitem.tbl.1 /data/tpch/lineitem.tbl.2 /data/tpch/lineitem.tbl.3 /data/tpch/lineitem.tbl.4 /data/tpch/lineitem.tbl.5 /data/tpch/lineitem.tbl.6 /data/tpch/lineitem.tbl.7 /data/tpch/lineitem.tbl.8 /data/tpch/nation.tbl /data/tpch/orders.tbl.1 /data/tpch/orders.tbl.2 /data/tpch/orders.tbl.3 /data/tpch/orders.tbl.4 /data/tpch/orders.tbl.5 /data/tpch/orders.tbl.6 /data/tpch/orders.tbl.7 /data/tpch/orders.tbl.8 /data/tpch/part.tbl.1 /data/tpch/part.tbl.2 /data/tpch/part.tbl.3 /data/tpch/part.tbl.4 /data/tpch/part.tbl.5 /data/tpch/part.tbl.6 /data/tpch/part.tbl.7 /data/tpch/part.tbl.8 /data/tpch/partsupp.tbl.1 /data/tpch/partsupp.tbl.2 /data/tpch/partsupp.tbl.3 /data/tpch/partsupp.tbl.4 /data/tpch/partsupp.tbl.5 /data/tpch/partsupp.tbl.6 /data/tpch/partsupp.tbl.7 /data/tpch/partsupp.tbl.8 /data/tpch/region.tbl /data/tpch/supplier.tbl
+real 30.942s
++ head -2 lineitem.tbl.1
+1|3103787|153803|1|17|30440.71|0.04|0.02|N|O|1996-03-13|1996-02-12|1996-03-22|DELIVER IN PERSON|TRUCK|egular courts above the
+1|1346182|146183|2|36|44212.32|0.09|0.06|N|O|1996-04-12|1996-02-28|1996-04-20|TAKE BACK RETURN|MAIL|ly final dependencies: slyly bold
++ du -sh --apparent-size /data/tpch
+21G	/data/tpch
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/lineitem.tbl.1 /data/tpch/lineitem.tbl.2 /data/tpch/lineitem.tbl.3 /data/tpch/lineitem.tbl.4 /data/tpch/lineitem.tbl.5 /data/tpch/lineitem.tbl.6 /data/tpch/lineitem.tbl.7 /data/tpch/lineitem.tbl.8
+++ wc -l
++ echo 'lineitem 119994608'
+lineitem 119994608
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/orders.tbl.1 /data/tpch/orders.tbl.2 /data/tpch/orders.tbl.3 /data/tpch/orders.tbl.4 /data/tpch/orders.tbl.5 /data/tpch/orders.tbl.6 /data/tpch/orders.tbl.7 /data/tpch/orders.tbl.8
+++ wc -l
++ echo 'orders 30000000'
+orders 30000000
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/partsupp.tbl.1 /data/tpch/partsupp.tbl.2 /data/tpch/partsupp.tbl.3 /data/tpch/partsupp.tbl.4 /data/tpch/partsupp.tbl.5 /data/tpch/partsupp.tbl.6 /data/tpch/partsupp.tbl.7 /data/tpch/partsupp.tbl.8
+++ wc -l
++ echo 'partsupp 16000000'
+partsupp 16000000
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/part.tbl.1 /data/tpch/part.tbl.2 /data/tpch/part.tbl.3 /data/tpch/part.tbl.4 /data/tpch/part.tbl.5 /data/tpch/part.tbl.6 /data/tpch/part.tbl.7 /data/tpch/part.tbl.8
+++ wc -l
++ echo 'part 4000000'
+part 4000000
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/supplier.tbl
+++ wc -l
++ echo 'supplier 200000'
+supplier 200000
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/nation.tbl
+++ wc -l
++ echo 'nation 25'
+nation 25
++ for t in lineitem orders partsupp part supplier nation region
+++ cat /data/tpch/region.tbl
+++ wc -l
++ echo 'region 5'
+region 5
