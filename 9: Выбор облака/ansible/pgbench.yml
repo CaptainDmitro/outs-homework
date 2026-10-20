@@ -1,0 +1,61 @@
+- name: Нагрузочное тестирование pgbench
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - conninfo.yml
+  environment:
+    PATH: "{{ psql_bin_dir }}:{{ lookup('env', 'PATH') }}"
+  vars:
+    scale: 10
+    clients: 8
+    duration: 60
+  tasks:
+    - name: Инициализация pgbench (scale {{ scale }})
+      ansible.builtin.command: >-
+        pgbench "{{ conninfo }}"
+        -i -s {{ scale }} --no-vacuum
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: init
+
+    - name: Вывод инициализации
+      ansible.builtin.debug:
+        msg: "{{ item.stderr_lines[-3:] }}"
+      loop: "{{ init.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: TPC-B ({{ clients }} клиентов, {{ duration }} с)
+      ansible.builtin.command: >-
+        pgbench "{{ conninfo }}"
+        -c {{ clients }} -j {{ clients }} -T {{ duration }} -P 10
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: tpcb
+      changed_when: false
+
+    - name: Вывод TPC-B
+      ansible.builtin.debug:
+        msg: "{{ item.stdout_lines + item.stderr_lines }}"
+      loop: "{{ tpcb.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Select-only ({{ clients }} клиентов, {{ duration }} с)
+      ansible.builtin.command: >-
+        pgbench "{{ conninfo }}"
+        -S -c {{ clients }} -j {{ clients }} -T {{ duration }} -P 10
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: selonly
+      changed_when: false
+
+    - name: Вывод select-only
+      ansible.builtin.debug:
+        msg: "{{ item.stdout_lines + item.stderr_lines }}"
+      loop: "{{ selonly.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"

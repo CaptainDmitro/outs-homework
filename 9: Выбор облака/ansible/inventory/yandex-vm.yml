@@ -1,0 +1,16 @@
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
+  vars:
+    psql_bin_dir: /usr/bin
+    clouds:
+      - name: yandex
+        host: rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net
+        port: 6432
+        dbname: bananaflow
+        user: banana
+        password: otus_pass_8
+        sslmode: verify-full
+        ca_url: https://storage.yandexcloud.net/cloud-certs/CA.pem

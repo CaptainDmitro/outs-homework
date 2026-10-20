@@ -1,0 +1,15 @@
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
+  vars:
+    psql_bin_dir: /usr/bin
+    clouds:
+      - name: vk
+        host: 192.168.199.113
+        port: 5432
+        dbname: bananaflow
+        user: banana
+        password: Otus-Pass-9-Banana!
+        sslmode: prefer

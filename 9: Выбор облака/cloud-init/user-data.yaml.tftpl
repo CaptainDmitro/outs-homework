@@ -1,0 +1,23 @@
+#cloud-config
+package_update: true
+packages:
+  - postgresql-client
+  - postgresql-contrib
+  - ansible-core
+write_files:
+  - path: /opt/bench/inventory.yml
+    content: |
+      ${indent(6, inventory)}
+  - path: /opt/bench/conninfo.yml
+    content: |
+      ${indent(6, conninfo)}
+  - path: /opt/bench/playbook.yml
+    content: |
+      ${indent(6, playbook)}
+  - path: /opt/bench/pgbench.yml
+    content: |
+      ${indent(6, pgbench)}
+runcmd:
+  - systemctl disable --now postgresql
+  - export HOME=/root; cd /opt/bench && { echo "=== BENCH BEGIN ${cloud}"; ansible-playbook -i inventory.yml playbook.yml; ansible-playbook -i inventory.yml pgbench.yml; echo "=== BENCH END ${cloud}"; } > /var/log/bench.log 2>&1
+  - cat /var/log/bench.log > /dev/ttyS0

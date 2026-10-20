@@ -1,0 +1,3 @@
+conninfo: >-
+  host={{ item.host }} port={{ item.port }} dbname={{ item.dbname }} user={{ item.user }}
+  sslmode={{ item.sslmode }}{{ (' sslrootcert=' ~ lookup('env', 'HOME') ~ '/.postgresql/' ~ item.name ~ '-root.crt') if item.ca_url is defined else '' }}

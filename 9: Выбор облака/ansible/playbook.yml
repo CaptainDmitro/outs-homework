@@ -1,0 +1,71 @@
+- name: Подключение к managed PostgreSQL и тестовые запросы
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - conninfo.yml
+  environment:
+    PATH: "{{ psql_bin_dir }}:{{ lookup('env', 'PATH') }}"
+  tasks:
+    - name: Каталог ~/.postgresql
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.postgresql"
+        state: directory
+        mode: "0700"
+
+    - name: Корневой сертификат облака
+      ansible.builtin.get_url:
+        url: "{{ item.ca_url }}"
+        dest: "{{ lookup('env', 'HOME') }}/.postgresql/{{ item.name }}-root.crt"
+        mode: "0600"
+      loop: "{{ clouds | selectattr('ca_url', 'defined') }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Запись в ~/.pgpass
+      ansible.builtin.lineinfile:
+        path: "{{ lookup('env', 'HOME') }}/.pgpass"
+        line: "{{ item.host }}:{{ item.port }}:{{ item.dbname }}:{{ item.user }}:{{ item.password }}"
+        create: true
+        mode: "0600"
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Тестовые запросы
+      ansible.builtin.command: >-
+        psql "{{ conninfo }}"
+        -X -c "select version()" -c "select now(), current_user, current_database(), pg_is_in_recovery()" -c "select ssl, version from pg_stat_ssl where pid = pg_backend_pid()"
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: test_queries
+      changed_when: false
+
+    - name: Вывод тестовых запросов
+      ansible.builtin.debug:
+        msg: "{{ item.stdout_lines }}"
+      loop: "{{ test_queries.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Скрипт с запросом select 1 для замера latency
+      ansible.builtin.copy:
+        dest: /tmp/select1.sql
+        content: "select 1;\n"
+
+    - name: Latency запроса select 1 (1 клиент, 30 с)
+      ansible.builtin.command: >-
+        pgbench "{{ conninfo }}"
+        -n -f /tmp/select1.sql -c 1 -T 30 -P 10
+      loop: "{{ clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: latency
+      changed_when: false
+
+    - name: Вывод latency
+      ansible.builtin.debug:
+        msg: "{{ item.stdout_lines + item.stderr_lines }}"
+      loop: "{{ latency.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
