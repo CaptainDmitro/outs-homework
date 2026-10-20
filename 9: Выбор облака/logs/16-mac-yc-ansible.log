@@ -1,0 +1,68 @@
++ ansible-playbook -i ansible/inventory/mac.yml ansible/playbook.yml
+
+PLAY [Подключение к managed PostgreSQL и тестовые запросы] *********************
+
+TASK [Каталог ~/.postgresql] ***************************************************
+ok: [localhost]
+
+TASK [Корневой сертификат облака] **********************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Запись в ~/.pgpass] ******************************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Тестовые запросы] ********************************************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод тестовых запросов] *************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "                                                                       version                                                                       ",
+        "-----------------------------------------------------------------------------------------------------------------------------------------------------",
+        " PostgreSQL 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit",
+        "(1 row)",
+        "",
+        "              now              | current_user | current_database | pg_is_in_recovery ",
+        "-------------------------------+--------------+------------------+-------------------",
+        " 2026-10-20 20:56:05.871181+03 | banana       | bananaflow       | f",
+        "(1 row)",
+        "",
+        " ssl | version ",
+        "-----+---------",
+        " f   | ",
+        "(1 row)"
+    ]
+}
+
+TASK [Скрипт с запросом select 1 для замера latency] ***************************
+ok: [localhost]
+
+TASK [Latency запроса select 1 (1 клиент, 30 с)] *******************************
+ok: [localhost] => (item=yandex)
+
+TASK [Вывод latency] ***********************************************************
+ok: [localhost] => (item=yandex) => {
+    "msg": [
+        "pgbench (18.6, server 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c))",
+        "transaction type: /tmp/select1.sql",
+        "scaling factor: 1",
+        "query mode: simple",
+        "number of clients: 1",
+        "number of threads: 1",
+        "maximum number of tries: 1",
+        "duration: 30 s",
+        "number of transactions actually processed: 695",
+        "number of failed transactions: 0 (0.000%)",
+        "latency average = 42.559 ms",
+        "latency stddev = 30.092 ms",
+        "initial connection time = 444.488 ms",
+        "tps = 23.495461 (without initial connection time)",
+        "progress: 10.0 s, 22.7 tps, lat 41.996 ms stddev 28.585, 0 failed",
+        "progress: 20.0 s, 21.6 tps, lat 46.328 ms stddev 40.303, 0 failed",
+        "progress: 30.0 s, 25.1 tps, lat 39.843 ms stddev 18.722, 0 failed"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

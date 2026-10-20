@@ -1,0 +1,40 @@
++ terraform -chdir=terraform/vkcs state list
+data.vkcs_compute_flavor.db
+data.vkcs_networking_network.extnet
+vkcs_backup_plan.pg
+vkcs_db_database.bananaflow
+vkcs_db_instance.pg
+vkcs_db_user.banana
+vkcs_networking_network.pg
+vkcs_networking_router.pg
+vkcs_networking_router_interface.pg
+vkcs_networking_secgroup.pg
+vkcs_networking_secgroup_rule.psql["85.172.184.54/32"]
+vkcs_networking_secgroup_rule.psql["95.85.243.6/32"]
+vkcs_networking_secgroup_rule.psql["95.85.249.52/32"]
+vkcs_networking_subnet.pg
++ GET database/v1.0/<project>/instances/7275c5df-e49a-4f9a-a7f6-0cab78fc398c
+{
+  "name": "otus-pg",
+  "status": "ACTIVE",
+  "datastore": {
+    "type": "postgresql",
+    "version": "17"
+  },
+  "flavor": "2d9866a9-e955-4986-b00a-340ca54b2cac",
+  "volume": {
+    "size": 10,
+    "volume_id": "768665bd-eae1-4f96-b534-cb76e2a213a1",
+    "used": 0.46
+  },
+  "ip": [
+    "192.168.199.113"
+  ],
+  "region": "RegionOne",
+  "availability_zone": null,
+  "created": "2026-10-20T17:41:12"
+}
++ GET .../instances/<id>/databases
+{"databases":[{"name":"bananaflow"}]}
++ GET .../instances/<id>/users
+[{"name":"banana","databases":[{"name":"bananaflow"}]}]

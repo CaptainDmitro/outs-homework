@@ -1,0 +1,17 @@
++ yc postgres resource-preset get b2.medium --format json
+{
+  "id": "b2.medium",
+  "zone_ids": [
+    "ru-central1-d",
+    "ru-central1-e"
+  ],
+  "cores": "2",
+  "memory": "4294967296"
+}
+
++ jq -r 'select(.name|startswith("Managed Service for PostgreSQL.")) | select(.name|test("Cascade Lake, (50% vCPU|RAM)$|network SSD|Public IP|Backups")) | "\(.name) | \(.pricingUnit) | \(.pricingVersions[-1].pricingExpressions[0].rates[0].unitPrice)"' /tmp/yc-skus.jsonl
+Managed Service for PostgreSQL. Host computing resources, Intel Cascade Lake, 50% vCPU | core*hour | 1.0892
+Managed Service for PostgreSQL. Host computing resources, Intel Cascade Lake, RAM | gbyte*hour | 0.5649
+Managed Service for PostgreSQL. Public IP address | fip*hour | 0.2766
+Managed Service for PostgreSQL. Backups beyond storage size | gbyte*hour | 0.00307
+Managed Service for PostgreSQL. Storage on network SSD disks | gbyte*hour | 0.0218
