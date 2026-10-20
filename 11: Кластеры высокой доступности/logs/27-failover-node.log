@@ -1,0 +1,84 @@
++ sleep 5
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698852953298616353) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Leader  | running   |  1 |           |
+| node2  | 172.20.0.12 | Replica | streaming |  1 |         0 |
+| node3  | 172.20.0.13 | Replica | streaming |  1 |         0 |
++--------+-------------+---------+-----------+----+-----------+
+20:42:56
++ date +%T
++ sudo docker kill node1
+node1
++ sleep 45
++ date +%T
+20:43:42
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698852953298616353) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node2  | 172.20.0.12 | Replica | streaming |  2 |         0 |
+| node3  | 172.20.0.13 | Leader  | running   |  2 |           |
++--------+-------------+---------+-----------+----+-----------+
++ sudo docker exec node2 patronictl -c /etc/patroni.yml history
+2026-10-20 20:43:46,436 - ERROR - Request to server http://172.20.0.11:2379 failed: MaxRetryError("HTTPConnectionPool(host='172.20.0.11', port=2379): Max retries exceeded with url: /v3/kv/range (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x75fc2e157f20>, 'Connection to 172.20.0.11 timed out. (connect timeout=1.6666666666666667)'))")
++----+----------+------------------------------+----------------------------------+------------+
+| TL |      LSN | Reason                       | Timestamp                        | New Leader |
++----+----------+------------------------------+----------------------------------+------------+
+|  1 | 88284672 | no recovery target specified | 2026-10-20T20:43:31.748047+00:00 | node3      |
++----+----------+------------------------------+----------------------------------+------------+
++ sudo docker logs --since 60s node2
++ grep -E 'promot|leader|Lock owner'
++ grep -v etcd
++ tail -5
+2026-10-20 20:43:32,696 INFO: Lock owner: node3; I am node2
+2026-10-20 20:43:32,714 INFO: no action. I am (node2), a secondary, and following a leader (node3)
+2026-10-20 20:43:32,897 INFO: Lock owner: node3; I am node2
+2026-10-20 20:43:32,936 INFO: no action. I am (node2), a secondary, and following a leader (node3)
+2026-10-20 20:43:42,992 INFO: no action. I am (node2), a secondary, and following a leader (node3)
++ sudo docker logs --since 60s node3
++ grep -E 'promot|leader|Lock owner'
++ grep -v etcd
++ tail -4
+2026-10-20 20:43:31.606 UTC [54] LOG:  received promote request
+2026-10-20 20:43:32,811 INFO: no action. I am (node3), the leader with the lock
+2026-10-20 20:43:32,946 INFO: no action. I am (node3), the leader with the lock
+2026-10-20 20:43:42,949 INFO: no action. I am (node3), the leader with the lock
++ date +%T
+20:43:46
++ sudo docker start node1
+node1
++ sleep 30
++ sudo docker exec node2 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-d (7698852953298616353) ----+-----------+
+| Member | Host        | Role    | State     | TL | Lag in MB |
++--------+-------------+---------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica | running   |  1 |         0 |
+| node2  | 172.20.0.12 | Replica | streaming |  2 |         0 |
+| node3  | 172.20.0.13 | Leader  | running   |  2 |           |
++--------+-------------+---------+-----------+----+-----------+
+
+### pg-e: standby-кластер переходит на новый таймлайн и догоняет
++ sudo docker exec node1 patronictl -c /etc/patroni.yml list
++ Cluster: bananaflow-e (7698852953298616353) ------+----+-----------+
+| Member | Host        | Role           | State     | TL | Lag in MB |
++--------+-------------+----------------+-----------+----+-----------+
+| node1  | 172.20.0.11 | Replica        | streaming |  2 |         0 |
+| node2  | 172.20.0.12 | Standby Leader | streaming |  2 |           |
+| node3  | 172.20.0.13 | Replica        | streaming |  2 |         0 |
++--------+-------------+----------------+-----------+----+-----------+
++ sudo docker exec node2 psql -h /var/run/postgresql -U postgres -d bananaflow -XAt -c 'select status, received_tli, sender_host, sender_port from pg_stat_wal_receiver' -c 'select max(id) from ha_test'
+streaming|2|10.130.0.10|5442
+56
++ sudo docker logs --since 2m node2
++ grep 'UTC \['
+2026-10-20 20:42:56.958 UTC [67] FATAL:  could not receive data from WAL stream: server closed the connection unexpectedly
+2026-10-20 20:42:56.958 UTC [66] LOG:  invalid record length at 0/5431E00: expected at least 24, got 0
+2026-10-20 20:42:57.016 UTC [157] LOG:  started streaming WAL from primary at 0/5000000 on timeline 1
+2026-10-20 20:43:37.306 UTC [157] LOG:  replication terminated by primary server
+2026-10-20 20:43:37.306 UTC [157] DETAIL:  End of WAL reached on timeline 1 at 0/5431E00.
+2026-10-20 20:43:37.311 UTC [157] LOG:  fetching timeline history file for timeline 2 from primary server
+2026-10-20 20:43:37.322 UTC [66] LOG:  new target timeline is 2
+2026-10-20 20:43:37.331 UTC [157] LOG:  restarted WAL streaming at 0/5000000 on timeline 2
+2026-10-20 20:43:52.268 UTC [64] LOG:  restartpoint starting: time

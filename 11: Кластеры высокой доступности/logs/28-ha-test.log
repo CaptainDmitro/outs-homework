@@ -1,0 +1,91 @@
+20:42:51 1|bananaflow-d|172.20.0.11
+20:42:52 2|bananaflow-d|172.20.0.11
+20:42:54 3|bananaflow-d|172.20.0.11
+20:42:55 4|bananaflow-d|172.20.0.11
+20:42:56 5|bananaflow-d|172.20.0.11
+20:43:00 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:03 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:05 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:43:07 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:43:10 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:13 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:16 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:19 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:22 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:26 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:29 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:32 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:35 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:38 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:41 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:43:42 34|bananaflow-d|172.20.0.13
+20:43:44 35|bananaflow-d|172.20.0.13
+20:43:45 36|bananaflow-d|172.20.0.13
+20:43:47 37|bananaflow-d|172.20.0.13
+20:43:49 38|bananaflow-d|172.20.0.13
+20:43:50 39|bananaflow-d|172.20.0.13
+20:43:52 40|bananaflow-d|172.20.0.13
+20:43:53 41|bananaflow-d|172.20.0.13
+20:43:55 42|bananaflow-d|172.20.0.13
+20:43:57 43|bananaflow-d|172.20.0.13
+20:43:58 44|bananaflow-d|172.20.0.13
+20:44:00 45|bananaflow-d|172.20.0.13
+20:44:01 46|bananaflow-d|172.20.0.13
+20:44:03 47|bananaflow-d|172.20.0.13
+20:44:04 48|bananaflow-d|172.20.0.13
+20:44:06 49|bananaflow-d|172.20.0.13
+20:44:07 50|bananaflow-d|172.20.0.13
+20:44:09 51|bananaflow-d|172.20.0.13
+20:44:10 52|bananaflow-d|172.20.0.13
+20:44:12 53|bananaflow-d|172.20.0.13
+20:44:14 54|bananaflow-d|172.20.0.13
+20:44:15 55|bananaflow-d|172.20.0.13
+20:44:17 56|bananaflow-d|172.20.0.13
+20:44:19 57|bananaflow-d|172.20.0.13
+20:44:21 58|bananaflow-d|172.20.0.13
+20:44:23 59|bananaflow-d|172.20.0.13
+20:44:24 60|bananaflow-d|172.20.0.13
+20:44:26 61|bananaflow-d|172.20.0.13
+20:44:27 62|bananaflow-d|172.20.0.13
+20:44:29 63|bananaflow-d|172.20.0.13
+20:44:31 64|bananaflow-d|172.20.0.13
+20:44:33 65|bananaflow-d|172.20.0.13
+20:44:34 66|bananaflow-d|172.20.0.13
+20:44:36 67|bananaflow-d|172.20.0.13
+20:44:37 68|bananaflow-d|172.20.0.13
+20:44:40 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:44:43 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:44:44 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:44:45 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:44:48 psql: error: connection to server at "46.243.210.86", port 5432 failed: server closed the connection unexpectedly
+20:44:51 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:44:54 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:44:57 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:00 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:03 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:06 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:09 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:12 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:15 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:18 psql: error: connection to server at "46.243.210.86", port 5432 failed: timeout expired
+20:45:21 100|bananaflow-e|172.20.0.12
+20:45:22 101|bananaflow-e|172.20.0.12
+20:45:24 102|bananaflow-e|172.20.0.12
+20:45:25 103|bananaflow-e|172.20.0.12
+20:45:27 104|bananaflow-e|172.20.0.12
+20:45:29 105|bananaflow-e|172.20.0.12
+20:45:30 106|bananaflow-e|172.20.0.12
+20:45:31 107|bananaflow-e|172.20.0.12
+20:45:33 108|bananaflow-e|172.20.0.12
+20:45:35 109|bananaflow-e|172.20.0.12
+20:45:37 110|bananaflow-e|172.20.0.12
+20:45:38 111|bananaflow-e|172.20.0.12
+20:45:40 112|bananaflow-e|172.20.0.12
+20:45:42 113|bananaflow-e|172.20.0.12
+20:45:44 114|bananaflow-e|172.20.0.12
+20:45:46 115|bananaflow-e|172.20.0.12
+20:45:48 116|bananaflow-e|172.20.0.12
+20:45:49 117|bananaflow-e|172.20.0.12
+20:45:50 118|bananaflow-e|172.20.0.12
+20:45:53 119|bananaflow-e|172.20.0.12
+20:45:54 120|bananaflow-e|172.20.0.12

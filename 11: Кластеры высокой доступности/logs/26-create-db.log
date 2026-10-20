@@ -1,0 +1,9 @@
++ sudo docker exec -e PGPASSWORD=otus_pass_11 node1 psql -h 172.20.0.10 -p 5432 -U postgres -X -v ON_ERROR_STOP=1 -c 'create user banana password '\''banana_pass_11'\''' -c 'create database bananaflow owner banana'
+CREATE ROLE
+CREATE DATABASE
++ sudo docker exec -e PGPASSWORD=banana_pass_11 node1 psql -h 172.20.0.10 -p 5432 -U banana -d bananaflow -X -c 'create table ha_test(id bigserial primary key, ts timestamptz default now(), cluster text, node inet)'
+CREATE TABLE
+
+### Mac
+$ PGPASSWORD=banana_pass_11 psql -h 46.243.210.86 -U banana -d bananaflow -XAt -c "select current_setting('cluster_name'), inet_server_addr(), pg_is_in_recovery(), version()"
+bananaflow-d|172.20.0.11|f|PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
