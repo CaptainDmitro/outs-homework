@@ -1,0 +1,219 @@
++ terraform apply -auto-approve -no-color
+data.vkcs_networking_network.extnet: Reading...
+data.vkcs_compute_flavor.db: Reading...
+data.vkcs_networking_network.extnet: Read complete after 0s [id=ec8c610e-6387-447e-83d2-d2c541e88164]
+data.vkcs_compute_flavor.db: Read complete after 0s [id=94d277e1-08bd-45cd-824e-8ddaaa8325ef]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # vkcs_backup_plan.pg will be created
+  + resource "vkcs_backup_plan" "pg" {
+      + full_retention     = {
+          + max_full_backup = 7
+        }
+      + id                 = (known after apply)
+      + incremental_backup = false
+      + instance_ids       = [
+          + (known after apply),
+        ]
+      + name               = "otus-pg-backup"
+      + provider_id        = (known after apply)
+      + provider_name      = "dbaas"
+      + region             = (known after apply)
+      + schedule           = {
+          + date = [
+              + "Su",
+            ]
+          + time = "03:00"
+        }
+    }
+
+  # vkcs_db_database.bananaflow will be created
+  + resource "vkcs_db_database" "bananaflow" {
+      + dbms_id   = (known after apply)
+      + dbms_type = (known after apply)
+      + id        = (known after apply)
+      + name      = "bananaflow"
+    }
+
+  # vkcs_db_instance.pg will be created
+  + resource "vkcs_db_instance" "pg" {
+      + availability_zone   = "GZ1"
+      + flavor_id           = "94d277e1-08bd-45cd-824e-8ddaaa8325ef"
+      + floating_ip_enabled = true
+      + id                  = (known after apply)
+      + ip                  = (known after apply)
+      + name                = "otus-pg"
+      + region              = (known after apply)
+      + root_password       = (sensitive value)
+      + size                = 10
+      + volume_type         = "ceph-ssd"
+
+      + datastore {
+          + type    = "postgresql"
+          + version = "17"
+        }
+
+      + disk_autoexpand {
+          + autoexpand    = true
+          + max_disk_size = 20
+        }
+
+      + network {
+          + security_groups = (known after apply)
+          + uuid            = (known after apply)
+        }
+    }
+
+  # vkcs_db_user.banana will be created
+  + resource "vkcs_db_user" "banana" {
+      + databases = [
+          + "bananaflow",
+        ]
+      + dbms_id   = (known after apply)
+      + dbms_type = (known after apply)
+      + id        = (known after apply)
+      + name      = "banana"
+      + password  = (sensitive value)
+    }
+
+  # vkcs_networking_network.pg will be created
+  + resource "vkcs_networking_network" "pg" {
+      + admin_state_up        = true
+      + all_tags              = (known after apply)
+      + id                    = (known after apply)
+      + name                  = "otus-pg-net"
+      + port_security_enabled = true
+      + private_dns_domain    = (known after apply)
+      + region                = (known after apply)
+      + sdn                   = (known after apply)
+    }
+
+  # vkcs_networking_router.pg will be created
+  + resource "vkcs_networking_router" "pg" {
+      + admin_state_up      = true
+      + all_tags            = (known after apply)
+      + external_fixed_ips  = (known after apply)
+      + external_network_id = "ec8c610e-6387-447e-83d2-d2c541e88164"
+      + id                  = (known after apply)
+      + name                = "otus-pg-router"
+      + region              = (known after apply)
+      + sdn                 = (known after apply)
+    }
+
+  # vkcs_networking_router_interface.pg will be created
+  + resource "vkcs_networking_router_interface" "pg" {
+      + id        = (known after apply)
+      + port_id   = (known after apply)
+      + region    = (known after apply)
+      + router_id = (known after apply)
+      + sdn       = (known after apply)
+      + subnet_id = (known after apply)
+    }
+
+  # vkcs_networking_secgroup.pg will be created
+  + resource "vkcs_networking_secgroup" "pg" {
+      + all_tags    = (known after apply)
+      + description = "psql from my IP"
+      + id          = (known after apply)
+      + name        = "otus-pg-sg"
+      + region      = (known after apply)
+      + sdn         = (known after apply)
+    }
+
+  # vkcs_networking_secgroup_rule.psql["85.172.184.54/32"] will be created
+  + resource "vkcs_networking_secgroup_rule" "psql" {
+      + direction         = "ingress"
+      + ethertype         = "IPv4"
+      + id                = (known after apply)
+      + port_range_max    = 5432
+      + port_range_min    = 5432
+      + protocol          = "tcp"
+      + region            = (known after apply)
+      + remote_group_id   = (known after apply)
+      + remote_ip_prefix  = "85.172.184.54/32"
+      + sdn               = (known after apply)
+      + security_group_id = (known after apply)
+    }
+
+  # vkcs_networking_secgroup_rule.psql["95.85.243.6/32"] will be created
+  + resource "vkcs_networking_secgroup_rule" "psql" {
+      + direction         = "ingress"
+      + ethertype         = "IPv4"
+      + id                = (known after apply)
+      + port_range_max    = 5432
+      + port_range_min    = 5432
+      + protocol          = "tcp"
+      + region            = (known after apply)
+      + remote_group_id   = (known after apply)
+      + remote_ip_prefix  = "95.85.243.6/32"
+      + sdn               = (known after apply)
+      + security_group_id = (known after apply)
+    }
+
+  # vkcs_networking_secgroup_rule.psql["95.85.249.52/32"] will be created
+  + resource "vkcs_networking_secgroup_rule" "psql" {
+      + direction         = "ingress"
+      + ethertype         = "IPv4"
+      + id                = (known after apply)
+      + port_range_max    = 5432
+      + port_range_min    = 5432
+      + protocol          = "tcp"
+      + region            = (known after apply)
+      + remote_group_id   = (known after apply)
+      + remote_ip_prefix  = "95.85.249.52/32"
+      + sdn               = (known after apply)
+      + security_group_id = (known after apply)
+    }
+
+  # vkcs_networking_subnet.pg will be created
+  + resource "vkcs_networking_subnet" "pg" {
+      + all_tags           = (known after apply)
+      + cidr               = "192.168.199.0/24"
+      + enable_dhcp        = true
+      + enable_private_dns = (known after apply)
+      + gateway_ip         = (known after apply)
+      + id                 = (known after apply)
+      + name               = "otus-pg-subnet"
+      + network_id         = (known after apply)
+      + no_gateway         = false
+      + region             = (known after apply)
+      + sdn                = (known after apply)
+
+      + allocation_pool (known after apply)
+    }
+
+Plan: 12 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + instance_id = (known after apply)
+  + ip          = (known after apply)
+vkcs_networking_router.pg: Creating...
+vkcs_networking_secgroup.pg: Creating...
+vkcs_networking_network.pg: Creating...
+vkcs_networking_secgroup.pg: Creation complete after 1s [id=f7b2ead4-15a1-424e-b68e-b6114f82453b]
+vkcs_networking_secgroup_rule.psql["95.85.249.52/32"]: Creating...
+vkcs_networking_secgroup_rule.psql["85.172.184.54/32"]: Creating...
+vkcs_networking_secgroup_rule.psql["95.85.243.6/32"]: Creating...
+vkcs_networking_secgroup_rule.psql["85.172.184.54/32"]: Creation complete after 0s [id=07e303a2-f982-40eb-a567-644e3541ab10]
+vkcs_networking_secgroup_rule.psql["95.85.243.6/32"]: Creation complete after 1s [id=a79e819e-a26c-4512-b43f-6e0ea6293046]
+vkcs_networking_secgroup_rule.psql["95.85.249.52/32"]: Creation complete after 1s [id=9b5550e5-a1f6-4b53-b088-adcca02c5a10]
+vkcs_networking_network.pg: Creation complete after 6s [id=f29d2c88-bc99-41a0-bf37-dc86d70d7ed8]
+vkcs_networking_subnet.pg: Creating...
+vkcs_networking_router.pg: Creation complete after 9s [id=6e5d371a-e17f-428b-a42e-7250425bfffc]
+vkcs_networking_subnet.pg: Creation complete after 7s [id=b6e30670-61d5-404e-8271-4c290b0bfb43]
+vkcs_networking_router_interface.pg: Creating...
+vkcs_networking_router_interface.pg: Creation complete after 6s [id=ee6be89a-c4ed-4688-b278-04d1c8cc265e]
+vkcs_db_instance.pg: Creating...
+
+Error: error creating vkcs_db_instance: Request forbidden: [POST https://msk.cloud.vk.com/infra/database/v1.0/d7ac9991cc964eed8cbda19a31cedc0e/instances], error message: {"forbidden": {"code": 403, "message": "Policy doesn't allow instance:create to be performed."}}
+Request ID: req-6da0e695-82b2-4a2d-ba80-388ac1cd4528
+
+  with vkcs_db_instance.pg,
+  on main.tf line 47, in resource "vkcs_db_instance" "pg":
+  47: resource "vkcs_db_instance" "pg" {
+

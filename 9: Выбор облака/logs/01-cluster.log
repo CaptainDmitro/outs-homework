@@ -1,0 +1,31 @@
++ yc postgres cluster list
++----------------------+---------+---------------------+--------+---------+
+|          ID          |  NAME   |     CREATED AT      | HEALTH | STATUS  |
++----------------------+---------+---------------------+--------+---------+
+| c9qssrecqhfgosn3jo9b | otus-pg | 2026-10-20 16:09:30 | ALIVE  | RUNNING |
++----------------------+---------+---------------------+--------+---------+
+
++ yc postgres cluster get otus-pg --format json
++ jq '{name, environment, status, health, version: .config.version, resources: .config.resources, security_group_ids}'
+{
+  "name": "otus-pg",
+  "environment": "PRODUCTION",
+  "status": "RUNNING",
+  "health": "ALIVE",
+  "version": "17",
+  "resources": {
+    "resource_preset_id": "b2.medium",
+    "disk_size": "10737418240",
+    "disk_type_id": "network-ssd"
+  },
+  "security_group_ids": [
+    "enp4g2tqhtcnub933ujh"
+  ]
+}
++ yc postgres host list --cluster-name otus-pg
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+|                   NAME                    |      CLUSTER ID      |  ROLE  | HEALTH |    ZONE ID    | PUBLIC IP | REPLICATION SOURCE |
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+| rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net | c9qssrecqhfgosn3jo9b | MASTER | ALIVE  | ru-central1-e | true      |                    |
++-------------------------------------------+----------------------+--------+--------+---------------+-----------+--------------------+
+

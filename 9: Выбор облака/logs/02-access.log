@@ -1,0 +1,21 @@
++ yc vpc security-group get enp4g2tqhtcnub933ujh --format json
++ jq '{name, rules: [.rules[] | {description, direction, ports, protocol_name, cidr_blocks}]}'
+{
+  "name": "otus-pg-sg",
+  "rules": [
+    {
+      "description": "psql from my IP",
+      "direction": "INGRESS",
+      "ports": {
+        "from_port": "6432",
+        "to_port": "6432"
+      },
+      "protocol_name": "TCP",
+      "cidr_blocks": {
+        "v4_cidr_blocks": [
+          "85.172.184.54/32"
+        ]
+      }
+    }
+  ]
+}

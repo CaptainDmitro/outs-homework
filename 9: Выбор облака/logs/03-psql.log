@@ -1,0 +1,30 @@
++ psql 'host=rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net port=6432 sslmode=verify-full dbname=bananaflow user=banana' -c '\conninfo' -c 'select version()'
+                      Connection Information
+      Parameter       |                   Value                   
+----------------------+-------------------------------------------
+ Database             | bananaflow
+ Client User          | banana
+ Host                 | rc1e-6gbc9ajfe68rdr30.mdb.yandexcloud.net
+ Host Address         | 153.51.113.144
+ Server Port          | 6432
+ Options              | 
+ Protocol Version     | 3.0
+ Password Used        | true
+ GSSAPI Authenticated | false
+ Backend PID          | 883210914
+ SSL Connection       | true
+ SSL Library          | OpenSSL
+ SSL Protocol         | TLSv1.3
+ SSL Key Bits         | 256
+ SSL Cipher           | TLS_AES_256_GCM_SHA384
+ SSL Compression      | false
+ ALPN                 | none
+ Superuser            | off
+ Hot Standby          | unknown
+(19 rows)
+
+                                                                       version                                                                       
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 17.11 (Ubuntu 17.11-201-yandex.60286.5a0f49380c) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, 64-bit
+(1 row)
+
