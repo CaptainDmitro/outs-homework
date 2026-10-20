@@ -1,0 +1,301 @@
++ CH='clickhouse-client -d tpch'
+++ date -u '+%F %T'
++ START='2026-10-20 20:08:40'
+++ clickhouse-client -d tpch -q 'SELECT count() FROM system.merges'
++ '[' 0 = 0 ']'
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start clickhouse-server
++ clickhouse-client -d tpch -q 'SELECT 1'
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q1-agg.sql
+   ┌─l_returnflag─┬─l_linestatus─┬────sum_qty─┬───sum_base_price─┬─────sum_disc_price─┬───────────sum_charge─┬────────────avg_qty─┬─────────avg_price─┬─────────────avg_disc─┬─count_order─┐
+1. │ A            │ F            │  755169104 │ 1132393551078.85 │   1075769269507.28 │ 1118803345410.881341 │ 25.500834973772946 │ 38239.09230193623 │  0.05000589089336099 │    29613505 │ -- 29.61 million
+2. │ N            │ F            │   19739848 │   29582901058.72 │   28103693343.3129 │   29230208447.211007 │ 25.531421091909944 │ 38262.37689623997 │ 0.049961340422862564 │      773159 │
+3. │ N            │ O            │ 1486771871 │ 2229413402673.42 │  2117943983015.216 │ 2202675535336.866619 │ 25.498757203625235 │ 38235.36896957981 │  0.04999711444238138 │    58307621 │ -- 58.31 million
+4. │ R            │ F            │  755284493 │ 1132556540140.25 │ 1075930611640.1078 │ 1118968269619.380181 │ 25.506202578654715 │ 38246.80211539509 │ 0.050000747674989125 │    29611797 │ -- 29.61 million
+   └──────────────┴──────────────┴────────────┴──────────────────┴────────────────────┴──────────────────────┴────────────────────┴───────────────────┴──────────────────────┴─────────────┘
+1.938
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q1-agg.sql
+   ┌─l_returnflag─┬─l_linestatus─┬────sum_qty─┬───sum_base_price─┬─────sum_disc_price─┬───────────sum_charge─┬────────────avg_qty─┬─────────avg_price─┬─────────────avg_disc─┬─count_order─┐
+1. │ A            │ F            │  755169104 │ 1132393551078.85 │   1075769269507.28 │ 1118803345410.881341 │ 25.500834973772946 │ 38239.09230193623 │  0.05000589089336099 │    29613505 │ -- 29.61 million
+2. │ N            │ F            │   19739848 │   29582901058.72 │   28103693343.3129 │   29230208447.211007 │ 25.531421091909944 │ 38262.37689623997 │ 0.049961340422862564 │      773159 │
+3. │ N            │ O            │ 1486771871 │ 2229413402673.42 │  2117943983015.216 │ 2202675535336.866619 │ 25.498757203625235 │ 38235.36896957981 │  0.04999711444238138 │    58307621 │ -- 58.31 million
+4. │ R            │ F            │  755284493 │ 1132556540140.25 │ 1075930611640.1078 │ 1118968269619.380181 │ 25.506202578654715 │ 38246.80211539509 │ 0.050000747674989125 │    29611797 │ -- 29.61 million
+   └──────────────┴──────────────┴────────────┴──────────────────┴────────────────────┴──────────────────────┴────────────────────┴───────────────────┴──────────────────────┴─────────────┘
+1.758
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q1-agg.sql
+   ┌─l_returnflag─┬─l_linestatus─┬────sum_qty─┬───sum_base_price─┬─────sum_disc_price─┬───────────sum_charge─┬────────────avg_qty─┬─────────avg_price─┬─────────────avg_disc─┬─count_order─┐
+1. │ A            │ F            │  755169104 │ 1132393551078.85 │   1075769269507.28 │ 1118803345410.881341 │ 25.500834973772946 │ 38239.09230193623 │  0.05000589089336099 │    29613505 │ -- 29.61 million
+2. │ N            │ F            │   19739848 │   29582901058.72 │   28103693343.3129 │   29230208447.211007 │ 25.531421091909944 │ 38262.37689623997 │ 0.049961340422862564 │      773159 │
+3. │ N            │ O            │ 1486771871 │ 2229413402673.42 │  2117943983015.216 │ 2202675535336.866619 │ 25.498757203625235 │ 38235.36896957981 │  0.04999711444238138 │    58307621 │ -- 58.31 million
+4. │ R            │ F            │  755284493 │ 1132556540140.25 │ 1075930611640.1078 │ 1118968269619.380181 │ 25.506202578654715 │ 38246.80211539509 │ 0.050000747674989125 │    29611797 │ -- 29.61 million
+   └──────────────┴──────────────┴────────────┴──────────────────┴────────────────────┴──────────────────────┴────────────────────┴───────────────────┴──────────────────────┴─────────────┘
+1.516
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start clickhouse-server
++ clickhouse-client -d tpch -q 'SELECT 1'
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q2-filter.sql
+   ┌────────revenue─┐
+1. │ 209604862.4912 │ -- 209.60 million
+   └────────────────┘
+0.041
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q2-filter.sql
+   ┌────────revenue─┐
+1. │ 209604862.4912 │ -- 209.60 million
+   └────────────────┘
+0.020
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q2-filter.sql
+   ┌────────revenue─┐
+1. │ 209604862.4912 │ -- 209.60 million
+   └────────────────┘
+0.019
++ for q in q1-agg q2-filter q3-join
++ cold
++ systemctl stop postgresql clickhouse-server
++ sync
++ echo 3
++ systemctl start clickhouse-server
++ clickhouse-client -d tpch -q 'SELECT 1'
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q3-join.sql
+    ┌─l_orderkey─┬─────revenue─┬─o_orderdate─┬─o_shippriority─┐
+ 1. │   16384100 │  450194.828 │  1995-03-02 │              0 │
+ 2. │   95386692 │ 449323.5984 │  1995-02-20 │              0 │
+ 3. │   17349504 │ 440084.9056 │  1995-03-08 │              0 │
+ 4. │   34684896 │ 434803.9319 │  1995-03-11 │              0 │
+ 5. │   62597284 │ 433809.9854 │  1995-03-04 │              0 │
+ 6. │   30596321 │ 425393.7914 │  1995-02-19 │              0 │
+ 7. │   92905604 │ 424721.0092 │  1995-03-14 │              0 │
+ 8. │   62821248 │ 423699.3457 │  1995-02-11 │              0 │
+ 9. │  117312357 │ 423609.1834 │  1995-03-13 │              0 │
+10. │   35506627 │  423096.594 │  1995-03-13 │              0 │
+    └────────────┴─────────────┴─────────────┴────────────────┘
+1.082
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q3-join.sql
+    ┌─l_orderkey─┬─────revenue─┬─o_orderdate─┬─o_shippriority─┐
+ 1. │   16384100 │  450194.828 │  1995-03-02 │              0 │
+ 2. │   95386692 │ 449323.5984 │  1995-02-20 │              0 │
+ 3. │   17349504 │ 440084.9056 │  1995-03-08 │              0 │
+ 4. │   34684896 │ 434803.9319 │  1995-03-11 │              0 │
+ 5. │   62597284 │ 433809.9854 │  1995-03-04 │              0 │
+ 6. │   30596321 │ 425393.7914 │  1995-02-19 │              0 │
+ 7. │   92905604 │ 424721.0092 │  1995-03-14 │              0 │
+ 8. │   62821248 │ 423699.3457 │  1995-02-11 │              0 │
+ 9. │  117312357 │ 423609.1834 │  1995-03-13 │              0 │
+10. │   35506627 │  423096.594 │  1995-03-13 │              0 │
+    └────────────┴─────────────┴─────────────┴────────────────┘
+0.883
++ for run in 1 2 3
++ clickhouse-client -d tpch --time --format PrettyCompactMonoBlock --queries-file /opt/bench/q3-join.sql
+    ┌─l_orderkey─┬─────revenue─┬─o_orderdate─┬─o_shippriority─┐
+ 1. │   16384100 │  450194.828 │  1995-03-02 │              0 │
+ 2. │   95386692 │ 449323.5984 │  1995-02-20 │              0 │
+ 3. │   17349504 │ 440084.9056 │  1995-03-08 │              0 │
+ 4. │   34684896 │ 434803.9319 │  1995-03-11 │              0 │
+ 5. │   62597284 │ 433809.9854 │  1995-03-04 │              0 │
+ 6. │   30596321 │ 425393.7914 │  1995-02-19 │              0 │
+ 7. │   92905604 │ 424721.0092 │  1995-03-14 │              0 │
+ 8. │   62821248 │ 423699.3457 │  1995-02-11 │              0 │
+ 9. │  117312357 │ 423609.1834 │  1995-03-13 │              0 │
+10. │   35506627 │  423096.594 │  1995-03-13 │              0 │
+    └────────────┴─────────────┴─────────────┴────────────────┘
+0.892
++ for q in q1-agg q2-filter q3-join
+++ sed 's/;$//' /opt/bench/q1-agg.sql
++ clickhouse-client -d tpch -q 'EXPLAIN indexes = 1 SELECT l_returnflag,
+       l_linestatus,
+       sum(l_quantity) AS sum_qty,
+       sum(l_extendedprice) AS sum_base_price,
+       sum(l_extendedprice * (1 - l_discount)) AS sum_disc_price,
+       sum(l_extendedprice * (1 - l_discount) * (1 + l_tax)) AS sum_charge,
+       avg(l_quantity) AS avg_qty,
+       avg(l_extendedprice) AS avg_price,
+       avg(l_discount) AS avg_disc,
+       count(*) AS count_order
+FROM lineitem
+WHERE l_shipdate <= '\''1998-09-02'\''
+GROUP BY l_returnflag, l_linestatus
+ORDER BY l_returnflag, l_linestatus'
+Output: l_returnflag, l_linestatus, sumCount(l_quantity).1, sumCount(l_extendedprice).1, sum(l_extendedprice * (1 − l_discount)), sum(l_extendedprice * (1 − l_discount) * (1 + l_tax)), sumCount(l_quantity).1 / toFloat64(sumCount(l_quantity).2), sumCount(l_extendedprice).1 / toFloat64(sumCount(l_extendedprice).2), avg(l_discount), count()
+
+Sorting (Sorting for ORDER BY)
+│  Sort description: l_returnflag ASC, l_linestatus ASC
+└──Aggregating
+   │  Keys: l_returnflag, l_linestatus
+   │  Aggregates: sumCount(l_quantity), sumCount(l_extendedprice), sum(l_extendedprice * (1 − l_discount)), sum(l_extendedprice * (1 − l_discount) * (1 + l_tax)), avg(l_discount), count()
+   │  Skip merging: 0
+   └──ReadFromMergeTree (tpch.lineitem)
+         Read type: Default
+         Parts: 3 | Granules: 14443
+         Output: l_returnflag, l_linestatus, l_quantity, l_extendedprice, l_discount, l_tax
+         Prewhere filter
+         Prewhere filter column:  l_shipdate <= \'1998-09-02\'
+         Indexes:
+           PrimaryKey
+             Keys:
+               l_shipdate
+             Condition: (l_shipdate in (-Inf, 10471])
+             Parts: 3/3
+             Granules: 14443/14677
+             Search Algorithm: binary search
+           Ranges: 3
++ for q in q1-agg q2-filter q3-join
+++ sed 's/;$//' /opt/bench/q2-filter.sql
++ clickhouse-client -d tpch -q 'EXPLAIN indexes = 1 SELECT sum(l_extendedprice * l_discount) AS revenue
+FROM lineitem
+WHERE l_shipdate >= '\''1994-01-01'\''
+  AND l_shipdate < '\''1994-02-01'\''
+  AND l_discount BETWEEN 0.05 AND 0.07
+  AND l_quantity < 24'
+Output: sum(l_extendedprice * l_discount)
+
+Aggregating
+│  Keys:
+│  Aggregates: sum(l_extendedprice * l_discount)
+│  Skip merging: 0
+└──ReadFromMergeTree (tpch.lineitem)
+      Read type: Default
+      Parts: 3 | Granules: 192
+      Output: l_discount, l_extendedprice
+      Prewhere filter
+      Prewhere filter column:  l_shipdate < \'1994-02-01\' AND l_shipdate >= \'1994-01-01\' AND l_quantity < 24 AND l_discount <= 0.07 AND l_discount >= 0.05
+      Indexes:
+        PrimaryKey
+          Keys:
+            l_shipdate
+          Condition: and((l_shipdate in (-Inf, 8796]), (l_shipdate in [8766, +Inf)))
+          Parts: 3/3
+          Granules: 192/14677
+          Search Algorithm: binary search
+        Ranges: 3
++ for q in q1-agg q2-filter q3-join
+++ sed 's/;$//' /opt/bench/q3-join.sql
++ clickhouse-client -d tpch -q 'EXPLAIN indexes = 1 SELECT l_orderkey,
+       sum(l_extendedprice * (1 - l_discount)) AS revenue,
+       o_orderdate,
+       o_shippriority
+FROM lineitem
+JOIN orders ON l_orderkey = o_orderkey
+JOIN customer ON c_custkey = o_custkey
+WHERE c_mktsegment = '\''BUILDING'\''
+  AND o_orderdate < '\''1995-03-15'\''
+  AND l_shipdate > '\''1995-03-15'\''
+GROUP BY l_orderkey, o_orderdate, o_shippriority
+ORDER BY revenue DESC, o_orderdate
+LIMIT 10'
+Output: l_orderkey, sum(l_extendedprice * (1 − l_discount)), o_orderdate, o_shippriority
+
+Limit (preliminary LIMIT)
+│  Limit 10
+│  Offset 0
+└──Sorting (Sorting for ORDER BY)
+   │  Sort description: sum(l_extendedprice * (1 − l_discount)) DESC, o_orderdate ASC
+   │  Limit 10
+   └──Aggregating
+      │  Keys: l_orderkey, o_orderdate, o_shippriority
+      │  Aggregates: sum(l_extendedprice * (1 − l_discount))
+      │  Skip merging: 0
+      └──Join (JOIN FillRightFirst)
+         │  lineitem[64440668] ⋈ (orders[14569646] ⋈ customer[500000])
+         │  Type: inner | Strictness: all | Algorithm: SpillingHashJoin(ConcurrentHashJoin)
+         │  Cost: estimated 11.39 million
+         │  Selectivity: estimated (NDV) 3.287e-08
+         │  Output rows: estimated 7.73 million
+         │  Left: rows estimated 64.44 million
+         │  Right: rows estimated 3.65 million
+         │  Join conditions: l_orderkey = o_orderkey
+         │  Input (left): l_orderkey, l_extendedprice, l_discount
+         │  Input (right): o_orderkey, o_orderdate, o_shippriority
+         ├──ReadFromMergeTree (tpch.lineitem)
+         │     Read type: Default
+         │     Parts: 3 | Granules: 7927
+         │     Output: l_orderkey, l_extendedprice, l_discount
+         │     Prewhere filter
+         │     Prewhere filter column:  l_shipdate > \'1995-03-15\'
+         │     Runtime filters: RF2(l_orderkey, o_orderkey)
+         │     Indexes:
+         │       PrimaryKey
+         │         Keys:
+         │           l_shipdate
+         │         Condition: (l_shipdate in [9205, +Inf))
+         │         Parts: 3/3
+         │         Granules: 7927/14677
+         │         Search Algorithm: binary search
+         │       Ranges: 3
+         └──BuildRuntimeFilter (Build runtime join filter on o_orderkey)
+            │  Filter id: RF2
+            └──Join (JOIN FillRightFirst)
+               │  orders[14569646] ⋈ customer[500000]
+               │  Type: inner | Strictness: all | Algorithm: SpillingHashJoin(ConcurrentHashJoin)
+               │  Cost: estimated 3.65 million
+               │  Selectivity: estimated (NDV) 5.012e-07
+               │  Output rows: estimated 3.65 million
+               │  Left: rows estimated 14.57 million
+               │  Right: rows estimated 500.00 thousand
+               │  Join conditions: o_custkey = c_custkey
+               │  Input (left): o_custkey, o_orderdate, o_shippriority, o_orderkey
+               │  Input (right): c_custkey
+               ├──ReadFromMergeTree (tpch.orders)
+               │     Read type: Default
+               │     Parts: 1 | Granules: 1780
+               │     Output: o_orderdate, o_custkey, o_shippriority, o_orderkey
+               │     Prewhere filter
+               │     Prewhere filter column:  o_orderdate < \'1995-03-15\'
+               │     Runtime filters: RF1(o_custkey, c_custkey from tpch.customer)
+               │     Indexes:
+               │       PrimaryKey
+               │         Keys:
+               │           o_orderdate
+               │         Condition: (o_orderdate in (-Inf, 9203])
+               │         Parts: 1/1
+               │         Granules: 1780/3663
+               │         Search Algorithm: binary search
+               │       Ranges: 1
+               └──BuildRuntimeFilter (Build runtime join filter on c_custkey)
+                  │  Filter id: RF1
+                  │  Source table: tpch.customer
+                  └──ReadFromMergeTree (tpch.customer)
+                        Read type: Default
+                        Parts: 3 | Granules: 368
+                        Output: c_custkey
+                        Prewhere filter
+                        Prewhere filter column:  c_mktsegment = \'BUILDING\'
+                        Indexes:
+                          PrimaryKey
+                            Condition: true
+                            Parts: 3/3
+                            Granules: 368/368
+                          Ranges: 3
++ clickhouse-client -d tpch -q 'SYSTEM FLUSH LOGS'
++ clickhouse-client -d tpch --format PrettyCompactMonoBlock -q '
+  SELECT event_time, query_duration_ms AS ms, read_rows, formatReadableSize(read_bytes) AS read,
+         formatReadableSize(memory_usage) AS memory, substring(replaceAll(query, '\''\n'\'', '\'' '\''), 1, 40) AS query_text
+  FROM system.query_log
+  WHERE type = '\''QueryFinish'\'' AND query_kind = '\''Select'\'' AND query LIKE '\''%FROM lineitem%'\'' AND event_time >= '\''2026-10-20 20:08:40'\''
+  ORDER BY event_time'
+   ┌──────────event_time─┬───ms─┬─read_rows─┬─read──────┬─memory─────┬─query_text───────────────────────────────┐
+1. │ 2026-10-20 20:08:48 │ 1938 │ 118315577 │ 3.97 GiB  │ 18.43 MiB  │ SELECT l_returnflag,        l_linestatus │
+2. │ 2026-10-20 20:08:50 │ 1758 │ 118315577 │ 3.97 GiB  │ 15.59 MiB  │ SELECT l_returnflag,        l_linestatus │
+3. │ 2026-10-20 20:08:52 │ 1516 │ 118315577 │ 3.97 GiB  │ 15.59 MiB  │ SELECT l_returnflag,        l_linestatus │
+4. │ 2026-10-20 20:08:58 │   41 │   1572864 │ 39.00 MiB │ 4.22 MiB   │ SELECT sum(l_extendedprice * l_discount) │
+5. │ 2026-10-20 20:08:58 │   19 │   1572864 │ 39.00 MiB │ 4.13 MiB   │ SELECT sum(l_extendedprice * l_discount) │
+6. │ 2026-10-20 20:08:58 │   19 │   1572864 │ 39.00 MiB │ 4.13 MiB   │ SELECT sum(l_extendedprice * l_discount) │
+7. │ 2026-10-20 20:09:06 │ 1084 │  82280368 │ 1.77 GiB  │ 470.48 MiB │ SELECT l_orderkey,        sum(l_extended │
+8. │ 2026-10-20 20:09:07 │  885 │  82280368 │ 1.77 GiB  │ 302.21 MiB │ SELECT l_orderkey,        sum(l_extended │
+9. │ 2026-10-20 20:09:08 │  894 │  82280368 │ 1.77 GiB  │ 301.30 MiB │ SELECT l_orderkey,        sum(l_extended │
+   └─────────────────────┴──────┴───────────┴───────────┴────────────┴──────────────────────────────────────────┘
++ systemctl start postgresql
