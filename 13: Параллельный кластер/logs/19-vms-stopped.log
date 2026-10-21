@@ -1,0 +1,9 @@
++ ssh yb@153.51.115.27 'cat ~/bench-yb.log; uptime'
+Connection closed by 153.51.115.27 port 22
++ yc compute instance list
++----------------------+-----------+---------------+---------+-------------+-------------+
+|          ID          |   NAME    |    ZONE ID    | STATUS  | EXTERNAL IP | INTERNAL IP |
++----------------------+-----------+---------------+---------+-------------+-------------+
+| bg0d9lpva91glfdgkrvv | otus-yb-e | ru-central1-e | STOPPED |             | 10.131.0.16 |
+| fv4mqaj1v2eq2lgo201d | otus-yb-d | ru-central1-d | STOPPED |             | 10.130.0.8  |
++----------------------+-----------+---------------+---------+-------------+-------------+

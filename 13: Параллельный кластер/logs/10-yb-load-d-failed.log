@@ -1,0 +1,10 @@
+COPY 750000
+06:52:10 customer part 1/2 loaded in 30 s
+COPY 4000000
+06:54:47 partsupp part 1/2 loaded in 157 s
+ERROR:  [IO error (yb/tserver/tablet_service.cc:2712): Write to tablet 1dfef2999eb642779c07f9a8ece75ed3 rejected. Node 13961c2d6e824195816996179eb30414 has insufficient disk space, IO error (yb/tserver/tablet_service.cc:2712): Write to tablet 7415e667c6164ed0a30249d1f0b4d719 rejected. Node 13961c2d6e824195816996179eb30414 has insufficient disk space, IO error (yb/tserver/tablet_service.cc:2712): W
+CONTEXT:  COPY orders, line 4658432: "18633728|1193671|F|265429.17|1992-04-21|1-URGENT|Clerk#000009501|0|uickly above the blithely even pa..."
+
+real	7m53.783s
+user	1m0.960s
+sys	0m9.077s

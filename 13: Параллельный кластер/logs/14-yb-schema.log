@@ -1,0 +1,24 @@
++ curl -s 'http://10.131.0.16:9000/varz?raw=1'
++ grep -E 'log_min_seconds_to_retain|xcluster_checkpoint_max_staleness'
+--log_min_seconds_to_retain=120
+--xcluster_checkpoint_max_staleness_secs=150
++ Y='/opt/yugabyte/bin/ysqlsh -h 10.131.0.16'
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -c 'CREATE DATABASE tpch'
+CREATE DATABASE
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -v ON_ERROR_STOP=1 -q -f tpch-schema-yb.sql
++ /home/yb/tpch-load.sh '/opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch' 10 1 1 nation region
+COPY 25
+07:05:38 nation part 1/1 loaded in 4 s
+COPY 5
+07:05:41 region part 1/1 loaded in 3 s
++ sleep 20
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 list_tablets ysql.tpch lineitem 0 include_followers
+Tablet-UUID                      	Range                                                    	Leader-IP       	Leader-UUID 	Followers
+8814ae3653104343aa5c800128a580ca 	hash_split: [0x0000, 0x1FFF]                             	10.131.0.16:9100 	1f8f8a2541a24a2eaae35f317b2e786d
+148396f8f4694173a0753ad9a6853755 	hash_split: [0x2000, 0x3FFF]                             	10.131.0.16:9100 	1f8f8a2541a24a2eaae35f317b2e786d
+5b013acaf7a140629433a25084246ccb 	hash_split: [0x4000, 0x5FFF]                             	10.130.0.8:9100 	f32f23735a484ce8819bca946477cea0
+fb489ae7fe244a709ca8181b2b401fdd 	hash_split: [0x6000, 0x7FFF]                             	10.130.0.8:9100 	f32f23735a484ce8819bca946477cea0
+9d9ee801982842bda78f199134818511 	hash_split: [0x8000, 0x9FFF]                             	10.131.0.16:9100 	1f8f8a2541a24a2eaae35f317b2e786d
+980fc17f0fd6415898663f126572e06b 	hash_split: [0xA000, 0xBFFF]                             	10.130.0.8:9100 	f32f23735a484ce8819bca946477cea0
+7fe3490e6a9f42eda4fd94351cfa8f6a 	hash_split: [0xC000, 0xDFFF]                             	10.130.0.8:9100 	f32f23735a484ce8819bca946477cea0
+5fd8192ff73547d593b728c7f9758ec0 	hash_split: [0xE000, 0xFFFF]                             	10.131.0.16:9100 	1f8f8a2541a24a2eaae35f317b2e786d

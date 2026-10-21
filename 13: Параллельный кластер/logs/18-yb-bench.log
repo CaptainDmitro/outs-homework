@@ -1,0 +1,7 @@
++ ssh yb@153.51.115.27 'PGOPTIONS="-c statement_timeout=1800s" nohup bash -c "date; time ~/bench.sh \"/opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch\" ~/queries 3; date" > ~/bench-yb.log 2>&1 &'
++ cat ~/bench-yb.log   # через 30 с после запуска
+Wed Oct 21 07:33:09 UTC 2026
+query                   run1, ms      run2, ms      run3, ms
+q01
+# строка из мониторинга ~/bench-yb.log (последнее, что удалось прочитать до остановки VM):
+q01                   140568.766

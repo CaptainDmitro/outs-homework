@@ -1,0 +1,31 @@
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch lineitem 600
+Flushed [tpch.lineitem [ysql_schema=public] [00004000000030008000000000004023]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch orders 600
+Flushed [tpch.orders [ysql_schema=public] [0000400000003000800000000000401e]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch partsupp 600
+Flushed [tpch.partsupp [ysql_schema=public] [00004000000030008000000000004014]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch part 600
+Flushed [tpch.part [ysql_schema=public] [0000400000003000800000000000400f]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch customer 600
+Flushed [tpch.customer [ysql_schema=public] [00004000000030008000000000004019]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch supplier 600
+Flushed [tpch.supplier [ysql_schema=public] [0000400000003000800000000000400a]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch nation 600
+Flushed [tpch.nation [ysql_schema=public] [00004000000030008000000000004005]] tables.
++ for t in lineitem orders partsupp part customer supplier nation region
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 flush_table ysql.tpch region 600
+Flushed [tpch.region [ysql_schema=public] [00004000000030008000000000004000]] tables.
++ sleep 150
++ df -h /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb1        20G  8.5G   12G  43% /data
++ du -sh /data/yb/data/yb-data/tserver/wals /data/yb/data/yb-data/tserver/data
+4.8G	/data/yb/data/yb-data/tserver/wals
+3.2G	/data/yb/data/yb-data/tserver/data

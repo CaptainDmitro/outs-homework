@@ -1,0 +1,16 @@
+COPY 100000
+06:51:47 supplier part 1/1 loaded in 5 s
+COPY 2000000
+06:52:32 part part 1/1 loaded in 45 s
+COPY 750000
+06:52:50 customer part 2/2 loaded in 18 s
+COPY 4000000
+06:53:58 partsupp part 2/2 loaded in 68 s
+COPY 7500000
+06:56:46 orders part 2/2 loaded in 168 s
+ERROR:  [IO error (yb/tserver/tablet_service.cc:2712): Write to tablet 4011e30814c44326b6369efd5e19b494 rejected. Node 13961c2d6e824195816996179eb30414 has insufficient disk space, IO error (yb/tserver/tablet_service.cc:2712): Write to tablet 5bb56d9258314be18f609a15bddb5e8a rejected. Node 13961c2d6e824195816996179eb30414 has insufficient disk space, IO error (yb/tserver/tablet_service.cc:2712): W
+CONTEXT:  COPY lineitem, line 6300000: "36300547|685388|10395|1|44|60427.40|0.09|0.07|R|F|1992-01-19|1992-03-07|1992-01-25|NONE|REG AIR| the..."
+
+real	8m29.906s
+user	2m57.947s
+sys	0m29.091s

@@ -1,0 +1,50 @@
++ hostname
+otus-yb-e
++ /opt/yugabyte/bin/yugabyted destroy --base_dir=/data/yb
+Stopped yugabyted using config /data/yb/conf/yugabyted.conf.
+Deleted logs at /data/yb/logs.
+Deleted data at /data/yb/data.
+Deleted conf at /data/yb/conf.
++ df -h /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb1        20G  424M   20G   3% /data
++ hostname
+otus-yb-d
++ /opt/yugabyte/bin/yugabyted destroy --base_dir=/data/yb
+Stopped yugabyted using config /data/yb/conf/yugabyted.conf.
+Deleted logs at /data/yb/logs.
+Deleted data at /data/yb/data.
+Deleted conf at /data/yb/conf.
++ df -h /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb1        20G   18G  2.9G  86% /data
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.130.0.8 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-d --tserver_flags=log_min_seconds_to_retain=120
+Starting yugabyted...
+Starting yugabyted...
+❌ Database failed to start
+Starting yugabyted...
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.131.0.16 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-e --join=10.130.0.8 --tserver_flags=log_min_seconds_to_retain=120
+Fetching configs from join IP...
+ERROR: Node at the join ip provided is not reachable.
+For more information, check the logs in /data/yb/logs
++ sleep 10
++ A='/opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100'
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 get_universe_config
+Timed out (yb/rpc/rpc.cc:226): Unable to establish connection to leader master at [10.130.0.8:7100,10.131.0.16:7100]. Please verify the addresses and check if server is up, or if you're missing --certs_dir_name.
+
+: Could not locate the leader master: GetLeaderMasterRpc(addrs: [10.130.0.8:7100, 10.131.0.16:7100], num_attempts: 340) passed its deadline 970.937s (passed 60.279s of 59.998s): Network error (yb/util/net/socket.cc:542): recvmsg error: Connection refused (system error 111)
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 modify_placement_info yandex.ru-central1.ru-central1-d:0,yandex.ru-central1.ru-central1-e:0 1
+Timed out (yb/rpc/rpc.cc:226): Unable to establish connection to leader master at [10.130.0.8:7100,10.131.0.16:7100]. Please verify the addresses and check if server is up, or if you're missing --certs_dir_name.
+
+: Could not locate the leader master: GetLeaderMasterRpc(addrs: [10.130.0.8:7100, 10.131.0.16:7100], num_attempts: 340) passed its deadline 1031.266s (passed 60.218s of 60.000s): Network error (yb/util/net/socket.cc:542): recvmsg error: Connection refused (system error 111)
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 get_universe_config
+Timed out (yb/rpc/rpc.cc:226): Unable to establish connection to leader master at [10.130.0.8:7100,10.131.0.16:7100]. Please verify the addresses and check if server is up, or if you're missing --certs_dir_name.
+
+: Could not locate the leader master: GetLeaderMasterRpc(addrs: [10.130.0.8:7100, 10.131.0.16:7100], num_attempts: 340) passed its deadline 1091.533s (passed 60.216s of 60.000s): Network error (yb/util/net/socket.cc:542): recvmsg error: Connection refused (system error 111)
++ curl -s 'http://10.131.0.16:9000/varz?raw'
++ grep -E log_min_seconds_to_retain
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1021 07:01:10.629685  5742 cdc_service.cc:231] Invalid value '300' for flag 'xcluster_checkpoint_max_staleness_secs': Must be less than the sum of log_min_seconds_to_retain and update_min_cdc_indices_interval_secs. Minimum value allowed: 180
+F1021 07:01:10.629801  5742 flags.cc:675] Check failed: _s.ok() Bad status: Invalid argument (yb/util/flags/flags.cc:856): ERROR: failed validation of new value '300' for flag 'xcluster_checkpoint_max_staleness_secs'
+ : cdc_service.cc:231] Invalid value '300' for flag 'xcluster_checkpoint_max_staleness_secs': Must be less than the sum of log_min_seconds_to_retain and update_min_cdc_indices_interval_secs. Minimum value allowed: 180
+*** Check failure stack trace: ***

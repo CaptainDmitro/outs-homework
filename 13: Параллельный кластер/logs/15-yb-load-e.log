@@ -1,0 +1,16 @@
+COPY 100000
+07:06:15 supplier part 1/1 loaded in 6 s
+COPY 2000000
+07:07:09 part part 1/1 loaded in 54 s
+COPY 750000
+07:07:32 customer part 2/2 loaded in 23 s
+COPY 4000000
+07:08:50 partsupp part 2/2 loaded in 78 s
+COPY 7500000
+07:12:15 orders part 2/2 loaded in 205 s
+COPY 29986257
+07:28:59 lineitem part 2/2 loaded in 1004 s
+
+real	22m49.796s
+user	3m5.351s
+sys	0m24.628s

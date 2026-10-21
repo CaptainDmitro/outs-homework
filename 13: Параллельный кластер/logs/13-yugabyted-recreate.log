@@ -1,0 +1,86 @@
++ /opt/yugabyte/bin/yugabyted destroy --base_dir=/data/yb
+Deleted logs at /data/yb/logs.
+Deleted data at /data/yb/data.
+Deleted conf at /data/yb/conf.
++ /opt/yugabyte/bin/yugabyted destroy --base_dir=/data/yb
+Deleted logs at /data/yb/logs.
+Deleted data at /data/yb/data.
+Deleted conf at /data/yb/conf.
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.130.0.8 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-d --tserver_flags=log_min_seconds_to_retain=120,xcluster_checkpoint_max_staleness_secs=150
+Starting yugabyted...
+Starting yugabyted...
+✅ YugabyteDB Started
+✅ UI ready
+✅ Data placement constraint successfully verified
+
+⚠ WARNINGS:
+- Transparent hugepages disabled. Please enable transparent_hugepages.
+- Cluster started in an insecure mode without authentication and encryption enabled. For non-production use only, not to be used without firewalls blocking the internet traffic.
+
+Please review the following docs and rerun the start command:
+- Quick start for Linux: https://docs.yugabyte.com/preview/quick-start/linux/
+
++------------------------------------------------------------------------------------------------+
+|                                           yugabyted                                            |
++------------------------------------------------------------------------------------------------+
+| Status     : Running.                                                                          |
+| YSQL Status: Ready                                                                             |
+| Replication Factor: 1                                                                                 |
+| YugabyteDB UI: http://10.130.0.8:15433                                                           |
+| JDBC       : jdbc:postgresql://10.130.0.8:5433/yugabyte?user=yugabyte&password=yugabyte        |
+| YSQL       : bin/ysqlsh -h 10.130.0.8  -U yugabyte -d yugabyte                                 |
+| YCQL       : bin/ycqlsh 10.130.0.8 9042 -u cassandra                                           |
+| Data Dir   : /data/yb/data                                                                     |
+| Log Dir    : /data/yb/logs                                                                     |
+| Universe UUID: ac3cf276-da5f-47b8-9951-44125efeec32                                              |
++------------------------------------------------------------------------------------------------+
+🚀 YugabyteDB started successfully! To load a sample dataset, try 'yugabyted demo'.
+🎉 Join us on Slack at https://www.yugabyte.com/slack
+👕 Claim your free t-shirt at https://www.yugabyte.com/community-rewards/
+
+Starting yugabyted...
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.131.0.16 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-e --join=10.130.0.8 --tserver_flags=log_min_seconds_to_retain=120,xcluster_checkpoint_max_staleness_secs=150
+Fetching configs from join IP...
+Starting yugabyted...
+Fetching configs from join IP...
+Starting yugabyted...
+✅ YugabyteDB Started
+✅ Node joined a running cluster with UUID ac3cf276-da5f-47b8-9951-44125efeec32
+✅ UI ready
+✅ Data placement constraint successfully verified
+
+⚠ WARNINGS:
+- Transparent hugepages disabled. Please enable transparent_hugepages.
+- Cluster started in an insecure mode without authentication and encryption enabled. For non-production use only, not to be used without firewalls blocking the internet traffic.
+
+Please review the following docs and rerun the start command:
+- Quick start for Linux: https://docs.yugabyte.com/preview/quick-start/linux/
+
++-------------------------------------------------------------------------------------------------+
+|                                            yugabyted                                            |
++-------------------------------------------------------------------------------------------------+
+| Status     : Running.                                                                           |
+| YSQL Status: Ready                                                                              |
+| Replication Factor: 1                                                                                  |
+| YugabyteDB UI: http://10.131.0.16:15433                                                           |
+| JDBC       : jdbc:postgresql://10.131.0.16:5433/yugabyte?user=yugabyte&password=yugabyte        |
+| YSQL       : bin/ysqlsh -h 10.131.0.16  -U yugabyte -d yugabyte                                 |
+| YCQL       : bin/ycqlsh 10.131.0.16 9042 -u cassandra                                           |
+| Data Dir   : /data/yb/data                                                                      |
+| Log Dir    : /data/yb/logs                                                                      |
+| Universe UUID: ac3cf276-da5f-47b8-9951-44125efeec32                                               |
++-------------------------------------------------------------------------------------------------+
+🚀 YugabyteDB started successfully! To load a sample dataset, try 'yugabyted demo'.
+🎉 Join us on Slack at https://www.yugabyte.com/slack
+👕 Claim your free t-shirt at https://www.yugabyte.com/community-rewards/
+
+Fetching configs from join IP...
+Starting yugabyted...
++ A='/opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100'
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 get_universe_config
+{"version":1,"replicationInfo":{"liveReplicas":{"numReplicas":1,"placementBlocks":[{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-d"},"minNumReplicas":1}],"placementUuid":"YjEzM2E2OWMtMGZlMy00ZWRmLWEyZDYtYzNiMzk4NzY2NTE1"}},"clusterUuid":"ac3cf276-da5f-47b8-9951-44125efeec32","universeUuid":"b83f61f1-6c5a-4df7-b605-61c755556f30"}
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 modify_placement_info yandex.ru-central1.ru-central1-d:0,yandex.ru-central1.ru-central1-e:0 1
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100,10.131.0.16:7100 get_universe_config
+{"version":2,"replicationInfo":{"liveReplicas":{"numReplicas":1,"placementBlocks":[{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-e"},"minNumReplicas":0},{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-d"},"minNumReplicas":0}],"placementUuid":"YjEzM2E2OWMtMGZlMy00ZWRmLWEyZDYtYzNiMzk4NzY2NTE1"}},"clusterUuid":"ac3cf276-da5f-47b8-9951-44125efeec32","universeUuid":"b83f61f1-6c5a-4df7-b605-61c755556f30"}
++ curl -s 'http://10.131.0.16:9000/varz?raw'
++ grep -E 'log_min_seconds_to_retain|xcluster_checkpoint_max_staleness'

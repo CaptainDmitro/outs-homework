@@ -1,0 +1,15 @@
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb1        20G   18G  2.9G  86% /data
+Tablet Server UUID               RPC Host/Port Heartbeat delay Status   Reads/s  Writes/s Uptime   SST total size  SST uncomp size SST #files      Memory   Broadcast Host/Port
+13961c2d6e824195816996179eb30414 10.130.0.8:9100 0.81s           ALIVE    0.20     0.20     723      2.18 GB         4.86 GB         58              3.42 GB  10.130.0.8:9100
+388c0a99280d4694a3c526524ebe8923 10.131.0.16:9100 0.39s           ALIVE    0.00     0.00     715      0 B             0 B             0               97.51 MB 10.131.0.16:9100
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 get_universe_config
+{"version":1,"replicationInfo":{"liveReplicas":{"numReplicas":1,"placementBlocks":[{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-d"},"minNumReplicas":1}],"placementUuid":"NmRhOGU3YTItODIyMy00ZTY2LTgwZjgtN2Q0ZGM5YmI2NWMz"}},"clusterUuid":"2c6a3971-3a33-4d1f-b3e2-fdd8def1f80b","universeUuid":"c5b0cc0b-be56-43e4-8bb3-56e1da155a10"}
++ du -sh /data/yb/data/yb-data/tserver/wals /data/yb/data/yb-data/tserver/data
+15G	/data/yb/data/yb-data/tserver/wals
+2.1G	/data/yb/data/yb-data/tserver/data
++ hostname
+otus-yb-e
++ du -sh /data/yb/data/yb-data/tserver/wals /data/yb/data/yb-data/tserver/data
+0	/data/yb/data/yb-data/tserver/wals
+0	/data/yb/data/yb-data/tserver/data

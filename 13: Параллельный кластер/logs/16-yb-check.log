@@ -1,0 +1,41 @@
++ Y='/opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch'
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -c 'select '\''lineitem'\'' t, count(*) from lineitem union all select '\''orders'\'', count(*) from orders union all select '\''partsupp'\'', count(*) from partsupp union all select '\''part'\'', count(*) from part union all select '\''customer'\'', count(*) from customer union all select '\''supplier'\'', count(*) from supplier union all select '\''nation'\'', count(*) from nation union all select '\''region'\'', count(*) from region'
+    t     |  count
+----------+----------
+ region   |        5
+ nation   |       25
+ supplier |   100000
+ customer |  1500000
+ part     |  2000000
+ partsupp |  8000000
+ orders   | 15000000
+ lineitem | 59986052
+(8 rows)
+
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -c ANALYZE
+ANALYZE
+
+real	0m41.036s
+user	0m0.000s
+sys	0m0.008s
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -c 'show yb_enable_cbo' -c 'show yb_enable_base_scans_cost_model'
+ yb_enable_cbo
+---------------
+ on
+(1 row)
+
+ yb_enable_base_scans_cost_model
+---------------------------------
+ on
+(1 row)
+
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 list_all_tablet_servers
+Tablet Server UUID               RPC Host/Port Heartbeat delay Status   Reads/s  Writes/s Uptime   SST total size  SST uncomp size SST #files      Memory   Broadcast Host/Port
+f32f23735a484ce8819bca946477cea0 10.130.0.8:9100 0.06s           ALIVE    5.19     0.40     1496     3.12 GB         7.39 GB         31              3.92 GB  10.130.0.8:9100
+1f8f8a2541a24a2eaae35f317b2e786d 10.131.0.16:9100 0.82s           ALIVE    5.37     0.00     1490     3.13 GB         7.41 GB         32              3.92 GB  10.131.0.16:9100
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb1        20G  8.3G   12G  42% /data
++ df -h /data
++ du -sh /data/yb/data/yb-data/tserver/wals /data/yb/data/yb-data/tserver/data
+4.9G	/data/yb/data/yb-data/tserver/wals
+3.0G	/data/yb/data/yb-data/tserver/data
