@@ -1,0 +1,15 @@
++ cd /home/ubuntu/hw
++ ./consistency.sh 300 'postgresql://root@10.130.0.20:26257/otus?sslmode=disable' 'postgresql://root@10.130.0.20:26258/otus?sslmode=disable' 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable'
+writes=300 stale_reads=0
+gateway postgresql://root@10.130.0.20:26257/otus?sslmode=disable:
+Time: 15.384 ms
+Time: 18.833 ms
+Time: 11.880 ms
+gateway postgresql://root@10.130.0.20:26258/otus?sslmode=disable:
+Time: 9.037 ms
+Time: 8.037 ms
+Time: 10.928 ms
+gateway postgresql://root@10.131.0.20:26257/otus?sslmode=disable:
+Time: 11.877 ms
+Time: 8.974 ms
+Time: 9.808 ms

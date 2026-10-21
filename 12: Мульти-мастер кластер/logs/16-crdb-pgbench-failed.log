@@ -1,0 +1,5 @@
++ cd /home/ubuntu/hw
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 60 -P 10 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable'
+Error: pg_wrapper: pgbench was not found in /usr/lib/postgresql/16/bin
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 60 -P 10 'host=10.130.0.20,10.130.0.20,10.131.0.20 port=26257,26258,26257 load_balance_hosts=random user=root dbname=otus sslmode=disable'
+Error: pg_wrapper: pgbench was not found in /usr/lib/postgresql/16/bin

@@ -1,0 +1,173 @@
++ cd /home/ubuntu/hw
++ URL='postgresql://root@10.131.0.20:26257/otus?sslmode=disable'
++ for i in 1 2 3
++ echo '=== run 1'
+=== run 1
++ psql 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable' -X -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 7.019 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 462.387 ms
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 90152.907 ms (01:30.153)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 266476.768 ms (04:26.477)
++ for i in 1 2 3
++ echo '=== run 2'
+=== run 2
++ psql 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable' -X -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 8.118 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 99.074 ms
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 66409.728 ms (01:06.410)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 243489.243 ms (04:03.489)
++ for i in 1 2 3
++ echo '=== run 3'
+=== run 3
++ psql 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable' -X -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 45.186 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 89.605 ms
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 57285.222 ms (00:57.285)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 234024.878 ms (03:54.025)
++ psql 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable' -X -c 'EXPLAIN ANALYZE SELECT city, count(*), sum(fare), avg(distance_m)::NUMERIC(10,1) FROM trips GROUP BY city ORDER BY city'
+                            info
+------------------------------------------------------------
+ planning time: 434µs
+ execution time: 54.7s
+ distribution: full
+ plan type: custom
+ rows decoded from KV: 66,000,000 (8.9 GiB, 908 gRPC calls)
+ DistSQL network usage: 3.5 KiB (5,238 messages)
+ max sql temp disk usage: 371 MiB
+ regions: ru-central1
+ used follower read
+
+ • sort
+ │ sql nodes: n1, n2, n3
+ │ regions: ru-central1
+ │ execution time: 8ms
+ │ sql cpu time: 8ms
+ │ actual row count: 3
+ │ order: +city
+ │
+ └── • render
+     │ execution time: 7ms
+     │ sql cpu time: 7ms
+     │ actual row count: 3
+     │
+     └── • group (hash)
+         │ sql nodes: n1, n2, n3
+         │ regions: ru-central1
+         │ execution time: 27.1s
+         │ sql cpu time: 26.9s
+         │ actual row count: 3
+         │ group by: city
+         │
+         └── • scan
+               sql nodes: n1, n2, n3
+               kv nodes: n1, n2, n3
+               regions: ru-central1
+               used follower read
+               KV time: 1m45s
+               KV rows decoded: 66,000,000
+               sql cpu time: 44.4s
+               actual row count: 66,000,000
+               missing stats
+               table: trips@trips_pkey
+               spans: FULL SCAN
+(43 rows)
+
