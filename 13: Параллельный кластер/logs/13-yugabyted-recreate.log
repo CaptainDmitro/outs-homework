@@ -84,3 +84,5 @@ Starting yugabyted...
 {"version":2,"replicationInfo":{"liveReplicas":{"numReplicas":1,"placementBlocks":[{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-e"},"minNumReplicas":0},{"cloudInfo":{"placementCloud":"yandex","placementRegion":"ru-central1","placementZone":"ru-central1-d"},"minNumReplicas":0}],"placementUuid":"YjEzM2E2OWMtMGZlMy00ZWRmLWEyZDYtYzNiMzk4NzY2NTE1"}},"clusterUuid":"ac3cf276-da5f-47b8-9951-44125efeec32","universeUuid":"b83f61f1-6c5a-4df7-b605-61c755556f30"}
 + curl -s 'http://10.131.0.16:9000/varz?raw'
 + grep -E 'log_min_seconds_to_retain|xcluster_checkpoint_max_staleness'
+--log_min_seconds_to_retain=120
+--xcluster_checkpoint_max_staleness_secs=150
