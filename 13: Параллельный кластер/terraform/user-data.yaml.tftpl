@@ -1,0 +1,26 @@
+#cloud-config
+users:
+  - name: yb
+    groups: sudo
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+disk_setup:
+  /dev/disk/by-id/virtio-data:
+    table_type: gpt
+    layout: true
+    overwrite: false
+
+fs_setup:
+  - device: /dev/disk/by-id/virtio-data
+    partition: auto
+    filesystem: xfs
+    label: data
+
+mounts:
+  - [LABEL=data, /data, xfs, "defaults,noatime", "0", "2"]
+
+runcmd:
+  - mkdir -p /data && mount -a && chown yb:yb /data

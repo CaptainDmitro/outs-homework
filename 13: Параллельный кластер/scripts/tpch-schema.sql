@@ -1,0 +1,20 @@
+-- Схема TPC-H для одиночного PostgreSQL. Первичные ключи как в спецификации, без вторичных индексов.
+CREATE TABLE region   (r_regionkey int PRIMARY KEY, r_name char(25) NOT NULL, r_comment varchar(152));
+CREATE TABLE nation   (n_nationkey int PRIMARY KEY, n_name char(25) NOT NULL, n_regionkey int NOT NULL, n_comment varchar(152));
+CREATE TABLE supplier (s_suppkey int PRIMARY KEY, s_name char(25) NOT NULL, s_address varchar(40) NOT NULL, s_nationkey int NOT NULL,
+                       s_phone char(15) NOT NULL, s_acctbal numeric(15,2) NOT NULL, s_comment varchar(101) NOT NULL);
+CREATE TABLE part     (p_partkey int PRIMARY KEY, p_name varchar(55) NOT NULL, p_mfgr char(25) NOT NULL, p_brand char(10) NOT NULL,
+                       p_type varchar(25) NOT NULL, p_size int NOT NULL, p_container char(10) NOT NULL, p_retailprice numeric(15,2) NOT NULL,
+                       p_comment varchar(23) NOT NULL);
+CREATE TABLE partsupp (ps_partkey int NOT NULL, ps_suppkey int NOT NULL, ps_availqty int NOT NULL, ps_supplycost numeric(15,2) NOT NULL,
+                       ps_comment varchar(199) NOT NULL, PRIMARY KEY (ps_partkey, ps_suppkey));
+CREATE TABLE customer (c_custkey int PRIMARY KEY, c_name varchar(25) NOT NULL, c_address varchar(40) NOT NULL, c_nationkey int NOT NULL,
+                       c_phone char(15) NOT NULL, c_acctbal numeric(15,2) NOT NULL, c_mktsegment char(10) NOT NULL, c_comment varchar(117) NOT NULL);
+CREATE TABLE orders   (o_orderkey bigint PRIMARY KEY, o_custkey int NOT NULL, o_orderstatus char(1) NOT NULL, o_totalprice numeric(15,2) NOT NULL,
+                       o_orderdate date NOT NULL, o_orderpriority char(15) NOT NULL, o_clerk char(15) NOT NULL, o_shippriority int NOT NULL,
+                       o_comment varchar(79) NOT NULL);
+CREATE TABLE lineitem (l_orderkey bigint NOT NULL, l_partkey int NOT NULL, l_suppkey int NOT NULL, l_linenumber int NOT NULL,
+                       l_quantity numeric(15,2) NOT NULL, l_extendedprice numeric(15,2) NOT NULL, l_discount numeric(15,2) NOT NULL,
+                       l_tax numeric(15,2) NOT NULL, l_returnflag char(1) NOT NULL, l_linestatus char(1) NOT NULL, l_shipdate date NOT NULL,
+                       l_commitdate date NOT NULL, l_receiptdate date NOT NULL, l_shipinstruct char(25) NOT NULL, l_shipmode char(10) NOT NULL,
+                       l_comment varchar(44) NOT NULL, PRIMARY KEY (l_orderkey, l_linenumber));
