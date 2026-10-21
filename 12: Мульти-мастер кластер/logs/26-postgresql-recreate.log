@@ -1,0 +1,36 @@
++ sudo pg_dropcluster 16 main --stop
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G   28K   19G   1% /mnt/data
++ tail -2
++ sudo pg_createcluster 16 main -d /mnt/data/pg/16
+Ver Cluster Port Status Owner    Data directory  Log file
+16  main    5432 down   postgres /mnt/data/pg/16 /var/log/postgresql/postgresql-16-main.log
++ sudo pg_ctlcluster 16 main start
++ sudo -u postgres psql -X -c 'ALTER SYSTEM SET shared_buffers = '\''2GB'\''' -c 'ALTER SYSTEM SET effective_cache_size = '\''6GB'\''' -c 'ALTER SYSTEM SET work_mem = '\''64MB'\''' -c 'ALTER SYSTEM SET maintenance_work_mem = '\''1GB'\''' -c 'ALTER SYSTEM SET max_wal_size = '\''2GB'\''' -c 'ALTER SYSTEM SET checkpoint_timeout = '\''15min'\''' -c 'CREATE ROLE ubuntu SUPERUSER LOGIN' -c 'CREATE DATABASE otus OWNER ubuntu'
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+CREATE ROLE
+CREATE DATABASE
++ sudo pg_ctlcluster 16 main restart
++ psql -X -d otus -c 'SHOW shared_buffers' -c 'SHOW max_wal_size' -f /home/ubuntu/hw/sql/schema.sql
+ shared_buffers
+----------------
+ 2GB
+(1 row)
+
+ max_wal_size
+--------------
+ 2GB
+(1 row)
+
+CREATE TABLE
++ sudo du -sh /mnt/data/pg/16/pg_wal
+17M	/mnt/data/pg/16/pg_wal
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G   46M   19G   1% /mnt/data
++ df -h /mnt/data

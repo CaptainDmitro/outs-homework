@@ -1,0 +1,198 @@
++ cd /home/ubuntu/hw
++ for i in 1 2 3
++ echo '=== run 1'
+=== run 1
++ psql -X -d otus -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 124.049 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 21868.790 ms (00:21.869)
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 345435.854 ms (05:45.436)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 347868.638 ms (05:47.869)
++ for i in 1 2 3
++ echo '=== run 2'
+=== run 2
++ psql -X -d otus -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 1.397 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 49.258 ms
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 383448.898 ms (06:23.449)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 377701.023 ms (06:17.701)
++ for i in 1 2 3
++ echo '=== run 3'
+=== run 3
++ psql -X -d otus -f sql/queries.sql
+Timing is on.
+Q1: точечное чтение по первичному ключу
+    id    |  city   | driver_id |       started_at       | fare
+----------+---------+-----------+------------------------+-------
+ 31415926 | chicago |     93706 | 2025-08-09 04:54:46+00 | 82.94
+(1 row)
+
+Time: 1.629 ms
+Q2: диапазон по первичному ключу (100 тыс. строк)
+   city   | count |    sum
+----------+-------+------------
+ chicago  | 33333 | 1766499.00
+ moscow   | 33333 | 1766239.27
+ new_york | 33334 | 1766761.73
+(3 rows)
+
+Time: 50.783 ms
+Q3: агрегация по всей таблице
+   city   |  count   |      sum      |   avg
+----------+----------+---------------+---------
+ chicago  | 22000000 | 1165890000.00 | 24999.5
+ moscow   | 22000000 | 1165890000.00 | 24999.5
+ new_york | 22000000 | 1165890000.00 | 24999.5
+(3 rows)
+
+Time: 377979.432 ms (06:17.979)
+Q4: группировка по 100 тыс. водителей и топ-5
+ driver_id | count |   sum
+-----------+-------+----------
+      1951 |   660 | 67973.40
+     11951 |   660 | 67973.40
+     21951 |   660 | 67973.40
+     31951 |   660 | 67973.40
+     41951 |   660 | 67973.40
+(5 rows)
+
+Time: 346405.852 ms (05:46.406)
++ psql -X -d otus -c 'EXPLAIN (ANALYZE, BUFFERS) SELECT city, count(*), sum(fare), avg(distance_m)::NUMERIC(10,1) FROM trips GROUP BY city ORDER BY city'
+                                                                        QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=1845245.79..1845246.61 rows=3 width=63) (actual time=399654.008..399690.029 rows=3 loops=1)
+   Group Key: city
+   Buffers: shared hit=214644 read=1079606
+   ->  Gather Merge  (cost=1845245.79..1845246.49 rows=6 width=79) (actual time=399653.952..399689.965 rows=9 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=214644 read=1079606
+         ->  Sort  (cost=1844245.76..1844245.77 rows=3 width=79) (actual time=399630.242..399630.244 rows=3 loops=3)
+               Sort Key: city
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=214644 read=1079606
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               Worker 1:  Sort Method: quicksort  Memory: 25kB
+               ->  Partial HashAggregate  (cost=1844245.70..1844245.74 rows=3 width=79) (actual time=399630.180..399630.185 rows=3 loops=3)
+                     Group Key: city
+                     Batches: 1  Memory Usage: 24kB
+                     Buffers: shared hit=214628 read=1079606
+                     Worker 0:  Batches: 1  Memory Usage: 24kB
+                     Worker 1:  Batches: 1  Memory Usage: 24kB
+                     ->  Parallel Seq Scan on trips  (cost=0.00..1569239.85 rows=27500585 width=17) (actual time=17.685..391174.315 rows=22000000 loops=3)
+                           Buffers: shared hit=214628 read=1079606
+ Planning:
+   Buffers: shared hit=119
+ Planning Time: 0.889 ms
+ JIT:
+   Functions: 21
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 2.563 ms, Inlining 595.832 ms, Optimization 439.910 ms, Emission 206.391 ms, Total 1244.696 ms
+ Execution Time: 399710.554 ms
+(29 rows)
+
++ psql -X -d otus -c 'EXPLAIN (ANALYZE, BUFFERS) SELECT driver_id, count(*), sum(fare) FROM trips GROUP BY driver_id ORDER BY sum(fare) DESC, driver_id LIMIT 5'
+                                                                              QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1813402.65..1813402.66 rows=5 width=48) (actual time=319239.623..319285.979 rows=5 loops=1)
+   Buffers: shared hit=214743 read=1079510
+   ->  Sort  (cost=1813402.65..1813646.85 rows=97683 width=48) (actual time=319055.684..319102.039 rows=5 loops=1)
+         Sort Key: (sum(fare)) DESC, driver_id
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=214743 read=1079510
+         ->  Finalize GroupAggregate  (cost=1785811.18..1811780.17 rows=97683 width=48) (actual time=318751.469..319070.496 rows=100000 loops=1)
+               Group Key: driver_id
+               Buffers: shared hit=214740 read=1079510
+               ->  Gather Merge  (cost=1785811.18..1808605.47 rows=195366 width=48) (actual time=318751.412..318876.166 rows=300000 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=214740 read=1079510
+                     ->  Sort  (cost=1784811.15..1785055.36 rows=97683 width=48) (actual time=318705.819..318728.820 rows=100000 loops=3)
+                           Sort Key: driver_id
+                           Sort Method: quicksort  Memory: 13992kB
+                           Buffers: shared hit=214740 read=1079510
+                           Worker 0:  Sort Method: quicksort  Memory: 13995kB
+                           Worker 1:  Sort Method: quicksort  Memory: 13996kB
+                           ->  Partial HashAggregate  (cost=1775494.24..1776715.28 rows=97683 width=48) (actual time=318506.715..318629.996 rows=100000 loops=3)
+                                 Group Key: driver_id
+                                 Batches: 1  Memory Usage: 44049kB
+                                 Buffers: shared hit=214724 read=1079510
+                                 Worker 0:  Batches: 1  Memory Usage: 47121kB
+                                 Worker 1:  Batches: 1  Memory Usage: 44049kB
+                                 ->  Parallel Seq Scan on trips  (cost=0.00..1569239.85 rows=27500585 width=14) (actual time=19.021..307518.841 rows=22000000 loops=3)
+                                       Buffers: shared hit=214724 read=1079510
+ Planning:
+   Buffers: shared hit=103
+ Planning Time: 0.683 ms
+ JIT:
+   Functions: 22
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 2.341 ms, Inlining 332.708 ms, Optimization 217.283 ms, Emission 136.799 ms, Total 689.131 ms
+ Execution Time: 319309.949 ms
+(35 rows)
+

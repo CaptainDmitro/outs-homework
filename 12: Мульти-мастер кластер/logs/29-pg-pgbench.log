@@ -1,0 +1,22 @@
++ cd /home/ubuntu/hw
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 60 -P 10 otus
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+progress: 10.0 s, 118.7 tps, lat 66.518 ms stddev 63.269, 0 failed
+progress: 20.0 s, 136.4 tps, lat 59.047 ms stddev 56.190, 0 failed
+progress: 30.0 s, 167.3 tps, lat 47.836 ms stddev 46.777, 0 failed
+progress: 40.0 s, 147.0 tps, lat 54.232 ms stddev 55.680, 0 failed
+progress: 50.0 s, 156.9 tps, lat 51.220 ms stddev 46.932, 0 failed
+progress: 60.0 s, 166.0 tps, lat 47.979 ms stddev 46.268, 0 failed
+transaction type: sql/oltp.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 2
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 8931
+number of failed transactions: 0 (0.000%)
+latency average = 53.817 ms
+latency stddev = 52.779 ms
+initial connection time = 16.747 ms
+tps = 148.004902 (without initial connection time)

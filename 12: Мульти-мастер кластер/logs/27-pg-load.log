@@ -1,0 +1,22 @@
++ cd /home/ubuntu/hw
++ ./load.sh 66000000 200000 postgresql:///otus postgresql:///otus postgresql:///otus
+loaded ids 1..66000000 in 704 s, rc=0
++ psql -X -d otus -c '\timing on' -c 'VACUUM ANALYZE trips'
+Timing is on.
+VACUUM
+Time: 766683.610 ms (12:46.684)
++ psql -X -d otus -c 'SELECT count(*), sum(id), sum(id) = 66000000::NUMERIC * 66000001 / 2 AS complete FROM trips'
+  count   |       sum        | complete
+----------+------------------+----------
+ 66000000 | 2178000033000000 | t
+(1 row)
+
++ psql -X -d otus -c 'SELECT pg_size_pretty(pg_table_size('\''trips'\'')) AS table, pg_size_pretty(pg_indexes_size('\''trips'\'')) AS indexes, pg_size_pretty(pg_database_size('\''otus'\'')) AS database'
+  table   | indexes | database
+----------+---------+----------
+ 10114 MB | 2172 MB | 12 GB
+(1 row)
+
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G   15G  4.5G  76% /mnt/data
