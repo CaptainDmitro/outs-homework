@@ -1,0 +1,43 @@
+#cloud-config
+ssh_authorized_keys:
+  - ${ssh_key}
+write_files:
+  - path: /etc/systemd/system/cockroach@.service
+    content: |
+      [Unit]
+      Description=CockroachDB %i
+      After=network-online.target mnt-data.mount
+      Requires=mnt-data.mount
+
+      [Service]
+      User=cockroach
+      EnvironmentFile=/etc/cockroach/%i.env
+      ExecStart=/usr/local/bin/cockroach start --insecure \
+        --advertise-addr=${ip}:$${PORT} --listen-addr=:$${PORT} --http-addr=:$${HTTP} \
+        --join=${join} --locality=region=ru-central1,zone=${zone} \
+        --store=/mnt/data/%i --cache=$${MEM} --max-sql-memory=$${MEM} $EXTRA
+      Restart=always
+      LimitNOFILE=65536
+      TimeoutStopSec=60
+
+      [Install]
+      WantedBy=multi-user.target
+%{ for name, n in nodes ~}
+  - path: /etc/cockroach/${name}.env
+    content: |
+      PORT=${n.port}
+      HTTP=${n.http}
+      MEM=${n.mem}
+      EXTRA=${n.extra}
+%{ endfor ~}
+runcmd:
+  - mkfs.ext4 -q -L data /dev/disk/by-id/virtio-data
+  - mkdir -p /mnt/data
+  - echo 'LABEL=data /mnt/data ext4 defaults,noatime 0 2' >> /etc/fstab
+  - systemctl daemon-reload && mount /mnt/data
+  - useradd -r -m -d /var/lib/cockroach cockroach
+  - chown cockroach /mnt/data
+  # бинарник CockroachDB копирует install.sh: binaries.cockroachdb.com отвечает 403 на адреса Yandex Cloud
+  # пакеты ставим здесь: apt.packages в cloud-init ждёт блокировку APT только 30 с
+  - apt-get -o DPkg::Lock::Timeout=600 update
+  - DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 install -y postgresql-client-16

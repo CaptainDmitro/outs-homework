@@ -1,0 +1,3 @@
+\set id random(1, 66000000)
+SELECT fare FROM trips WHERE id = :id;
+UPDATE trips SET duration_s = duration_s + 1 WHERE id = :id;
