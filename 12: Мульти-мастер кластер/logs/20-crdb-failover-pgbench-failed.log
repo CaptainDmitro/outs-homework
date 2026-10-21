@@ -1,0 +1,106 @@
++ cd /home/ubuntu/hw
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 120 -P 5 'host=10.130.0.20,10.131.0.20 port=26257,26257 load_balance_hosts=random user=root dbname=otus sslmode=disable'
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 18.0.0)
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 212 раз)
+progress: 5.0 s, 293.4 tps, lat 26.977 ms stddev 12.614, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 192 раз)
+progress: 10.0 s, 265.6 tps, lat 30.141 ms stddev 13.637, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 203 раз)
+progress: 15.0 s, 268.8 tps, lat 29.795 ms stddev 14.610, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 202 раз)
+progress: 20.0 s, 245.2 tps, lat 32.535 ms stddev 16.446, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 204 раз)
+progress: 25.0 s, 273.8 tps, lat 29.261 ms stddev 14.060, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 209 раз)
+progress: 30.0 s, 284.4 tps, lat 28.065 ms stddev 13.352, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 179 раз)
+progress: 35.0 s, 255.4 tps, lat 28.641 ms stddev 13.891, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 90 раз)
+progress: 40.0 s, 45.8 tps, lat 189.873 ms stddev 737.639, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 275 раз)
+progress: 45.0 s, 215.2 tps, lat 37.224 ms stddev 17.373, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 264 раз)
+progress: 50.0 s, 218.6 tps, lat 36.542 ms stddev 18.081, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 310 раз)
+progress: 55.0 s, 215.8 tps, lat 37.096 ms stddev 19.085, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 249 раз)
+progress: 60.0 s, 252.0 tps, lat 31.701 ms stddev 15.236, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 274 раз)
+progress: 65.0 s, 246.2 tps, lat 32.473 ms stddev 15.478, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 278 раз)
+progress: 70.0 s, 236.4 tps, lat 33.862 ms stddev 16.239, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 264 раз)
+progress: 75.0 s, 257.8 tps, lat 31.043 ms stddev 14.413, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 236 раз)
+progress: 80.0 s, 234.4 tps, lat 34.189 ms stddev 15.115, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 248 раз)
+progress: 85.0 s, 245.6 tps, lat 32.500 ms stddev 14.809, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 272 раз)
+progress: 90.0 s, 232.0 tps, lat 34.439 ms stddev 16.913, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 245 раз)
+progress: 95.0 s, 244.8 tps, lat 32.725 ms stddev 15.333, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 248 раз)
+progress: 100.0 s, 230.8 tps, lat 34.546 ms stddev 17.669, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 183 раз)
+progress: 105.0 s, 213.0 tps, lat 37.709 ms stddev 18.532, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 237 раз)
+progress: 110.0 s, 233.4 tps, lat 34.246 ms stddev 14.652, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 192 раз)
+progress: 115.0 s, 240.8 tps, lat 33.176 ms stddev 13.892, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 247 раз)
+progress: 120.0 s, 252.4 tps, lat 31.745 ms stddev 13.578, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+transaction type: sql/oltp.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 2
+maximum number of tries: 1
+duration: 120 s
+number of transactions actually processed: 28516
+number of failed transactions: 0 (0.000%)
+latency average = 33.656 ms
+latency stddev = 69.360 ms
+initial connection time = 33.378 ms
+tps = 237.632650 (without initial connection time)
++ cockroach node status --insecure --host=10.131.0.20:26257 --ranges --format=records
++ grep -E '^(id|address|is_live|ranges_underreplicated|ranges_unavailable)'
+id                     | 1
+address                | 10.130.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 2
+address                | 10.131.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 3
+address                | 10.130.0.20:26258
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0

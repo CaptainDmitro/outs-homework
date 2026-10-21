@@ -1,0 +1,33 @@
++ date -u +%T
+23:55:16
++ sudo systemctl kill -s KILL cockroach@node2
+Failed to kill unit cockroach@node2.service: Failed to send signal SIGKILL to auxiliary processes: Invalid argument
++ systemctl is-active cockroach@node2
+active
++ sleep 15
++ cockroach node status --insecure --host=10.130.0.20:26257 --ranges --format=records
++ grep -E '^(id|address|is_live|ranges_underreplicated|ranges_unavailable)'
+id                     | 1
+address                | 10.130.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 2
+address                | 10.131.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 3
+address                | 10.130.0.20:26258
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
++ cockroach sql --insecure --host=10.130.0.20:26257 -d otus -e 'SELECT count(*) FROM trips WHERE id BETWEEN 1 AND 1000000'
+count
+1000000
++ sleep 25
++ date -u +%T
+23:55:59
++ sudo systemctl start cockroach@node2
++ systemctl is-active cockroach@node2
+active

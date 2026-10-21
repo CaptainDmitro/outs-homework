@@ -1,0 +1,42 @@
++ sudo mkdir -p /run/systemd/system/cockroach@node2.service.d
++ printf '[Service]\nRestart=no\n'
++ sudo tee /run/systemd/system/cockroach@node2.service.d/norestart.conf
+[Service]
+Restart=no
++ sudo systemctl daemon-reload
++ date -u +%T
+23:57:39
+++ systemctl show -p MainPID --value cockroach@node2
++ sudo kill -9 95488
++ sleep 2
++ systemctl is-active cockroach@node2
+failed
++ sleep 20
++ grep -E '^(id|address|is_live|ranges_underreplicated|ranges_unavailable)'
++ cockroach node status --insecure --host=10.130.0.20:26257 --ranges --format=records
+id                     | 1
+address                | 10.130.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 46
+id                     | 2
+address                | 10.131.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 52
+id                     | 3
+address                | 10.130.0.20:26258
+is_live                | false
+ranges_unavailable     | 0
+ranges_underreplicated | 0
++ cockroach sql --insecure --host=10.130.0.20:26257 -d otus -e 'SELECT count(*) FROM trips WHERE id BETWEEN 1 AND 1000000'
+count
+1000000
++ sleep 40
++ date -u +%T
+23:58:43
++ sudo rm -r /run/systemd/system/cockroach@node2.service.d
++ sudo systemctl daemon-reload
++ sudo systemctl start cockroach@node2
++ systemctl is-active cockroach@node2
+active

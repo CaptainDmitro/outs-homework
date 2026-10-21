@@ -1,0 +1,67 @@
++ cd /home/ubuntu/hw
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 150 -P 5 'host=10.130.0.20,10.131.0.20 port=26257,26257 load_balance_hosts=random user=root dbname=otus sslmode=disable'
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 18.0.0)
+progress: 5.0 s, 260.6 tps, lat 30.363 ms stddev 12.910, 0 failed
+progress: 10.0 s, 253.2 tps, lat 31.608 ms stddev 13.137, 0 failed
+progress: 15.0 s, 266.6 tps, lat 30.027 ms stddev 11.504, 0 failed
+progress: 20.0 s, 247.8 tps, lat 32.151 ms stddev 14.150, 0 failed
+progress: 25.0 s, 265.2 tps, lat 30.297 ms stddev 12.584, 0 failed
+progress: 30.0 s, 234.2 tps, lat 34.018 ms stddev 16.207, 0 failed
+progress: 35.0 s, 74.2 tps, lat 106.510 ms stddev 472.174, 0 failed
+progress: 40.0 s, 142.8 tps, lat 56.873 ms stddev 294.481, 0 failed
+progress: 45.0 s, 257.4 tps, lat 31.094 ms stddev 16.167, 0 failed
+progress: 50.0 s, 258.0 tps, lat 30.970 ms stddev 17.802, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 25 раз)
+progress: 55.0 s, 253.0 tps, lat 31.669 ms stddev 16.510, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 7 раз)
+progress: 60.0 s, 267.6 tps, lat 29.847 ms stddev 16.193, 0 failed
+progress: 65.0 s, 250.7 tps, lat 31.954 ms stddev 17.500, 0 failed
+progress: 70.0 s, 260.7 tps, lat 30.665 ms stddev 17.487, 0 failed
+progress: 75.0 s, 281.2 tps, lat 28.440 ms stddev 14.878, 0 failed
+progress: 80.0 s, 260.8 tps, lat 30.662 ms stddev 15.876, 0 failed
+progress: 85.0 s, 275.4 tps, lat 29.057 ms stddev 14.872, 0 failed
+progress: 90.0 s, 262.4 tps, lat 30.532 ms stddev 17.091, 0 failed
+progress: 95.0 s, 280.2 tps, lat 28.544 ms stddev 14.365, 0 failed
+progress: 100.0 s, 213.4 tps, lat 37.411 ms stddev 19.679, 0 failed
+progress: 105.0 s, 263.4 tps, lat 30.440 ms stddev 15.159, 0 failed
+progress: 110.0 s, 270.0 tps, lat 29.558 ms stddev 15.133, 0 failed
+progress: 115.0 s, 237.8 tps, lat 33.686 ms stddev 17.002, 0 failed
+progress: 120.0 s, 250.8 tps, lat 31.841 ms stddev 16.445, 0 failed
+progress: 125.0 s, 227.4 tps, lat 35.217 ms stddev 18.870, 0 failed
+progress: 130.0 s, 230.2 tps, lat 34.745 ms stddev 20.726, 0 failed
+progress: 135.0 s, 244.8 tps, lat 32.416 ms stddev 17.775, 0 failed
+progress: 140.0 s, 224.2 tps, lat 35.844 ms stddev 20.166, 0 failed
+progress: 145.0 s, 256.6 tps, lat 31.153 ms stddev 15.180, 0 failed
+progress: 150.0 s, 170.8 tps, lat 46.767 ms stddev 35.259, 0 failed
+transaction type: sql/oltp.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 2
+maximum number of tries: 1
+duration: 150 s
+number of transactions actually processed: 36215
+number of failed transactions: 0 (0.000%)
+latency average = 33.133 ms
+latency stddev = 65.943 ms
+initial connection time = 32.338 ms
+tps = 241.430264 (without initial connection time)
++ cockroach node status --insecure --host=10.131.0.20:26257 --ranges --format=records
++ grep -E '^(id|address|is_live|ranges_underreplicated|ranges_unavailable)'
+id                     | 1
+address                | 10.130.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 2
+address                | 10.131.0.20:26257
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 3
+address                | 10.130.0.20:26258
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 0

@@ -1,0 +1,57 @@
++ cd /home/ubuntu/hw
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 60 -P 10 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable'
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 18.0.0)
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 5742 раз)
+progress: 10.0 s, 296.2 tps, lat 26.965 ms stddev 13.939, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 5366 раз)
+progress: 20.0 s, 277.3 tps, lat 28.843 ms stddev 17.151, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 6647 раз)
+progress: 30.0 s, 341.8 tps, lat 23.400 ms stddev 10.136, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 6629 раз)
+progress: 40.0 s, 340.5 tps, lat 23.460 ms stddev 11.189, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 6693 раз)
+progress: 50.0 s, 343.5 tps, lat 23.303 ms stddev 10.938, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 6770 раз)
+progress: 60.0 s, 345.8 tps, lat 23.143 ms stddev 9.964, 0 failed
+NOTICE:  No license is installed. Throttling will begin after 2026-10-27 21:19:50 +0000 UTC unless a license is installed before then.
+... (повторилось 9 раз)
+transaction type: sql/oltp.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 2
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 19459
+number of failed transactions: 0 (0.000%)
+latency average = 24.665 ms
+latency stddev = 12.442 ms
+initial connection time = 3.692 ms
+tps = 324.247580 (without initial connection time)
++ pgbench -n -f sql/oltp.pgbench -c 8 -j 2 -T 60 -P 10 'host=10.130.0.20,10.130.0.20,10.131.0.20 port=26257,26258,26257 load_balance_hosts=random user=root dbname=otus sslmode=disable'
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1), server 18.0.0)
+progress: 10.0 s, 292.2 tps, lat 27.238 ms stddev 13.115, 0 failed
+progress: 20.0 s, 267.8 tps, lat 29.844 ms stddev 15.198, 0 failed
+progress: 30.0 s, 278.1 tps, lat 28.778 ms stddev 14.694, 0 failed
+progress: 40.0 s, 294.8 tps, lat 27.139 ms stddev 13.081, 0 failed
+progress: 50.0 s, 309.3 tps, lat 25.890 ms stddev 11.487, 0 failed
+progress: 60.0 s, 291.9 tps, lat 27.396 ms stddev 12.687, 0 failed
+transaction type: sql/oltp.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 8
+number of threads: 2
+maximum number of tries: 1
+duration: 60 s
+number of transactions actually processed: 17349
+number of failed transactions: 0 (0.000%)
+latency average = 27.656 ms
+latency stddev = 13.437 ms
+initial connection time = 33.218 ms
+tps = 289.161562 (without initial connection time)
