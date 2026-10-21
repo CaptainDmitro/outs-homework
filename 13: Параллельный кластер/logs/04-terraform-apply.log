@@ -1,0 +1,38 @@
++ terraform apply -auto-approve
+...
+Plan: 1 to add, 1 to change, 0 to destroy.
+
+Changes to Outputs:
+  + nodes = {
+      + otus-yb-d = {
+          + external_ip = "178.154.251.92"
+          + internal_ip = "10.130.0.8"
+          + zone        = "ru-central1-d"
+        }
+      + otus-yb-e = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-e"
+        }
+    }
+yandex_compute_instance.yb["ru-central1-e"]: Creating...
+yandex_compute_instance.yb["ru-central1-d"]: Modifying... [id=fv4mqaj1v2eq2lgo201d]
+yandex_compute_instance.yb["ru-central1-e"]: Creation complete after 1m6s [id=bg0d9lpva91glfdgkrvv]
+yandex_compute_instance.yb["ru-central1-d"]: Modifications complete after 1m8s [id=fv4mqaj1v2eq2lgo201d]
+
+Apply complete! Resources: 1 added, 1 changed, 0 destroyed.
+
+Outputs:
+
+nodes = {
+  "otus-yb-d" = {
+    "external_ip" = "178.154.250.252"
+    "internal_ip" = "10.130.0.8"
+    "zone" = "ru-central1-d"
+  }
+  "otus-yb-e" = {
+    "external_ip" = "153.51.115.27"
+    "internal_ip" = "10.131.0.16"
+    "zone" = "ru-central1-e"
+  }
+}

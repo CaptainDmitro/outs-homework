@@ -1,0 +1,38 @@
++ hostname
+otus-yb-d
++ grep PRETTY /etc/os-release
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
++ nproc
+2
++ lscpu
++ grep 'Model name'
+Model name:                              AMD EPYC-Genoa Processor
++ free -h
++ head -2
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       429Mi        15Gi       1.0Mi       158Mi        15Gi
++ df -h / /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       9.1G  2.1G  7.0G  23% /
+/dev/vdb1        20G  424M   20G   3% /data
++ cloud-init status
+status: done
++ hostname
+otus-yb-e
++ grep PRETTY /etc/os-release
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
++ nproc
+2
++ lscpu
++ grep 'Model name'
+Model name:                              AMD EPYC-Genoa Processor
++ free -h
++ head -2
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       452Mi        15Gi       1.0Mi       178Mi        15Gi
++ df -h / /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       9.1G  2.1G  7.0G  23% /
+/dev/vdb1        20G  424M   20G   3% /data
++ cloud-init status
+status: done

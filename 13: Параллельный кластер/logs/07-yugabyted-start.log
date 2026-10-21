@@ -1,0 +1,113 @@
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.130.0.8 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-d
+Starting yugabyted...
+Starting yugabyted...
+
+✅ YugabyteDB Started
+
+✅ UI ready
+
+✅ Data placement constraint successfully verified
+
+⚠ WARNINGS:
+- Transparent hugepages disabled. Please enable transparent_hugepages.
+- Cluster started in an insecure mode without authentication and encryption enabled. For non-production use only, not to be used without firewalls blocking the internet traffic.
+
+Please review the following docs and rerun the start command:
+- Quick start for Linux: https://docs.yugabyte.com/preview/quick-start/linux/
+
++------------------------------------------------------------------------------------------------+
+|                                           yugabyted                                            |
++------------------------------------------------------------------------------------------------+
+| Status     : Running.                                                                          |
+| YSQL Status: Ready                                                                             |
+| Replication Factor: 1                                                                                 |
+| YugabyteDB UI: http://10.130.0.8:15433                                                           |
+| JDBC       : jdbc:postgresql://10.130.0.8:5433/yugabyte?user=yugabyte&password=yugabyte        |
+| YSQL       : bin/ysqlsh -h 10.130.0.8  -U yugabyte -d yugabyte                                 |
+| YCQL       : bin/ycqlsh 10.130.0.8 9042 -u cassandra                                           |
+| Data Dir   : /data/yb/data                                                                     |
+| Log Dir    : /data/yb/logs                                                                     |
+| Universe UUID: 2c6a3971-3a33-4d1f-b3e2-fdd8def1f80b                                              |
++------------------------------------------------------------------------------------------------+
+🚀 YugabyteDB started successfully! To load a sample dataset, try 'yugabyted demo'.
+🎉 Join us on Slack at https://www.yugabyte.com/slack
+👕 Claim your free t-shirt at https://www.yugabyte.com/community-rewards/
+
+Starting yugabyted...
++ /opt/yugabyte/bin/yugabyted start --advertise_address=10.131.0.16 --base_dir=/data/yb --cloud_location=yandex.ru-central1.ru-central1-e --join=10.130.0.8
+Fetching configs from join IP...
+Starting yugabyted...
+Fetching configs from join IP...
+Starting yugabyted...
+
+✅ YugabyteDB Started
+✅ Node joined a running cluster with UUID 2c6a3971-3a33-4d1f-b3e2-fdd8def1f80b
+
+✅ UI ready
+
+✅ Data placement constraint successfully verified
+
+⚠ WARNINGS:
+- Transparent hugepages disabled. Please enable transparent_hugepages.
+- Cluster started in an insecure mode without authentication and encryption enabled. For non-production use only, not to be used without firewalls blocking the internet traffic.
+
+Please review the following docs and rerun the start command:
+- Quick start for Linux: https://docs.yugabyte.com/preview/quick-start/linux/
+
++-------------------------------------------------------------------------------------------------+
+|                                            yugabyted                                            |
++-------------------------------------------------------------------------------------------------+
+| Status     : Running.                                                                           |
+| YSQL Status: Ready                                                                              |
+| Replication Factor: 1                                                                                  |
+| YugabyteDB UI: http://10.131.0.16:15433                                                           |
+| JDBC       : jdbc:postgresql://10.131.0.16:5433/yugabyte?user=yugabyte&password=yugabyte        |
+| YSQL       : bin/ysqlsh -h 10.131.0.16  -U yugabyte -d yugabyte                                 |
+| YCQL       : bin/ycqlsh 10.131.0.16 9042 -u cassandra                                           |
+| Data Dir   : /data/yb/data                                                                      |
+| Log Dir    : /data/yb/logs                                                                      |
+| Universe UUID: 2c6a3971-3a33-4d1f-b3e2-fdd8def1f80b                                               |
++-------------------------------------------------------------------------------------------------+
+🚀 YugabyteDB started successfully! To load a sample dataset, try 'yugabyted demo'.
+🎉 Join us on Slack at https://www.yugabyte.com/slack
+👕 Claim your free t-shirt at https://www.yugabyte.com/community-rewards/
+
+Fetching configs from join IP...
+Starting yugabyted...
++ sleep 15
++ /opt/yugabyte/bin/yugabyted status --base_dir=/data/yb
+
++-------------------------------------------------------------------------------------------------+
+|                                            yugabyted                                            |
++-------------------------------------------------------------------------------------------------+
+| Status     : Running.                                                                           |
+| YSQL Status: Ready                                                                              |
+| Replication Factor: 1                                                                                  |
+| YugabyteDB UI: http://10.131.0.16:15433                                                           |
+| JDBC       : jdbc:postgresql://10.131.0.16:5433/yugabyte?user=yugabyte&password=yugabyte        |
+| YSQL       : bin/ysqlsh -h 10.131.0.16  -U yugabyte -d yugabyte                                 |
+| YCQL       : bin/ycqlsh 10.131.0.16 9042 -u cassandra                                           |
+| Data Dir   : /data/yb/data                                                                      |
+| Log Dir    : /data/yb/logs                                                                      |
+| Universe UUID: 2c6a3971-3a33-4d1f-b3e2-fdd8def1f80b                                               |
++-------------------------------------------------------------------------------------------------+
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 list_all_masters
+Master UUID                      	RPC Host/Port        	State    	Role 	Broadcast Host/Port
+75cd0a42c58846fbad0eb4d3e4813dbf 	10.130.0.8:7100      	ALIVE    	LEADER 	10.130.0.8:7100
+3620c22da9a640d689c16ced31e43265 	10.131.0.16:7100     	ALIVE    	FOLLOWER 	10.131.0.16:7100
++ /opt/yugabyte/bin/yb-admin --master_addresses 10.130.0.8:7100 list_all_tablet_servers
+Tablet Server UUID               RPC Host/Port Heartbeat delay Status   Reads/s  Writes/s Uptime   SST total size  SST uncomp size SST #files      Memory   Broadcast Host/Port
+13961c2d6e824195816996179eb30414 10.130.0.8:9100 0.35s           ALIVE    0.20     0.20     30       0 B             0 B             0               32.67 MB 10.130.0.8:9100
+388c0a99280d4694a3c526524ebe8923 10.131.0.16:9100 0.48s           ALIVE    0.00     0.00     20       0 B             0 B             0               22.94 MB 10.131.0.16:9100
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -c 'select host, cloud, region, zone from yb_servers()' -c 'select version()'
+    host     | cloud  |   region    |     zone
+-------------+--------+-------------+---------------
+ 10.130.0.8  | yandex | ru-central1 | ru-central1-d
+ 10.131.0.16 | yandex | ru-central1 | ru-central1-e
+(2 rows)
+
+                                                                                          version
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 15.12-YB-2025.2.7.0-b0 on x86_64-pc-linux-gnu, compiled by clang version 19.1.0 (https://github.com/yugabyte/llvm-project.git a2a6b655e14e7fa1fcf1011a6cb29cb8575249c0), 64-bit
+(1 row)
+

@@ -1,0 +1,9 @@
++ sudo apt-get -qq install -y build-essential git
+...
++ git clone -q https://github.com/electrum/tpch-dbgen.git /home/yb/tpch-dbgen
++ cd /home/yb/tpch-dbgen
++ make -s
++ grep -ci warning
+15
++ ls -la dbgen
+-rwxrwxr-x 1 yb yb 127584 Oct 21 06:51 dbgen

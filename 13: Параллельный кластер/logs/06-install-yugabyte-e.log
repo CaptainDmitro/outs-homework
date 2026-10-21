@@ -1,0 +1,31 @@
++ YB_VER=2025.2.7.0
++ YB_BUILD=b107
++ sudo apt-get -qq update
++ sudo apt-get -qq install -y python3 chrony
+...
++ cat
++ sudo tee /etc/security/limits.d/yugabyte.conf
+yb  soft  nofile  1048576
+yb  hard  nofile  1048576
+yb  soft  nproc   12000
+yb  hard  nproc   12000
++ curl -sSL -o /tmp/yb.tar.gz https://software.yugabyte.com/releases/2025.2.7.0/yugabyte-2025.2.7.0-b107-linux-x86_64.tar.gz
++ sudo mkdir -p /opt/yugabyte
++ sudo chown yb:yb /opt/yugabyte
++ tar xzf /tmp/yb.tar.gz -C /opt/yugabyte --strip-components=1
++ rm /tmp/yb.tar.gz
++ /opt/yugabyte/bin/post_install.sh
+...
+----------------------------------------------------------------------
+|                              Version                               |
+----------------------------------------------------------------------
+| Version        : 2025.2.7.0-b107                                   |
+| Build Time     : 02 Oct 2026 08:20:25 UTC                          |
+| Build Hash     : dbc633d46cfa68f8ab37e3c623800feaef4f50e6          |
+----------------------------------------------------------------------
+
+INSTALL PASSED
++ /opt/yugabyte/bin/yugabyted version
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       9.1G  3.5G  5.6G  39% /

@@ -1,0 +1,27 @@
++ terraform apply -auto-approve
+...
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + nodes = {
+      + otus-yb-d = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-d"
+        }
+      + otus-yb-e = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-e"
+        }
+    }
+yandex_compute_instance.yb["ru-central1-d"]: Creating...
+yandex_compute_instance.yb["ru-central1-e"]: Creating...
+yandex_compute_instance.yb["ru-central1-d"]: Creation complete after 1m4s [id=fv4mqaj1v2eq2lgo201d]
+
+Error: Error while waiting operation to create instance: operation (id=bg0kastlmuosirn6pa5d) failed: rpc error: code = ResourceExhausted desc = Not enough resources
+
+  with yandex_compute_instance.yb["ru-central1-e"],
+  on main.tf line 99, in resource "yandex_compute_instance" "yb":
+  99: resource "yandex_compute_instance" "yb" {
+

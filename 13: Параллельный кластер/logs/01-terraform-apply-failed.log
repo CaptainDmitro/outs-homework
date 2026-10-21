@@ -1,0 +1,36 @@
++ terraform apply -auto-approve
+...
+Plan: 7 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + nodes = {
+      + otus-yb-a = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-a"
+        }
+      + otus-yb-d = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-d"
+        }
+      + otus-yb-e = {
+          + external_ip = (known after apply)
+          + internal_ip = (known after apply)
+          + zone        = "ru-central1-e"
+        }
+    }
+yandex_compute_disk.data["ru-central1-a"]: Creating...
+yandex_compute_disk.data["ru-central1-e"]: Creating...
+yandex_compute_disk.data["ru-central1-d"]: Creating...
+yandex_vpc_security_group.yb: Creating...
+yandex_vpc_security_group.yb: Creation complete after 22s [id=enpmckk68ogv1q97cd9q]
+yandex_compute_disk.data["ru-central1-e"]: Creation complete after 31s [id=bg0sugfmul5cukid3jgt]
+yandex_compute_disk.data["ru-central1-d"]: Creation complete after 31s [id=fv46nba0kia2vfbdftav]
+
+Error: Error while requesting API to create disk: x-request-id = df45a374-81c1-49a3-b755-2aa038df0538 x-server-trace-id = fd479b2fff8190c3:e3b1d6a3bc9610c5:69a5ca1b6e0924d5:1 x-client-trace-id = 59f07474-3f2b-4756-9372-650e99183d48 rpc error: code = FailedPrecondition desc = this type of operation is currently unavailable
+
+  with yandex_compute_disk.data["ru-central1-a"],
+  on main.tf line 90, in resource "yandex_compute_disk" "data":
+  90: resource "yandex_compute_disk" "data" {
+

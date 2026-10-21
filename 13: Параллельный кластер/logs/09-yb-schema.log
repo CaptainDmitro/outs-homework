@@ -1,0 +1,15 @@
++ Y='/opt/yugabyte/bin/ysqlsh -h 10.131.0.16'
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -c 'CREATE DATABASE tpch'
+CREATE DATABASE
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -v ON_ERROR_STOP=1 -q -f tpch-schema-yb.sql
++ /home/yb/tpch-load.sh '/opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch' 10 1 1 nation region
+COPY 25
+06:51:27 nation part 1/1 loaded in 3 s
+COPY 5
+06:51:31 region part 1/1 loaded in 4 s
++ /opt/yugabyte/bin/ysqlsh -h 10.131.0.16 -d tpch -c 'select (select count(*) from nation) nation, (select count(*) from region) region'
+ nation | region
+--------+--------
+     25 |      5
+(1 row)
+
