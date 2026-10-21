@@ -1,0 +1,79 @@
++ sudo systemctl stop cockroach@node3
++ systemctl is-active cockroach@node3
+failed
++ sudo install -d -o postgres -g postgres /mnt/data/pg
++ sudo pg_createcluster 16 main -d /mnt/data/pg/16
+Creating new PostgreSQL cluster 16/main ...
+/usr/lib/postgresql/16/bin/initdb -D /mnt/data/pg/16 --auth-local peer --auth-host scram-sha-256 --no-instructions
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C.UTF-8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /mnt/data/pg/16 ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... Etc/UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+Ver Cluster Port Status Owner    Data directory  Log file
+16  main    5432 down   postgres /mnt/data/pg/16 /var/log/postgresql/postgresql-16-main.log
++ sudo pg_ctlcluster 16 main start
++ sudo -u postgres psql -X -c 'ALTER SYSTEM SET shared_buffers = '\''2GB'\''' -c 'ALTER SYSTEM SET effective_cache_size = '\''6GB'\''' -c 'ALTER SYSTEM SET work_mem = '\''64MB'\''' -c 'ALTER SYSTEM SET maintenance_work_mem = '\''1GB'\''' -c 'ALTER SYSTEM SET max_wal_size = '\''8GB'\''' -c 'ALTER SYSTEM SET checkpoint_timeout = '\''15min'\''' -c 'CREATE ROLE ubuntu SUPERUSER LOGIN' -c 'CREATE DATABASE otus OWNER ubuntu'
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+ALTER SYSTEM
+CREATE ROLE
+CREATE DATABASE
++ sudo pg_ctlcluster 16 main restart
+Ver Cluster Port Status Owner    Data directory  Log file
+16  main    5432 online postgres /mnt/data/pg/16 /var/log/postgresql/postgresql-16-main.log
++ pg_lsclusters
++ psql -X -d otus -c 'SELECT version()' -c 'SHOW shared_buffers' -c 'SHOW max_parallel_workers_per_gather' -f /home/ubuntu/hw/sql/schema.sql -c '\d trips'
+                                                                 version
+------------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+(1 row)
+
+ shared_buffers
+----------------
+ 2GB
+(1 row)
+
+ max_parallel_workers_per_gather
+---------------------------------
+ 2
+(1 row)
+
+CREATE TABLE
+                           Table "public.trips"
+    Column    |           Type           | Collation | Nullable | Default
+--------------+--------------------------+-----------+----------+---------
+ id           | bigint                   |           | not null |
+ city         | text                     |           | not null |
+ driver_id    | bigint                   |           | not null |
+ passenger_id | bigint                   |           | not null |
+ started_at   | timestamp with time zone |           | not null |
+ duration_s   | integer                  |           | not null |
+ distance_m   | integer                  |           | not null |
+ fare         | numeric(10,2)            |           | not null |
+ payment      | text                     |           | not null |
+ note         | text                     |           | not null |
+Indexes:
+    "trips_pkey" PRIMARY KEY, btree (id)
+
++ free -m
+               total        used        free      shared  buff/cache   available
+Mem:            7940         572        4233          65        3511        7368
+Swap:              0           0           0

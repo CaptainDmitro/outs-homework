@@ -1,0 +1,86 @@
++ sudo du -sh /mnt/data/node3 /mnt/data/pg/16/base /mnt/data/pg/16/pg_wal
+4.6G	/mnt/data/node3
+1.3G	/mnt/data/pg/16/base
+8.1G	/mnt/data/pg/16/pg_wal
++ sudo pg_ctlcluster 16 main stop -m fast
++ sudo systemctl disable cockroach@node3
+Removed "/etc/systemd/system/multi-user.target.wants/cockroach@node3.service".
++ sudo rm -rf /mnt/data/node3
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  9.3G  9.3G  51% /mnt/data
++ df -h /mnt/data
++ sudo pg_ctlcluster 16 main start
+Ver Cluster Port Status Owner    Data directory  Log file
+16  main    5432 online postgres /mnt/data/pg/16 /var/log/postgresql/postgresql-16-main.log
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  9.6G  9.0G  52% /mnt/data
++ pg_lsclusters
++ psql -X -d otus -c 'ALTER SYSTEM SET max_wal_size = '\''2GB'\''' -c 'SELECT pg_reload_conf()' -c 'SHOW max_wal_size' -c 'DROP TABLE trips' -c CHECKPOINT -f /home/ubuntu/hw/sql/schema.sql
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  the database system is not yet accepting connections
+DETAIL:  Consistent recovery state has not been yet reached.
++ df -h /mnt/data
++ cockroach node status --insecure --host=10.130.0.20:26257 --ranges --format=records
++ grep -E '^(id|is_live|ranges_underreplicated|ranges_unavailable)'
+id                     | 1
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 36
+id                     | 2
+is_live                | false
+ranges_unavailable     | 0
+ranges_underreplicated | 0
+id                     | 3
+is_live                | true
+ranges_unavailable     | 0
+ranges_underreplicated | 62
++ pg_isready
+/var/run/postgresql:5432 - accepting connections
++ psql -X -d otus -c 'ALTER SYSTEM SET max_wal_size = '\''2GB'\''' -c 'SELECT pg_reload_conf()' -c 'SHOW max_wal_size' -c 'DROP TABLE trips' -c CHECKPOINT -f /home/ubuntu/hw/sql/schema.sql
+ALTER SYSTEM
+ pg_reload_conf
+----------------
+ t
+(1 row)
+
+ max_wal_size
+--------------
+ 8GB
+(1 row)
+
+DROP TABLE
+CHECKPOINT
+CREATE TABLE
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  8.1G   11G  44% /mnt/data
++ psql -X -d otus -c 'SHOW max_wal_size' -c CHECKPOINT
+ max_wal_size
+--------------
+ 2GB
+(1 row)
+
+CHECKPOINT
++ sudo du -sh /mnt/data/pg/16/base /mnt/data/pg/16/pg_wal
+30M	/mnt/data/pg/16/base
+8.1G	/mnt/data/pg/16/pg_wal
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  8.1G   11G  44% /mnt/data
++ psql -X -d otus -c 'SELECT pg_switch_wal()' -c CHECKPOINT -c 'SELECT pg_switch_wal()' -c CHECKPOINT
+ pg_switch_wal
+---------------
+ 2/10368C8
+(1 row)
+
+CHECKPOINT
+ pg_switch_wal
+---------------
+ 2/20000F0
+(1 row)
+
+CHECKPOINT
++ sudo du -sh /mnt/data/pg/16/pg_wal
+8.0G	/mnt/data/pg/16/pg_wal
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  8.1G   11G  44% /mnt/data

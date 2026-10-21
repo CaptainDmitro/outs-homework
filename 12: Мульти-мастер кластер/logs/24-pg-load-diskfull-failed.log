@@ -1,0 +1,67 @@
++ cd /home/ubuntu/hw
++ ./load.sh 66000000 200000 postgresql:///otus postgresql:///otus postgresql:///otus
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 0: chunk 30000001..30200000 failed, retry 1
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 2: chunk 35800001..36000000 failed, retry 1
+worker 1: chunk 30800001..31000000 failed, retry 1
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 2: chunk 35800001..36000000 failed, retry 2
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 1: chunk 30800001..31000000 failed, retry 2
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 0: chunk 30000001..30200000 failed, retry 2
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 1: chunk 30800001..31000000 failed, retry 3
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 2: chunk 35800001..36000000 failed, retry 3
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 0: chunk 30000001..30200000 failed, retry 3
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 1: chunk 30800001..31000000 failed, retry 4
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 0: chunk 30000001..30200000 failed, retry 4
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 2: chunk 35800001..36000000 failed, retry 4
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 1: chunk 30800001..31000000 failed, retry 5
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 2: chunk 35800001..36000000 failed, retry 5
+psql:sql/load-chunk.sql:13: ERROR:  could not extend file "base/16385/16386.4": No space left on device
+HINT:  Check free disk space.
+worker 0: chunk 30000001..30200000 failed, retry 5
+loaded ids 1..66000000 in 507 s, rc=1
++ psql -X -d otus -c '\timing on' -c 'VACUUM ANALYZE trips'
+Timing is on.
+ERROR:  could not extend file "base/16385/16386_vm": No space left on device
+HINT:  Check free disk space.
+CONTEXT:  while scanning block 490080 of relation "public.trips"
+Time: 10.372 ms
++ psql -X -d otus -c 'SELECT count(*), sum(id), sum(id) = 66000000::NUMERIC * 66000001 / 2 AS complete FROM trips'
+WARNING:  terminating connection because of crash of another server process
+DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+connection to server was lost
++ psql -X -d otus -c 'SELECT pg_size_pretty(pg_table_size('\''trips'\'')) AS table, pg_size_pretty(pg_indexes_size('\''trips'\'')) AS indexes, pg_size_pretty(pg_database_size('\''otus'\'')) AS database'
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  the database system is in recovery mode
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G   19G  512K 100% /mnt/data
