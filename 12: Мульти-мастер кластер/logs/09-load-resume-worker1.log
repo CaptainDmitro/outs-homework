@@ -1,0 +1,23 @@
++ cd /home/ubuntu/hw
++ cat
++ chmod +x resume-w1.sh
+#!/bin/bash
+# Дозагрузка порций воркера 1 после его остановки
+url=postgresql://root@10.130.0.20:26258/otus?sslmode=disable
+start=$(date +%s)
+for ((lo = 15200001; lo <= 60000000; lo += 600000)); do
+    hi=$((lo + 199999))
+    for try in 1 2 3 4 5; do
+        psql "$url" -X -q -v ON_ERROR_STOP=1 -v lo=$lo -v hi=$hi -f sql/load-chunk.sql && break
+        echo "chunk $lo..$hi failed, retry $try" >&2; sleep 30
+    done
+done
+echo "resume done in $(($(date +%s) - start)) s"
++ cat resume-w1.sh
++ sleep 5
++ nohup ./resume-w1.sh
++ pgrep -af 'psql.*lo='
++ grep -o 'lo=[0-9]*'
+lo=15600001
+lo=20800001
+lo=15200001

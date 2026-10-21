@@ -1,0 +1,31 @@
++ cd /home/ubuntu/hw
++ cat load-crdb.log
+psql:sql/load-chunk.sql:13: ERROR:  query execution canceled
+psql:sql/load-chunk.sql:13: ERROR:  server is shutting down
+psql:sql/load-chunk.sql:13: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+psql:sql/load-chunk.sql:13: error: connection to server was lost
+worker 1: chunk 15200001..15400000 failed, retry 1
+psql: error: connection to server at "10.130.0.20", port 26258 failed: ERROR:  server is not accepting clients, try another node
+worker 1: chunk 15200001..15400000 failed, retry 2
+psql: error: connection to server at "10.130.0.20", port 26258 failed: ERROR:  server is not accepting clients, try another node
+worker 1: chunk 15200001..15400000 failed, retry 3
+psql: error: connection to server at "10.130.0.20", port 26258 failed: ERROR:  server is not accepting clients, try another node
+worker 1: chunk 15200001..15400000 failed, retry 4
+psql: error: connection to server at "10.130.0.20", port 26258 failed: ERROR:  server is not accepting clients, try another node
+worker 1: chunk 15200001..15400000 failed, retry 5
+loaded 60000000 rows in 4242 s, rc=1
++ cat load-crdb-resume.log
+psql:sql/load-chunk.sql:13: ERROR:  query execution canceled
+psql:sql/load-chunk.sql:13: ERROR:  server is shutting down
+psql:sql/load-chunk.sql:13: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+psql:sql/load-chunk.sql:13: error: connection to server was lost
+chunk 17600001..17800000 failed, retry 1
+psql: error: connection to server at "10.130.0.20", port 26258 failed: ERROR:  server is not accepting clients, try another node
+chunk 17600001..17800000 failed, retry 2
+psql:sql/load-chunk.sql:13: ERROR:  result is ambiguous: unable to determine whether command was applied via snapshot
+chunk 48800001..49000000 failed, retry 1
+resume done in 3673 s

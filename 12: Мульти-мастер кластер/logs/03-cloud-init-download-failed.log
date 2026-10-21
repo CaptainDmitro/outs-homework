@@ -1,0 +1,9 @@
++ sudo grep -n -A5 curl /var/log/cloud-init-output.log
+82:curl: (22) The requested URL returned error: 403
+83-
+84-gzip: stdin: unexpected end of file
+85-tar: Child returned status 1
+86-tar: Error is not recoverable: exiting now
+87-cp: cannot stat '/tmp/cockroach-v26.3.2.linux-amd64/cockroach': No such file or directory
++ curl -sI https://binaries.cockroachdb.com/cockroach-v26.3.2.linux-amd64.tgz
+HTTP/2 403 

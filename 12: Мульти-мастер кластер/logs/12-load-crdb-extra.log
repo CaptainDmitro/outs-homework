@@ -1,0 +1,4 @@
++ cd /home/ubuntu/hw
++ FIRST=60000001
++ ./load.sh 66000000 200000 'postgresql://root@10.130.0.20:26257/otus?sslmode=disable' 'postgresql://root@10.130.0.20:26258/otus?sslmode=disable' 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable'
+loaded ids 60000001..66000000 in 281 s, rc=0

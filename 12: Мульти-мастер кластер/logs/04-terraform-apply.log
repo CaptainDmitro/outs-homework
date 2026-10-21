@@ -1,0 +1,37 @@
++ terraform apply -auto-approve
+data.yandex_vpc_subnet.zone["d"]: Reading...
+data.yandex_compute_image.ubuntu: Reading...
+data.yandex_vpc_network.default: Reading...
+data.yandex_vpc_subnet.zone["e"]: Reading...
+yandex_compute_disk.data["e"]: Refreshing state... [id=bg0f10um66vvogbjk2oq]
+yandex_compute_disk.data["d"]: Refreshing state... [id=fv4l4q8eugllgut7n6uv]
+data.yandex_vpc_subnet.zone["e"]: Read complete after 20s [id=ajcd2bbrfbagcv6p73t1]
+data.yandex_vpc_network.default: Read complete after 20s [id=enpano5e90s4f5rb251i]
+data.yandex_vpc_subnet.zone["d"]: Read complete after 20s [id=fl8cjtnhpo4im199nvpg]
+yandex_vpc_security_group.crdb: Refreshing state... [id=enp50iku90em0njsvqh8]
+data.yandex_compute_image.ubuntu: Read complete after 20s [id=fd8j8obes6voa9vvl6h8]
+yandex_compute_instance.node["d"]: Refreshing state... [id=fv4rllkbe1md3572jgsq]
+yandex_compute_instance.node["e"]: Refreshing state... [id=bg0s76sffruf1m5svuot]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+...
+Plan: 0 to add, 3 to change, 0 to destroy.
+yandex_vpc_security_group.crdb: Modifying... [id=enp50iku90em0njsvqh8]
+yandex_vpc_security_group.crdb: Modifications complete after 21s [id=enp50iku90em0njsvqh8]
+yandex_compute_instance.node["e"]: Modifying... [id=bg0s76sffruf1m5svuot]
+yandex_compute_instance.node["d"]: Modifying... [id=fv4rllkbe1md3572jgsq]
+yandex_compute_instance.node["e"]: Modifications complete after 21s [id=bg0s76sffruf1m5svuot]
+yandex_compute_instance.node["d"]: Modifications complete after 21s [id=fv4rllkbe1md3572jgsq]
+
+Apply complete! Resources: 0 added, 3 changed, 0 destroyed.
+
+Outputs:
+
+public_ips = {
+  "crdb-d" = "178.154.234.67"
+  "crdb-e" = "153.51.112.133"
+}

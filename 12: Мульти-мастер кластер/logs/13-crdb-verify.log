@@ -1,0 +1,20 @@
++ cockroach sql --insecure --host=10.131.0.20:26257 -d otus -e 'SELECT count(*), sum(id), sum(id) = 66000000::DECIMAL * 66000001 / 2 AS complete FROM trips'
+count	sum	complete
+66000000	2178000033000000	t
++ cockroach sql --insecure --host=10.131.0.20:26257 -d otus -e 'SELECT count(*) AS ranges, round(sum(range_size) / 1e9, 2) AS logical_gb FROM [SHOW RANGES FROM TABLE trips WITH DETAILS]'
+ranges	logical_gb
+42	10.09
++ cockroach node status --insecure --host=10.131.0.20:26257 --stats --format=records
++ grep -E '^(id|address|live_bytes|ranges |replicas_leaseholders)'
+id                | 1
+address           | 10.130.0.20:26257
+live_bytes        | 10446633633
+id                | 2
+address           | 10.131.0.20:26257
+live_bytes        | 10446722743
+id                | 3
+address           | 10.130.0.20:26258
+live_bytes        | 10446187416
++ df -h /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vdb         20G  4.7G   14G  26% /mnt/data

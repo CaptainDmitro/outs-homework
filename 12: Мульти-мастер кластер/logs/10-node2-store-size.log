@@ -1,0 +1,17 @@
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       9.1G  4.1G  5.0G  46% /
++ sudo sed -i 's#^EXTRA=.*#EXTRA=--store=path=/var/lib/cockroach/node2,size=4GiB#' /etc/cockroach/node2.env
++ cat /etc/cockroach/node2.env
+PORT=26258
+HTTP=8081
+MEM=.125
+EXTRA=--store=path=/var/lib/cockroach/node2,size=4GiB
++ sudo systemctl restart cockroach@node2
++ sleep 20
++ systemctl is-active cockroach@node2
+active
++ ps -o args= -C cockroach
++ grep 26258
+/usr/local/bin/cockroach start --insecure --advertise-addr=10.130.0.20:26257 --listen-addr=:26257 --http-addr=:8080 --join=10.130.0.20:26257,10.130.0.20:26258,10.131.0.20:26257 --locality=region=ru-central1,zone=ru-central1-d --store=/mnt/data/node1 --cache=.125 --max-sql-memory=.125
+/usr/local/bin/cockroach start --insecure --advertise-addr=10.130.0.20:26258 --listen-addr=:26258 --http-addr=:8081 --join=10.130.0.20:26257,10.130.0.20:26258,10.131.0.20:26257 --locality=region=ru-central1,zone=ru-central1-d --store=/mnt/data/node2 --cache=.125 --max-sql-memory=.125 --store=path=/var/lib/cockroach/node2,size=4GiB

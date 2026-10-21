@@ -1,0 +1,40 @@
++ terraform apply -auto-approve
+data.yandex_vpc_subnet.zone["e"]: Reading...
+data.yandex_vpc_network.default: Reading...
+data.yandex_vpc_subnet.zone["a"]: Reading...
+data.yandex_compute_image.ubuntu: Reading...
+data.yandex_vpc_subnet.zone["d"]: Reading...
+data.yandex_vpc_subnet.zone["a"]: Read complete after 20s [id=e9b4enn4c7gsk0mmd0mk]
+data.yandex_vpc_subnet.zone["e"]: Read complete after 21s [id=ajcd2bbrfbagcv6p73t1]
+data.yandex_vpc_subnet.zone["d"]: Read complete after 21s [id=fl8cjtnhpo4im199nvpg]
+data.yandex_compute_image.ubuntu: Read complete after 21s [id=fd8j8obes6voa9vvl6h8]
+data.yandex_vpc_network.default: Read complete after 21s [id=enpano5e90s4f5rb251i]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+...
+Plan: 7 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + public_ips = {
+      + crdb-a = (known after apply)
+      + crdb-d = (known after apply)
+      + crdb-e = (known after apply)
+    }
+yandex_compute_disk.data["e"]: Creating...
+yandex_compute_disk.data["a"]: Creating...
+yandex_compute_disk.data["d"]: Creating...
+yandex_vpc_security_group.crdb: Creating...
+yandex_vpc_security_group.crdb: Creation complete after 23s [id=enp50iku90em0njsvqh8]
+yandex_compute_disk.data["d"]: Creation complete after 31s [id=fv4l4q8eugllgut7n6uv]
+yandex_compute_disk.data["e"]: Creation complete after 32s [id=bg0f10um66vvogbjk2oq]
+
+Error: Error while requesting API to create disk: x-request-id = 706ec1cc-ced1-461d-b530-ccfbafd15602 x-server-trace-id = 2096e25c895100bb:bf6da72dbb707b35:555a54c1f274e0cf:1 x-client-trace-id = a9c06e03-b5ef-4da9-b51f-f0dfdc5fb48d rpc error: code = FailedPrecondition desc = this type of operation is currently unavailable
+
+  with yandex_compute_disk.data["a"],
+  on main.tf line 62, in resource "yandex_compute_disk" "data":
+  62: resource "yandex_compute_disk" "data" {
+

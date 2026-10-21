@@ -1,0 +1,20 @@
++ tgz=cockroach-v26.3.2.linux-amd64.tgz
++ shift
+++ basename cockroach-v26.3.2.linux-amd64.tgz .tgz
++ name=cockroach-v26.3.2.linux-amd64
++ for ip in '"$@"'
++ scp -q cockroach-v26.3.2.linux-amd64.tgz ubuntu@178.154.234.67:/tmp/
++ ssh ubuntu@178.154.234.67 'tar -xzf /tmp/cockroach-v26.3.2.linux-amd64.tgz -C /tmp && sudo cp /tmp/cockroach-v26.3.2.linux-amd64/cockroach /usr/local/bin/         && for f in /etc/cockroach/*.env; do sudo systemctl enable --now cockroach@$(basename $f .env); done         && cockroach version | head -2 && systemctl list-units '\''cockroach@*'\'' --no-pager --no-legend'
+Build Tag:        v26.3.2
+Build Time:       2026/09/16 12:26:01
+  cockroach@node1.service loaded active running CockroachDB node1
+  cockroach@node2.service loaded active running CockroachDB node2
++ for ip in '"$@"'
++ scp -q cockroach-v26.3.2.linux-amd64.tgz ubuntu@153.51.112.133:/tmp/
+scp: Connection closed
++ for ip in '"$@"'
++ scp -q cockroach-v26.3.2.linux-amd64.tgz ubuntu@153.51.112.133:/tmp/
++ ssh ubuntu@153.51.112.133 'tar -xzf /tmp/cockroach-v26.3.2.linux-amd64.tgz -C /tmp && sudo cp /tmp/cockroach-v26.3.2.linux-amd64/cockroach /usr/local/bin/         && for f in /etc/cockroach/*.env; do sudo systemctl enable --now cockroach@$(basename $f .env); done         && cockroach version | head -2 && systemctl list-units '\''cockroach@*'\'' --no-pager --no-legend'
+Build Tag:        v26.3.2
+Build Time:       2026/09/16 12:26:01
+  cockroach@node3.service loaded active running CockroachDB node3

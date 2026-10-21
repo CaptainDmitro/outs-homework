@@ -1,0 +1,22 @@
++ cockroach init --insecure --host=10.130.0.20:26257
+Cluster successfully initialized
++ sleep 15
++ cockroach node status --insecure --host=10.130.0.20:26257
+id	address	sql_address	build	started_at	updated_at	locality	attrs	is_available	is_live
+1	10.130.0.20:26257	10.130.0.20:26257	v26.3.2	2026-10-20 21:21:12.728797 +0000 UTC	2026-10-20 21:21:27.822236 +0000 UTC	region=ru-central1,zone=ru-central1-d	[]	true	true
+2	10.131.0.20:26257	10.131.0.20:26257	v26.3.2	2026-10-20 21:21:14.133653 +0000 UTC	2026-10-20 21:21:26.814472 +0000 UTC	region=ru-central1,zone=ru-central1-e	[]	true	true
+3	10.130.0.20:26258	10.130.0.20:26258	v26.3.2	2026-10-20 21:21:14.587146 +0000 UTC	2026-10-20 21:21:26.814474 +0000 UTC	region=ru-central1,zone=ru-central1-d	[]	true	true
++ cockroach sql --insecure --host=10.130.0.20:26257 -e 'SET CLUSTER SETTING storage.sstable.compression_algorithm = zstd' -e 'SHOW CLUSTER SETTING storage.sstable.compression_algorithm' -e 'SHOW ZONE CONFIGURATION FROM RANGE default' -e 'SELECT version()'
+SET CLUSTER SETTING
+storage.sstable.compression_algorithm
+zstd
+target	raw_config_sql
+RANGE default	"ALTER RANGE default CONFIGURE ZONE USING
+	range_min_bytes = 134217728,
+	range_max_bytes = 536870912,
+	gc.ttlseconds = 14400,
+	num_replicas = 3,
+	constraints = '[]',
+	lease_preferences = '[]'"
+version
+CockroachDB CCL v26.3.2 (x86_64-pc-linux-gnu, built 2026/09/16 12:26:01, go1.26.6)

@@ -1,0 +1,22 @@
++ cd /home/ubuntu/hw
++ cockroach sql --insecure --host=10.131.0.20:26257 -e 'CREATE DATABASE otus'
+CREATE DATABASE
++ cockroach sql --insecure --host=10.131.0.20:26257 -d otus -f sql/schema.sql
+CREATE TABLE
++ cockroach sql --insecure --host=10.131.0.20:26257 -d otus -e 'SHOW CREATE TABLE trips'
+table_name	create_statement
+trips	"CREATE TABLE public.trips (
+	id INT8 NOT NULL,
+	city STRING NOT NULL,
+	driver_id INT8 NOT NULL,
+	passenger_id INT8 NOT NULL,
+	started_at TIMESTAMPTZ NOT NULL,
+	duration_s INT8 NOT NULL,
+	distance_m INT8 NOT NULL,
+	fare DECIMAL(10,2) NOT NULL,
+	payment STRING NOT NULL,
+	note STRING NOT NULL,
+	CONSTRAINT trips_pkey PRIMARY KEY (id ASC)
+) WITH (schema_locked = true);"
++ sleep 60
++ nohup ./load.sh 60000000 200000 'postgresql://root@10.130.0.20:26257/otus?sslmode=disable' 'postgresql://root@10.130.0.20:26258/otus?sslmode=disable' 'postgresql://root@10.131.0.20:26257/otus?sslmode=disable'

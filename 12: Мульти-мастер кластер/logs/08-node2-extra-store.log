@@ -1,0 +1,33 @@
++ df -h / /mnt/data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       9.1G  3.0G  6.2G  33% /
+/dev/vdb         20G  6.5G   13G  35% /mnt/data
++ sudo sed -i 's/--max-sql-memory=${MEM}$/--max-sql-memory=${MEM} $EXTRA/' /etc/systemd/system/cockroach@.service
++ grep -n EXTRA /etc/systemd/system/cockroach@.service
+12:  --store=/mnt/data/%i --cache=${MEM} --max-sql-memory=${MEM} $EXTRA
++ echo EXTRA=
++ sudo tee -a /etc/cockroach/node1.env
+EXTRA=
++ echo EXTRA=--store=/var/lib/cockroach/node2
++ sudo tee -a /etc/cockroach/node2.env
+EXTRA=--store=/var/lib/cockroach/node2
++ sudo systemctl daemon-reload
++ sudo systemctl restart cockroach@node2
++ sleep 20
++ systemctl is-active cockroach@node1 cockroach@node2
+active
+active
++ ps -o args= -C cockroach
+/usr/local/bin/cockroach start --insecure --advertise-addr=10.130.0.20:26257 --listen-addr=:26257 --http-addr=:8080 --join=10.130.0.20:26257,10.130.0.20:26258,10.131.0.20:26257 --locality=region=ru-central1,zone=ru-central1-d --store=/mnt/data/node1 --cache=.125 --max-sql-memory=.125
+/usr/local/bin/cockroach start --insecure --advertise-addr=10.130.0.20:26258 --listen-addr=:26258 --http-addr=:8081 --join=10.130.0.20:26257,10.130.0.20:26258,10.131.0.20:26257 --locality=region=ru-central1,zone=ru-central1-d --store=/mnt/data/node2 --cache=.125 --max-sql-memory=.125 --store=/var/lib/cockroach/node2
++ cockroach node status --insecure --host=10.130.0.20:26257 --format=records
++ grep -E '^(id|address|is_live)'
+id           | 1
+address      | 10.130.0.20:26257
+is_live      | true
+id           | 2
+address      | 10.131.0.20:26257
+is_live      | true
+id           | 3
+address      | 10.130.0.20:26258
+is_live      | true
